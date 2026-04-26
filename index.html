@@ -168,18 +168,18 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   .s-hrow,.s-row{grid-template-columns:58px 68px 1fr 46px 22px;}
   .s-hrow span:nth-child(3),.s-row span:nth-child(3){display:none;}
   .nav-tab{padding:5px 8px;font-size:11px;}
-  .sync-badge span:last-child{display:none;}
 }
 </style>
 </head>
 <body style="background:#f2f2f7;min-height:100vh;">
+
 <nav class="nav">
   <div class="nav-logo">
     <div class="nav-mark"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
     ILA-101 Focus
   </div>
   <div class="nav-right">
-    <div class="sync-badge" id="sync-badge"><span class="sync-dot"></span><span id="sync-txt">Loading…</span></div>
+    <div class="sync-badge saving" id="sync-badge"><span class="sync-dot"></span><span id="sync-txt">Connecting…</span></div>
     <div class="nav-seg" id="main-seg">
       <button class="nav-tab on" data-p="timer">Timer</button>
       <button class="nav-tab" data-p="stopwatch">Stopwatch</button>
@@ -189,7 +189,7 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </nav>
 
-<!-- TIMER PAGE -->
+<!-- TIMER -->
 <div class="pg on" id="page-timer">
   <div class="hero"><div class="hero-inner hero-timer"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Pomodoro timer</div><div class="h-title">Deep focus.<br>One session at a time.</div><div class="h-sub">Study · Review · Exercise — every minute logged.</div></div></div>
   <div class="pomo-card">
@@ -199,13 +199,13 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
       <button class="mode-btn" data-m="long">Long break</button>
     </div>
     <div class="ring-wrap">
-      <svg viewBox="0 0 200 200"><circle class="rbg" cx="100" cy="100" r="88"></circle><circle class="rfill" id="rfill" cx="100" cy="100" r="88" stroke="#007aff" stroke-dasharray="552.92" stroke-dashoffset="0"></circle></svg>
+      <svg viewBox="0 0 200 200"><circle class="rbg" cx="100" cy="100" r="88"/><circle class="rfill" id="rfill" cx="100" cy="100" r="88" stroke="#007aff" stroke-dasharray="552.92" stroke-dashoffset="0"/></svg>
       <div class="ring-center"><div class="ring-time" id="ptime">25:00</div><div class="ring-lbl" id="plbl">Focus · #1</div></div>
     </div>
     <div class="pomo-btns">
-      <button class="btn-icon" id="p-reset" title="Reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+      <button class="btn-icon" id="p-reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
       <button class="btn-main" id="p-start">Start</button>
-      <button class="btn-icon" id="p-skip" title="Skip"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+      <button class="btn-icon" id="p-skip"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
     </div>
     <div class="act-seg" id="p-act-seg">
       <button class="act-btn on" data-a="Study"><svg class="act-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Study</button>
@@ -226,15 +226,15 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
-<!-- STOPWATCH PAGE -->
+<!-- STOPWATCH -->
 <div class="pg" id="page-stopwatch">
   <div class="hero"><div class="hero-inner hero-sw"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Free timer</div><div class="h-title">Run with no limits.<br>Log when you stop.</div><div class="h-sub">No countdown — study as long as you need.</div></div></div>
   <div class="sw-card">
     <div class="sw-time" id="sw-disp">00:00<span class="sw-ms" id="sw-ms">.00</span></div>
     <div class="sw-btns">
       <button class="btn-sw" id="sw-start">Start</button>
-      <button class="btn-sw-icon" id="sw-lap" style="opacity:.35;" disabled title="Lap"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
-      <button class="btn-sw-icon" id="sw-reset" title="Reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+      <button class="btn-sw-icon" id="sw-lap" style="opacity:.35;" disabled><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
+      <button class="btn-sw-icon" id="sw-reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
     </div>
     <div class="act-seg" id="sw-act-seg" style="max-width:480px;margin:0 auto 16px;">
       <button class="act-btn on" data-a="Study"><svg class="act-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Study</button>
@@ -256,7 +256,7 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
-<!-- DASHBOARD PAGE -->
+<!-- DASHBOARD -->
 <div class="pg" id="page-dash">
   <div class="hero"><div class="hero-inner hero-dash"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Progress overview</div><div class="h-title">Every hour counts.<br>Keep the balance.</div><div class="h-sub">All five SOA topics carry equal 15-25% weight.</div></div></div>
   <div class="tile-row">
@@ -266,14 +266,14 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     <div class="tile t-orange"><div class="tile-dot"></div><div class="tile-lbl">Streak</div><div class="tile-val" id="d-streak">0</div><div class="tile-sub">days</div></div>
   </div>
   <div class="card"><div class="card-title">Activity breakdown</div><div class="card-sub">Study · Review · Exercise</div><div class="bk-grid" id="bk-grid"></div></div>
-  <div class="card"><div class="card-title">Topics</div><div class="card-sub">Hours per syllabus topic — all weighted 15-25%</div><div id="topic-bars"></div></div>
+  <div class="card"><div class="card-title">Topics</div><div class="card-sub">Hours per syllabus topic</div><div id="topic-bars"></div></div>
   <div class="card"><div class="card-title">Last 14 days</div><div class="card-sub">daily hours</div><div class="chart" id="ap-chart"></div></div>
   <div class="card"><div class="card-title">Goals</div><div class="card-sub">daily and weekly targets</div><div class="goals-grid" id="ap-goals"></div></div>
 </div>
 
-<!-- HISTORY PAGE -->
+<!-- HISTORY -->
 <div class="pg" id="page-history">
-  <div class="hero"><div class="hero-inner hero-hist"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Session ledger</div><div class="h-title">Log any session.<br>Any date, any time.</div><div class="h-sub">Auto-saved · Full history · CSV export &amp; import.</div></div></div>
+  <div class="hero"><div class="hero-inner hero-hist"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Session ledger</div><div class="h-title">Log any session.<br>Any date, any time.</div><div class="h-sub">Syncs across all your devices via Firebase.</div></div></div>
   <div class="card">
     <div class="card-title">Add session</div>
     <div class="card-sub">Enter a date, time range or hours directly</div>
@@ -293,87 +293,40 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
       <div class="toolbar">
         <select class="fi" id="h-fcat" style="width:auto;font-size:12px;height:34px;"><option value="">All categories</option><option value="Study">Study</option><option value="Review">Review</option><option value="Exercise">Exercise</option></select>
         <select class="fi" id="h-ftopic" style="width:auto;font-size:12px;height:34px;"><option value="">All topics</option><option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option><option value="T4">T4</option><option value="T5">T5</option></select>
-        <button class="pill" id="h-export"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export CSV</button>
-        <button class="pill" id="h-import-btn"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import</button>
-        <input type="file" id="h-import-file" accept=".csv" style="display:none">
+        <button class="pill" id="h-export">⬇ Export CSV</button>
         <button class="pill danger" id="h-clear">Clear all</button>
       </div>
     </div>
-    <div id="sess-container"><div class="loading"><div class="spin"></div>Loading sessions…</div></div>
+    <div id="sess-container"><div class="loading"><div class="spin"></div>Loading from Firebase…</div></div>
   </div>
 </div>
 
 <div class="toast" id="ap-toast"><span class="toast-dot"></span><span id="toast-txt">Saved</span></div>
 
-<script>
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCogzZ0EN1GLgKT136B_IjLQp7K2vqwk5M",
+  authDomain: "study-timer-7eb69.firebaseapp.com",
+  projectId: "study-timer-7eb69",
+  storageBucket: "study-timer-7eb69.firebasestorage.app",
+  messagingSenderId: "61772644005",
+  appId: "1:61772644005:web:c79fa0345632035816174c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 const TOPICS={T1:{name:'Product design',color:'#5856d6',bg:'rgba(88,86,214,.1)'},T2:{name:'Assumptions',color:'#28cd41',bg:'rgba(40,205,65,.1)'},T3:{name:'Product mgmt',color:'#ff9500',bg:'rgba(255,149,0,.1)'},T4:{name:'Valuation',color:'#007aff',bg:'rgba(0,122,255,.1)'},T5:{name:'Assets & risk',color:'#af52de',bg:'rgba(175,82,222,.1)'}};
 const ACTS={Study:{color:'#007aff',bg:'rgba(0,122,255,.08)',label:'Study',subs:{Study_DSM:'TIA DSM',Study_Lecture:'Lecture',Study_Notes:'Notes'}},Review:{color:'#af52de',bg:'rgba(175,82,222,.08)',label:'Review',subs:{Review_FC:'Formula cards',Review_Anki:'Anki',Review_Notes:'Re-read'}},Exercise:{color:'#ff9500',bg:'rgba(255,149,0,.08)',label:'Exercise',subs:{Exercise_Drill:'Drill problems',Exercise_Past:'Past exam',Exercise_CBT:'CBT practice'}}};
 const SUBS={Study:'<option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option>',Review:'<option value="Review_FC">Formula cards</option><option value="Review_Anki">Anki / flashcards</option><option value="Review_Notes">Re-read notes</option>',Exercise:'<option value="Exercise_Drill">Drill problems</option><option value="Exercise_Past">Past exam</option><option value="Exercise_CBT">CBT practice</option>'};
 
-const STORAGE_KEY = 'ila101_data';
-let sessions=[], pomos=[], storageReady=false;
+let sessions=[], pomos=[], dbReady=false;
 
-// ── Sync badge ────────────────────────────────────────────────
-function setSyncBadge(state, text){
-  const b=document.getElementById('sync-badge'), t=document.getElementById('sync-txt');
-  b.className='sync-badge '+state; t.textContent=text;
-}
-
-// ── Persistent storage ────────────────────────────────────────
-async function saveData(){
-  setSyncBadge('saving','Saving…');
-  try{
-    if(typeof window.storage==='undefined') throw new Error('storage not ready');
-    const payload=JSON.stringify({sessions, pomos, savedAt: Date.now()});
-    const result = await window.storage.set(STORAGE_KEY, payload);
-    if(!result) throw new Error('null result');
-    setSyncBadge('saved','✓ All saved');
-    clearTimeout(window._syncReset);
-    window._syncReset=setTimeout(()=>setSyncBadge('saved','Auto-save on'),3000);
-  }catch(e){
-    // Retry once after 800ms
-    clearTimeout(window._saveRetry);
-    window._saveRetry=setTimeout(async()=>{
-      try{
-        const payload=JSON.stringify({sessions, pomos, savedAt: Date.now()});
-        await window.storage.set(STORAGE_KEY, payload);
-        setSyncBadge('saved','✓ All saved');
-        clearTimeout(window._syncReset);
-        window._syncReset=setTimeout(()=>setSyncBadge('saved','Auto-save on'),3000);
-      }catch(e2){
-        setSyncBadge('error','Save failed — export CSV to backup');
-        console.error('Storage save error:',e2);
-      }
-    },800);
-  }
-}
-
-async function loadData(){
-  setSyncBadge('saving','Loading…');
-  // Wait for storage to be available
-  let attempts=0;
-  while(typeof window.storage==='undefined' && attempts<20){
-    await new Promise(r=>setTimeout(r,200));
-    attempts++;
-  }
-  try{
-    const res = await window.storage.get(STORAGE_KEY);
-    if(res && res.value){
-      const d=JSON.parse(res.value);
-      sessions=d.sessions||[];
-      pomos=d.pomos||[];
-    }
-    storageReady=true;
-    setSyncBadge('saved','Auto-save on');
-  }catch(e){
-    // Key doesn't exist yet — fresh start
-    storageReady=true;
-    setSyncBadge('saved','Auto-save on');
-  }
-  renderAll();
-}
-
-// ── Helpers ───────────────────────────────────────────────────
+function setSyncBadge(state,text){const b=document.getElementById('sync-badge'),t=document.getElementById('sync-txt');b.className='sync-badge '+state;t.textContent=text;}
 function today(){const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
 function dkey(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
 function p2(n){return String(n).padStart(2,'0');}
@@ -381,12 +334,50 @@ function ft(s){return p2(Math.floor(s/60))+':'+p2(s%60);}
 function fh(h){return h.toFixed(1)+'h';}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
 function catOf(s){return s?s.split('_')[0]:'Study';}
-function toast(msg,dot='#28cd41'){
-  const el=document.getElementById('ap-toast');
-  document.getElementById('toast-txt').textContent=msg;
-  document.querySelector('.toast-dot').style.background=dot;
-  el.classList.add('show');clearTimeout(window._tt);
-  window._tt=setTimeout(()=>el.classList.remove('show'),2400);
+function toast(msg,dot='#28cd41'){const el=document.getElementById('ap-toast');document.getElementById('toast-txt').textContent=msg;document.querySelector('.toast-dot').style.background=dot;el.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>el.classList.remove('show'),2400);}
+
+// ── Firebase save/load ────────────────────────────────────────
+async function saveSession(s){
+  setSyncBadge('saving','Saving…');
+  try{
+    await setDoc(doc(db,'sessions',String(s.id)),s);
+    setSyncBadge('saved','✓ Synced');
+    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
+  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
+}
+async function savePomo(p){
+  try{await setDoc(doc(db,'pomos',String(p.id)),p);}catch(e){console.error(e);}
+}
+async function deleteSession(id){
+  setSyncBadge('saving','Deleting…');
+  try{
+    await deleteDoc(doc(db,'sessions',String(id)));
+    setSyncBadge('saved','✓ Synced');
+    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
+  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
+}
+async function deleteAllSessions(){
+  setSyncBadge('saving','Clearing…');
+  try{
+    const promises=sessions.map(s=>deleteDoc(doc(db,'sessions',String(s.id))));
+    const pomoProm=pomos.map(p=>deleteDoc(doc(db,'pomos',String(p.id))));
+    await Promise.all([...promises,...pomoProm]);
+    setSyncBadge('saved','✓ Cleared');
+    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
+  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
+}
+
+// ── Real-time listener ────────────────────────────────────────
+function startListeners(){
+  onSnapshot(collection(db,'sessions'),snap=>{
+    sessions=snap.docs.map(d=>d.data());
+    renderAll();
+    if(!dbReady){dbReady=true;setSyncBadge('saved','Firebase sync on');}
+  });
+  onSnapshot(collection(db,'pomos'),snap=>{
+    pomos=snap.docs.map(d=>d.data());
+    renderAll();
+  });
 }
 
 // ── Nav ───────────────────────────────────────────────────────
@@ -397,52 +388,27 @@ document.getElementById('main-seg').addEventListener('click',e=>{
   t.classList.add('on');document.getElementById('page-'+t.dataset.p).classList.add('on');
   renderAll();
 });
-
-function bindSeg(id,subId){
-  const seg=document.getElementById(id);if(!seg)return;
-  seg.addEventListener('click',e=>{
-    const b=e.target.closest('[data-a]');if(!b)return;
-    seg.querySelectorAll('.act-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');
-    const s=document.getElementById(subId);if(s)s.innerHTML=SUBS[b.dataset.a];
-  });
-}
+function bindSeg(id,subId){const seg=document.getElementById(id);if(!seg)return;seg.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;seg.querySelectorAll('.act-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');const s=document.getElementById(subId);if(s)s.innerHTML=SUBS[b.dataset.a];});}
 bindSeg('p-act-seg','p-sub');bindSeg('sw-act-seg','sw-sub');bindSeg('h-act-seg','h-sub');
 
 // ── Pomodoro ──────────────────────────────────────────────────
 const PM={mode:'work',running:false,left:25*60,total:25*60,iid:null,cycle:0,w:25,sb:5,lb:15,cl:4};
 const RC=2*Math.PI*88;
-function setMode(m){
-  PM.mode=m;PM.running=false;if(PM.iid)clearInterval(PM.iid);
-  const min=m==='work'?PM.w:m==='short'?PM.sb:PM.lb;
-  PM.left=min*60;PM.total=min*60;
-  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  document.getElementById('rfill').style.stroke=m==='work'?'#007aff':m==='short'?'#28cd41':'#af52de';
-  document.getElementById('p-start').textContent='Start';
-  document.getElementById('p-start').classList.remove('pause');
-  updateRing();
-}
-function updateRing(){
-  document.getElementById('ptime').textContent=ft(PM.left);
-  document.getElementById('rfill').style.strokeDashoffset=RC*(1-(PM.total-PM.left)/PM.total);
-  const tp=pomos.filter(p=>p.date===today()).length;
-  document.getElementById('plbl').textContent=PM.mode==='work'?'Focus #'+(tp+1):PM.mode==='short'?'Short break':'Long break';
-}
-function startP(){
-  if(PM.running){PM.running=false;clearInterval(PM.iid);document.getElementById('p-start').textContent='Resume';document.getElementById('p-start').classList.remove('pause');return;}
-  PM.running=true;document.getElementById('p-start').textContent='Pause';document.getElementById('p-start').classList.add('pause');
-  PM.iid=setInterval(()=>{PM.left--;updateRing();if(PM.left<=0)doneP();},1000);
-}
+function setMode(m){PM.mode=m;PM.running=false;if(PM.iid)clearInterval(PM.iid);const min=m==='work'?PM.w:m==='short'?PM.sb:PM.lb;PM.left=min*60;PM.total=min*60;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));document.getElementById('rfill').style.stroke=m==='work'?'#007aff':m==='short'?'#28cd41':'#af52de';document.getElementById('p-start').textContent='Start';document.getElementById('p-start').classList.remove('pause');updateRing();}
+function updateRing(){document.getElementById('ptime').textContent=ft(PM.left);document.getElementById('rfill').style.strokeDashoffset=RC*(1-(PM.total-PM.left)/PM.total);const tp=pomos.filter(p=>p.date===today()).length;document.getElementById('plbl').textContent=PM.mode==='work'?'Focus #'+(tp+1):PM.mode==='short'?'Short break':'Long break';}
+function startP(){if(PM.running){PM.running=false;clearInterval(PM.iid);document.getElementById('p-start').textContent='Resume';document.getElementById('p-start').classList.remove('pause');return;}PM.running=true;document.getElementById('p-start').textContent='Pause';document.getElementById('p-start').classList.add('pause');PM.iid=setInterval(()=>{PM.left--;updateRing();if(PM.left<=0)doneP();},1000);}
 function doneP(skip){
   clearInterval(PM.iid);PM.running=false;
   if(PM.mode==='work'&&!skip){
     const topic=document.getElementById('p-topic').value,sub=document.getElementById('p-sub').value,cat=catOf(sub),task=document.getElementById('p-task').value.trim();
-    pomos.push({id:Date.now(),date:today(),topic,sub,cat,mins:PM.w});
-    sessions.push({id:Date.now()+1,date:today(),topic,sub,cat,hours:PM.w/60,note:task||'Pomodoro'});
-    saveData();PM.cycle++;beep();toast('✓ Pomodoro saved ('+PM.w+' min)');
+    const ts=Date.now();
+    const pomo={id:ts,date:today(),topic,sub,cat,mins:PM.w};
+    const sess={id:ts+1,date:today(),topic,sub,cat,hours:PM.w/60,note:task||'Pomodoro'};
+    savePomo(pomo);saveSession(sess);
+    PM.cycle++;beep();toast('✓ Pomodoro saved & synced!');
     setMode(PM.cycle%PM.cl===0?'long':'short');
   }else if(PM.mode!=='work'&&!skip){beep();setMode('work');}
   else setMode(PM.mode==='work'?'short':'work');
-  renderAll();
 }
 function beep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[[880,0],[1320,210]].forEach(([f,d])=>{setTimeout(()=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.2,ctx.currentTime+.05);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.5);o.start();o.stop(ctx.currentTime+.5);},d);});}catch(e){}}
 document.getElementById('p-start').addEventListener('click',startP);
@@ -459,8 +425,8 @@ function startSW(){
     document.getElementById('sw-start').textContent='Resume';document.getElementById('sw-start').classList.remove('pause');
     if(SW.elapsed>10000){
       const topic=document.getElementById('sw-topic').value,sub=document.getElementById('sw-sub').value,cat=catOf(sub),note=document.getElementById('sw-note').value.trim(),hrs=SW.elapsed/3600000;
-      sessions.push({id:Date.now(),date:today(),topic,sub,cat,hours:hrs,note:note||'Stopwatch'});
-      saveData();renderAll();toast('✓ Logged & saved ('+fh(hrs)+')');
+      const sess={id:Date.now(),date:today(),topic,sub,cat,hours:hrs,note:note||'Stopwatch'};
+      saveSession(sess);toast('✓ Logged & synced ('+fh(hrs)+')');
     }
   }else{
     SW.run=true;SW.start=Date.now();
@@ -484,15 +450,15 @@ document.getElementById('h-add').addEventListener('click',()=>{
   if(s&&e){const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);let m=(eh*60+em)-(sh*60+sm);if(m<0)m+=1440;hours=m/60;}
   else hours=parseFloat(document.getElementById('h-hours').value)||0;
   if(!date||hours<=0){toast('Enter date and time/hours','#ff3b30');return;}
-  sessions.push({id:Date.now(),date,topic,sub,cat,hours,note});
-  saveData();renderAll();
+  const sess={id:Date.now(),date,topic,sub,cat,hours,note};
+  saveSession(sess);
   ['h-note','h-hours','h-start','h-end'].forEach(id=>document.getElementById(id).value='');
-  toast('✓ Session saved');
+  toast('✓ Session saved & synced!');
 });
 document.getElementById('h-fcat').addEventListener('change',rSessions);
 document.getElementById('h-ftopic').addEventListener('change',rSessions);
 
-// ── Render all ────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────
 function renderAll(){rStats();rBreakdown();rTopics();rChart();rSessions();rGoals();rPomoStats();rSWStats();}
 function rStats(){
   const tot=sessions.reduce((a,b)=>a+b.hours,0);
@@ -569,7 +535,7 @@ function rSessions(){
   if(cf)sorted=sorted.filter(s=>(s.cat||catOf(s.sub))===cf);
   if(tf)sorted=sorted.filter(s=>s.topic===tf);
   const el=document.getElementById('sess-container');
-  if(!storageReady){el.innerHTML='<div class="loading"><div class="spin"></div>Loading…</div>';return;}
+  if(!dbReady){el.innerHTML='<div class="loading"><div class="spin"></div>Connecting to Firebase…</div>';return;}
   if(!sorted.length){el.innerHTML='<div class="empty">No sessions yet — start the timer or add one above!</div>';return;}
   const head='<div class="s-hrow"><span>Date</span><span>Topic</span><span>Category</span><span>Note</span><span style="text-align:right;">Hours</span><span></span></div>';
   el.innerHTML='<div class="s-list">'+head+sorted.map(s=>{
@@ -579,27 +545,33 @@ function rSessions(){
     return '<div class="s-row"><span class="s-date">'+dl+'</span><span><span class="s-pill" style="background:'+t.bg+';color:'+t.color+'">'+s.topic+'</span></span><span><span class="s-cat-badge" style="background:'+cfg.bg+';color:'+cfg.color+'">'+cfg.label+'</span></span><span class="s-note">'+(s.note?esc(s.note):'<span style="color:#aeaeb2">'+esc(sub)+'</span>')+'</span><span class="s-hrs">'+s.hours.toFixed(1)+'h</span><button class="s-del" data-id="'+s.id+'">×</button></div>';
   }).join('')+'</div>';
   el.querySelectorAll('.s-del').forEach(b=>b.addEventListener('click',e=>{
-    const id=parseInt(e.target.dataset.id);sessions=sessions.filter(s=>s.id!==id);saveData();renderAll();toast('Session deleted');
+    const id=parseInt(e.target.dataset.id);
+    deleteSession(id);
+    toast('Session deleted');
   }));
 }
 
-// ── CSV export / import ───────────────────────────────────────
-function exportCSV(){if(!sessions.length){toast('Nothing to export','#ff3b30');return;}const h='date,topic,category,sub_activity,hours,note\n';const rows=sessions.map(s=>s.date+','+s.topic+','+(s.cat||catOf(s.sub))+','+(s.sub||'')+','+s.hours.toFixed(2)+',"'+(s.note||'').replace(/"/g,'""')+'"').join('\n');const blob=new Blob([h+rows],{type:'text/csv'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='ila101-'+today()+'.csv';a.click();URL.revokeObjectURL(url);toast('Exported '+sessions.length+' sessions');}
-function parseCSVLine(line){const r=[];let cur='',q=false;for(let i=0;i<line.length;i++){const c=line[i];if(q){if(c==='"'&&line[i+1]==='"'){cur+='"';i++;}else if(c==='"')q=false;else cur+=c;}else{if(c==='"')q=true;else if(c===','){r.push(cur);cur='';}else cur+=c;}}r.push(cur);return r;}
-function importCSV(file){const reader=new FileReader();reader.onload=e=>{try{const lines=e.target.result.split(/\r?\n/).filter(l=>l.trim());if(lines.length<2){toast('CSV empty','#ff3b30');return;}const ns=[];for(let i=1;i<lines.length;i++){const p=parseCSVLine(lines[i]);if(p.length<5)continue;const[date,topic,cat,sub,hours,note]=p;if(!TOPICS[topic])continue;ns.push({id:Date.now()+i,date:date.trim(),topic:topic.trim(),cat:(cat||'Study').trim(),sub:(sub||'Study_DSM').trim(),hours:parseFloat(hours)||0,note:(note||'').trim()});}if(!ns.length){toast('No valid rows','#ff3b30');return;}const rep=confirm('Found '+ns.length+' sessions.\nOK = Replace all, Cancel = Merge');sessions=rep?ns:sessions.concat(ns);saveData();renderAll();toast('✓ Imported '+ns.length+' sessions');}catch(err){toast('Import failed','#ff3b30');}};reader.readAsText(file);}
+// ── Export CSV ────────────────────────────────────────────────
+function exportCSV(){
+  if(!sessions.length){toast('Nothing to export','#ff3b30');return;}
+  const h='date,topic,category,sub_activity,hours,note\n';
+  const rows=sessions.map(s=>s.date+','+s.topic+','+(s.cat||catOf(s.sub))+','+(s.sub||'')+','+s.hours.toFixed(2)+',"'+(s.note||'').replace(/"/g,'""')+'"').join('\n');
+  const blob=new Blob([h+rows],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='ila101-'+today()+'.csv';a.click();
+  URL.revokeObjectURL(url);toast('Exported '+sessions.length+' sessions');
+}
 document.getElementById('h-export').addEventListener('click',exportCSV);
-document.getElementById('h-import-btn').addEventListener('click',()=>document.getElementById('h-import-file').click());
-document.getElementById('h-import-file').addEventListener('change',e=>{const f=e.target.files[0];if(f)importCSV(f);e.target.value='';});
 document.getElementById('h-clear').addEventListener('click',()=>{
   if(!sessions.length)return;
-  if(confirm('Clear ALL sessions? This cannot be undone.\n\nTip: Export CSV first to back up.')){
-    sessions=[];pomos=[];saveData();renderAll();toast('All data cleared');
+  if(confirm('Clear ALL sessions from Firebase? This cannot be undone.')){
+    deleteAllSessions();renderAll();toast('All data cleared');
   }
 });
 
 // ── Boot ──────────────────────────────────────────────────────
 setMode('work');
-loadData();
+startListeners();
 </script>
 </body>
 </html>
