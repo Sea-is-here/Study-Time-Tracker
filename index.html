@@ -4,25 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ILA-101 Focus</title>
+
+<!-- ============================================================
+  SECTION 1: GLOBAL STYLES
+  Controls all visual appearance: colors, layout, typography,
+  cards, tiles, buttons, modals, badges, toast notifications.
+============================================================ -->
 <style>
+/* --- Reset & Base --- */
 *{box-sizing:border-box;margin:0;padding:0;}
-body,div,span,p,button,input,select,label{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+body,div,span,p,button,input,select,label,textarea{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
 button{cursor:pointer;border:none;background:none;color:inherit;}
-input,select{font-family:inherit;}
-.nav{height:52px;background:rgba(255,255,255,.92);border-bottom:0.5px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:30;}
+input,select,textarea{font-family:inherit;}
+body{background:#f2f2f7;min-height:100vh;}
+
+/* --- Navigation Bar --- */
+.nav{height:52px;background:rgba(255,255,255,.92);border-bottom:0.5px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:30;backdrop-filter:blur(10px);}
 .nav-logo{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:#1d1d1f;}
 .nav-mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#007aff,#5856d6);display:flex;align-items:center;justify-content:center;}
 .nav-mark svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
 .nav-right{display:flex;align-items:center;gap:10px;}
+.nav-seg{display:flex;gap:1px;background:#e8e8ed;padding:2px;border-radius:9px;}
+.nav-tab{padding:6px 13px;border-radius:7px;font-size:12px;font-weight:500;color:#6e6e73;transition:all .18s;}
+.nav-tab.on{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+
+/* --- Sync Badge (Firebase connection status) --- */
 .sync-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:#f2f2f7;color:#6e6e73;display:flex;align-items:center;gap:5px;transition:all .3s;}
 .sync-badge.saved{background:rgba(40,205,65,.12);color:#1a7f2e;}
 .sync-badge.saving{background:rgba(0,122,255,.1);color:#007aff;}
 .sync-badge.error{background:rgba(255,59,48,.1);color:#ff3b30;}
 .sync-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
-.nav-seg{display:flex;gap:1px;background:#e8e8ed;padding:2px;border-radius:9px;}
-.nav-tab{padding:6px 13px;border-radius:7px;font-size:12px;font-weight:500;color:#6e6e73;transition:all .18s;}
-.nav-tab.on{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+
+/* --- Page Visibility --- */
 .pg{display:none;} .pg.on{display:block;}
+
+/* --- Hero Banners --- */
 .hero{padding:20px 20px 0;}
 .hero-inner{border-radius:20px;padding:24px 22px 22px;margin-bottom:20px;position:relative;overflow:hidden;}
 .h-tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;color:#fff;opacity:.85;}
@@ -34,6 +50,8 @@ input,select{font-family:inherit;}
 .hero-sw{background:linear-gradient(135deg,#007aff,#00a3e0 55%,#32ade6);}
 .hero-dash{background:linear-gradient(135deg,#6e3fc7,#883fce 50%,#9c27b0);}
 .hero-hist{background:linear-gradient(135deg,#c0392b,#e04a1f 50%,#f07800);}
+
+/* --- Stat Tiles --- */
 .tile-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 20px;margin-bottom:20px;}
 .tile{border-radius:16px;padding:18px 16px;position:relative;overflow:hidden;}
 .tile-lbl{font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;margin-bottom:8px;}
@@ -46,28 +64,23 @@ input,select{font-family:inherit;}
 .t-pink{background:linear-gradient(135deg,#ff375f,#bf5af2);color:#fff;}
 .t-purple{background:linear-gradient(135deg,#bf5af2,#9b59b6);color:#fff;}
 .t-indigo{background:linear-gradient(135deg,#5856d6,#3634c7);color:#fff;}
+
+/* --- Cards --- */
 .card{background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:18px;padding:20px;margin:0 20px 16px;}
 .card-title{font-size:17px;font-weight:600;letter-spacing:-.02em;color:#1d1d1f;margin-bottom:3px;}
 .card-sub{font-size:13px;color:#6e6e73;margin-bottom:16px;}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:16px;}
-.pomo-card{margin:0 20px 16px;background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:20px;padding:28px 20px;text-align:center;}
-.mode-seg{display:inline-flex;gap:2px;background:#f2f2f7;padding:3px;border-radius:10px;margin-bottom:22px;}
-.mode-btn{padding:7px 15px;border-radius:7px;font-size:12px;font-weight:500;color:#6e6e73;transition:all .18s;}
-.mode-btn.on{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.12);}
-.ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 22px;}
-.ring-wrap svg{transform:rotate(-90deg);width:100%;height:100%;}
-.ring-wrap circle{fill:none;stroke-width:10;}
-.rbg{stroke:#f2f2f7;} .rfill{stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
-.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.ring-time{font-size:48px;font-weight:200;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#1d1d1f;line-height:1;}
-.ring-lbl{font-size:12px;color:#6e6e73;margin-top:5px;font-weight:500;}
-.pomo-btns{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:18px;}
-.btn-main{background:#007aff;color:#fff;padding:13px 36px;border-radius:999px;font-size:14px;font-weight:600;min-width:120px;transition:all .15s;box-shadow:0 2px 8px rgba(0,122,255,.3);}
-.btn-main:active{transform:scale(.97);}
-.btn-main.pause{background:#ff3b30;box-shadow:0 2px 8px rgba(255,59,48,.3);}
-.btn-icon{width:42px;height:42px;border-radius:50%;background:#f2f2f7;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.btn-icon:hover{background:#e5e5ea;}
-.btn-icon svg{width:16px;height:16px;stroke:#1d1d1f;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* --- Form Inputs --- */
+.fl{font-size:11px;font-weight:600;color:#6e6e73;margin-bottom:5px;letter-spacing:.01em;text-transform:uppercase;}
+.fi{width:100%;padding:10px 12px;border:1px solid #d1d1d6;border-radius:10px;background:#fff;color:#1d1d1f;font-size:14px;outline:none;transition:all .15s;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:#007aff;box-shadow:0 0 0 3px rgba(0,122,255,.15);}
+.fi::placeholder{color:#aeaeb2;}
+select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+
+/* --- Activity Segment (Study/Review/Exercise) --- */
 .act-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:#f2f2f7;padding:4px;border-radius:14px;margin-bottom:16px;}
 .act-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border-radius:10px;font-size:13px;font-weight:600;color:#6e6e73;transition:all .2s;border:1.5px solid transparent;}
 .act-btn.on{background:#fff;box-shadow:0 1px 6px rgba(0,0,0,.1);}
@@ -75,27 +88,68 @@ input,select{font-family:inherit;}
 .act-btn[data-a="Review"].on{color:#af52de;border-color:rgba(175,82,222,.2);}
 .act-btn[data-a="Exercise"].on{color:#ff9500;border-color:rgba(255,149,0,.2);}
 .act-icon{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
-.fl{font-size:11px;font-weight:600;color:#6e6e73;margin-bottom:5px;letter-spacing:.01em;text-transform:uppercase;}
-.fi{width:100%;padding:10px 12px;border:1px solid #d1d1d6;border-radius:10px;background:#fff;color:#1d1d1f;font-size:14px;outline:none;transition:all .15s;-webkit-appearance:none;appearance:none;}
-.fi:focus{border-color:#007aff;box-shadow:0 0 0 3px rgba(0,122,255,.15);}
-.fi::placeholder{color:#aeaeb2;}
-select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
+
+/* --- Buttons --- */
+.btn-main{background:#007aff;color:#fff;padding:13px 36px;border-radius:999px;font-size:14px;font-weight:600;min-width:120px;transition:all .15s;box-shadow:0 2px 8px rgba(0,122,255,.3);}
+.btn-main:active{transform:scale(.97);}
+.btn-main.pause{background:#ff3b30;box-shadow:0 2px 8px rgba(255,59,48,.3);}
+.btn-icon{width:42px;height:42px;border-radius:50%;background:#f2f2f7;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.btn-icon:hover{background:#e5e5ea;}
+.btn-icon svg{width:16px;height:16px;stroke:#1d1d1f;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.btn-add{width:100%;background:linear-gradient(135deg,#007aff,#5856d6);color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:600;transition:all .15s;box-shadow:0 2px 10px rgba(0,122,255,.3);}
+.btn-add:active{transform:scale(.98);}
+.btn-sw{background:#007aff;color:#fff;padding:13px 36px;border-radius:999px;font-size:14px;font-weight:600;min-width:120px;transition:all .15s;box-shadow:0 2px 8px rgba(0,122,255,.3);}
+.btn-sw:active{transform:scale(.97);}
+.btn-sw.running{background:#ff9500;box-shadow:0 2px 8px rgba(255,149,0,.3);}
+.btn-sw-icon{width:42px;height:42px;border-radius:50%;background:#f2f2f7;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.btn-sw-icon:hover{background:#e5e5ea;}
+.btn-sw-icon svg{width:16px;height:16px;stroke:#1d1d1f;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.pill{padding:7px 13px;border-radius:999px;font-size:12px;font-weight:500;background:#f2f2f7;color:#1d1d1f;border:0.5px solid rgba(0,0,0,.08);display:inline-flex;align-items:center;gap:5px;transition:all .14s;}
+.pill:hover{background:#e5e5ea;}
+.pill.danger{color:#ff3b30;}
+.pill.danger:hover{background:rgba(255,59,48,.08);}
+.pill.active{background:#007aff;color:#fff;border-color:#007aff;}
+
+/* --- Pomodoro Timer Card --- */
+.pomo-card{margin:0 20px 16px;background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:20px;padding:28px 20px;text-align:center;}
+.mode-seg{display:inline-flex;gap:2px;background:#f2f2f7;padding:3px;border-radius:10px;margin-bottom:22px;}
+.mode-btn{padding:7px 15px;border-radius:7px;font-size:12px;font-weight:500;color:#6e6e73;transition:all .18s;}
+.mode-btn.on{background:#fff;color:#1d1d1f;box-shadow:0 1px 4px rgba(0,0,0,.12);}
+.ring-wrap{position:relative;width:200px;height:200px;margin:0 auto 22px;}
+.ring-wrap svg{transform:rotate(-90deg);width:100%;height:100%;}
+.ring-wrap circle{fill:none;stroke-width:10;}
+.rbg{stroke:#f2f2f7;}.rfill{stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-time{font-size:48px;font-weight:200;letter-spacing:-.04em;font-variant-numeric:tabular-nums;color:#1d1d1f;line-height:1;}
+.ring-lbl{font-size:12px;color:#6e6e73;margin-top:5px;font-weight:500;}
+.pomo-btns{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:18px;}
+
+/* --- Stopwatch Card --- */
 .sw-card{margin:0 20px 16px;background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:20px;padding:28px 20px;text-align:center;}
 .sw-time{font-size:64px;font-weight:100;letter-spacing:-.05em;font-variant-numeric:tabular-nums;color:#1d1d1f;line-height:1;margin-bottom:8px;}
 .sw-ms{font-size:28px;font-weight:200;color:#86868b;}
 .sw-btns{display:flex;gap:12px;justify-content:center;align-items:center;margin-bottom:22px;}
-.btn-sw{background:#007aff;color:#fff;padding:13px 36px;border-radius:999px;font-size:14px;font-weight:600;min-width:120px;transition:all .15s;box-shadow:0 2px 8px rgba(0,122,255,.3);}
-.btn-sw:active{transform:scale(.97);}
-.btn-sw.pause{background:#ff3b30;box-shadow:0 2px 8px rgba(255,59,48,.3);}
-.btn-sw-icon{width:42px;height:42px;border-radius:50%;background:#f2f2f7;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-.btn-sw-icon:hover{background:#e5e5ea;}
-.btn-sw-icon svg{width:16px;height:16px;stroke:#1d1d1f;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.sw-ctx{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto 10px;text-align:left;}
+.sw-note-w{max-width:480px;margin:0 auto 14px;}
 .lap-list{max-height:150px;overflow-y:auto;border-top:0.5px solid #e5e5ea;margin-top:14px;}
 .lap-row{display:flex;justify-content:space-between;padding:9px 4px;border-bottom:0.5px solid #f2f2f7;font-size:13px;color:#6e6e73;}
 .lap-row:last-child{border-bottom:none;}
 .lap-row b{color:#1d1d1f;font-weight:600;font-variant-numeric:tabular-nums;}
-.sw-ctx{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px;margin:0 auto 10px;text-align:left;}
-.sw-note-w{max-width:480px;margin:0 auto;}
+
+/* --- Stopwatch Confirm Stop Modal --- */
+.sw-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.sw-confirm.show{display:flex;}
+.sw-confirm-box{background:#fff;border-radius:20px;padding:28px 24px;max-width:340px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.sw-confirm-time{font-size:42px;font-weight:200;letter-spacing:-.04em;color:#1d1d1f;margin:12px 0 4px;font-variant-numeric:tabular-nums;}
+.sw-confirm-label{font-size:13px;color:#6e6e73;margin-bottom:20px;}
+.sw-confirm-title{font-size:17px;font-weight:600;color:#1d1d1f;margin-bottom:6px;}
+.sw-confirm-sub{font-size:13px;color:#6e6e73;margin-bottom:20px;}
+.sw-confirm-btns{display:flex;flex-direction:column;gap:10px;}
+.btn-stop-save{background:linear-gradient(135deg,#28cd41,#34c759);color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 2px 8px rgba(40,205,65,.3);}
+.btn-pause-resume{background:#f2f2f7;color:#1d1d1f;padding:13px;border-radius:12px;font-size:14px;font-weight:600;}
+.btn-discard{background:rgba(255,59,48,.08);color:#ff3b30;padding:13px;border-radius:12px;font-size:14px;font-weight:600;}
+
+/* --- Dashboard: Activity Breakdown --- */
 .bk-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .bk-card{border-radius:14px;padding:16px;border:1px solid transparent;}
 .bk-lbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
@@ -107,6 +161,8 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .bk-subs{margin-top:12px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,.06);display:flex;flex-direction:column;gap:5px;}
 .bk-sub-row{display:flex;justify-content:space-between;font-size:11px;}
 .bk-sub-row b{font-weight:600;}
+
+/* --- Dashboard: Topic Bars --- */
 .t-row{margin-bottom:14px;}
 .t-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .t-name{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:#1d1d1f;}
@@ -116,12 +172,23 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .t-tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .t-bg{height:6px;border-radius:999px;background:#f2f2f7;overflow:hidden;}
 .t-fill{height:100%;border-radius:999px;transition:width .5s cubic-bezier(.16,1,.3,1);}
-.chart{display:flex;align-items:flex-end;gap:3px;height:110px;padding-bottom:20px;}
-.ch-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;}
-.ch-bwrap{width:100%;flex:1;display:flex;align-items:flex-end;}
+
+/* --- Dashboard: Chart (Bar + Dot) --- */
+.chart-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.chart-wrap{overflow-x:auto;padding-bottom:4px;}
+.chart{display:flex;align-items:flex-end;gap:3px;height:130px;padding-bottom:22px;min-width:100%;}
+.ch-col{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;min-width:18px;flex:1;}
+.ch-bwrap{width:100%;flex:1;display:flex;align-items:flex-end;position:relative;}
+/* Bar chart style */
 .ch-bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;background:#007aff;opacity:.75;transition:height .4s;}
 .ch-bar.empty{background:#f2f2f7;opacity:1;}
-.ch-lbl{font-size:10px;color:#aeaeb2;font-variant-numeric:tabular-nums;font-weight:500;}
+/* Dot plot style */
+.ch-dot{width:8px;height:8px;border-radius:50%;background:#007aff;position:absolute;left:50%;transform:translateX(-50%);transition:bottom .4s;}
+.ch-dot.empty{background:#e5e5ea;}
+.ch-lbl{font-size:10px;color:#aeaeb2;font-variant-numeric:tabular-nums;font-weight:500;white-space:nowrap;}
+.ch-val{font-size:9px;color:#6e6e73;font-weight:600;font-variant-numeric:tabular-nums;}
+
+/* --- Dashboard: Goals --- */
 .goals-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 .goal-card{border-radius:14px;padding:18px;position:relative;overflow:hidden;color:#fff;}
 .goal-card::before{content:'';position:absolute;right:-18px;top:-18px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.15);}
@@ -134,27 +201,37 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .g-blue{background:linear-gradient(135deg,#007aff,#5856d6);}
 .g-green{background:linear-gradient(135deg,#28cd41,#00c7be);}
 .g-orange{background:linear-gradient(135deg,#ff9500,#ff6200);}
-.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
-.btn-add{width:100%;background:linear-gradient(135deg,#007aff,#5856d6);color:#fff;padding:13px;border-radius:12px;font-size:14px;font-weight:600;transition:all .15s;box-shadow:0 2px 10px rgba(0,122,255,.3);}
-.btn-add:active{transform:scale(.98);}
+
+/* --- History: Session Table --- */
 .s-list{display:flex;flex-direction:column;}
-.s-hrow{display:grid;grid-template-columns:68px 76px 82px 1fr 50px 26px;gap:10px;padding:6px 12px;font-size:11px;font-weight:600;color:#aeaeb2;letter-spacing:.03em;text-transform:uppercase;}
-.s-row{display:grid;grid-template-columns:68px 76px 82px 1fr 50px 26px;gap:10px;align-items:center;padding:10px 12px;border-radius:12px;font-size:13px;transition:background .12s;}
+.s-hrow{display:grid;grid-template-columns:68px 60px 70px 1fr 46px 52px;gap:8px;padding:6px 12px;font-size:11px;font-weight:600;color:#aeaeb2;letter-spacing:.03em;text-transform:uppercase;}
+.s-row{display:grid;grid-template-columns:68px 60px 70px 1fr 46px 52px;gap:8px;align-items:center;padding:10px 12px;border-radius:12px;font-size:13px;transition:background .12s;}
 .s-row:hover{background:#f9f9fb;}
 .s-date{color:#6e6e73;font-size:11px;font-weight:500;font-variant-numeric:tabular-nums;}
 .s-pill{display:inline-block;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;}
 .s-cat-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;font-size:10px;font-weight:700;}
 .s-note{color:#1d1d1f;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;}
 .s-hrs{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:#1d1d1f;font-size:13px;}
-.s-del{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#aeaeb2;font-size:14px;opacity:0;transition:all .12s;}
-.s-row:hover .s-del{opacity:1;}
+.s-actions{display:flex;gap:4px;justify-content:flex-end;opacity:0;transition:opacity .12s;}
+.s-row:hover .s-actions{opacity:1;}
+.s-edit,.s-del{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .12s;}
+.s-edit{color:#007aff;}
+.s-edit:hover{background:rgba(0,122,255,.1);}
+.s-del{color:#aeaeb2;}
 .s-del:hover{background:rgba(255,59,48,.1);color:#ff3b30;}
+
+/* --- Edit Session Modal --- */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff;border-radius:20px;padding:24px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.modal-title{font-size:17px;font-weight:600;color:#1d1d1f;margin-bottom:4px;}
+.modal-sub{font-size:13px;color:#6e6e73;margin-bottom:18px;}
+.modal-btns{display:flex;gap:10px;margin-top:16px;}
+.btn-modal-save{flex:1;background:linear-gradient(135deg,#007aff,#5856d6);color:#fff;padding:12px;border-radius:12px;font-size:14px;font-weight:600;}
+.btn-modal-cancel{flex:1;background:#f2f2f7;color:#1d1d1f;padding:12px;border-radius:12px;font-size:14px;font-weight:600;}
+
+/* --- Toolbar & Misc --- */
 .toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;}
-.pill{padding:7px 13px;border-radius:999px;font-size:12px;font-weight:500;background:#f2f2f7;color:#1d1d1f;border:0.5px solid rgba(0,0,0,.08);display:inline-flex;align-items:center;gap:5px;transition:all .14s;}
-.pill:hover{background:#e5e5ea;}
-.pill.danger{color:#ff3b30;}
-.pill.danger:hover{background:rgba(255,59,48,.08);}
 .toast{position:fixed;top:66px;left:50%;transform:translateX(-50%) translateY(-8px);background:#1d1d1f;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:all .22s cubic-bezier(.16,1,.3,1);z-index:99;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .toast-dot{width:7px;height:7px;border-radius:50%;background:#28cd41;flex-shrink:0;}
@@ -162,24 +239,35 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .loading{text-align:center;padding:48px;color:#aeaeb2;font-size:14px;display:flex;flex-direction:column;align-items:center;gap:12px;}
 .spin{width:22px;height:22px;border:2.5px solid #e5e5ea;border-top-color:#007aff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* --- Responsive --- */
 @media(max-width:640px){
   .tile-row,.bk-grid,.goals-grid{grid-template-columns:1fr 1fr;}
   .fg3{grid-template-columns:1fr 1fr;}
-  .s-hrow,.s-row{grid-template-columns:58px 68px 1fr 46px 22px;}
+  .s-hrow,.s-row{grid-template-columns:58px 55px 1fr 40px 44px;}
   .s-hrow span:nth-child(3),.s-row span:nth-child(3){display:none;}
   .nav-tab{padding:5px 8px;font-size:11px;}
 }
 </style>
 </head>
-<body style="background:#f2f2f7;min-height:100vh;">
+<body>
 
+<!-- ============================================================
+  SECTION 2: NAVIGATION BAR
+  Logo, Firebase sync status badge, and page tab switcher.
+============================================================ -->
 <nav class="nav">
   <div class="nav-logo">
-    <div class="nav-mark"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+    <div class="nav-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
     ILA-101 Focus
   </div>
   <div class="nav-right">
-    <div class="sync-badge saving" id="sync-badge"><span class="sync-dot"></span><span id="sync-txt">Connecting…</span></div>
+    <div class="sync-badge saving" id="sync-badge">
+      <span class="sync-dot"></span>
+      <span id="sync-txt">Connecting…</span>
+    </div>
     <div class="nav-seg" id="main-seg">
       <button class="nav-tab on" data-p="timer">Timer</button>
       <button class="nav-tab" data-p="stopwatch">Stopwatch</button>
@@ -189,35 +277,82 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </nav>
 
-<!-- TIMER -->
+<!-- ============================================================
+  SECTION 3: POMODORO TIMER PAGE
+  25-min countdown timer with ring animation, mode switching
+  (Focus / Short break / Long break), activity & topic selectors,
+  and summary tiles (today's pomos, focus time, streak, all-time).
+============================================================ -->
 <div class="pg on" id="page-timer">
-  <div class="hero"><div class="hero-inner hero-timer"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Pomodoro timer</div><div class="h-title">Deep focus.<br>One session at a time.</div><div class="h-sub">Study · Review · Exercise — every minute logged.</div></div></div>
+  <div class="hero">
+    <div class="hero-inner hero-timer">
+      <div class="hc1"></div><div class="hc2"></div>
+      <div class="h-tag">Pomodoro timer</div>
+      <div class="h-title">Deep focus.<br>One session at a time.</div>
+      <div class="h-sub">Study · Review · Exercise — every minute logged.</div>
+    </div>
+  </div>
   <div class="pomo-card">
+    <!-- Mode selector -->
     <div class="mode-seg">
       <button class="mode-btn on" data-m="work">Focus</button>
       <button class="mode-btn" data-m="short">Short break</button>
       <button class="mode-btn" data-m="long">Long break</button>
     </div>
+    <!-- Countdown ring -->
     <div class="ring-wrap">
-      <svg viewBox="0 0 200 200"><circle class="rbg" cx="100" cy="100" r="88"/><circle class="rfill" id="rfill" cx="100" cy="100" r="88" stroke="#007aff" stroke-dasharray="552.92" stroke-dashoffset="0"/></svg>
-      <div class="ring-center"><div class="ring-time" id="ptime">25:00</div><div class="ring-lbl" id="plbl">Focus · #1</div></div>
+      <svg viewBox="0 0 200 200">
+        <circle class="rbg" cx="100" cy="100" r="88"/>
+        <circle class="rfill" id="rfill" cx="100" cy="100" r="88" stroke="#007aff" stroke-dasharray="552.92" stroke-dashoffset="0"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-time" id="ptime">25:00</div>
+        <div class="ring-lbl" id="plbl">Focus · #1</div>
+      </div>
     </div>
+    <!-- Controls -->
     <div class="pomo-btns">
-      <button class="btn-icon" id="p-reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+      <button class="btn-icon" id="p-reset" title="Reset">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
       <button class="btn-main" id="p-start">Start</button>
-      <button class="btn-icon" id="p-skip"><svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+      <button class="btn-icon" id="p-skip" title="Skip">
+        <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
     </div>
+    <!-- Activity type -->
     <div class="act-seg" id="p-act-seg">
       <button class="act-btn on" data-a="Study"><svg class="act-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Study</button>
       <button class="act-btn" data-a="Review"><svg class="act-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M7 21h10M12 17v4"/></svg>Review</button>
       <button class="act-btn" data-a="Exercise"><svg class="act-icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercise</button>
     </div>
+    <!-- Topic & sub-activity -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;text-align:left;">
-      <div><div class="fl">Topic</div><select class="fi" id="p-topic"><option value="T1">T1 — Product design (Sec A)</option><option value="T2">T2 — Assumptions (Sec B)</option><option value="T3">T3 — Product mgmt (Sec E)</option><option value="T4">T4 — Valuation (Sec C)</option><option value="T5">T5 — Assets &amp; risk (Sec D+F)</option></select></div>
-      <div><div class="fl">Sub-activity</div><select class="fi" id="p-sub"><option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option></select></div>
-      <div style="grid-column:1/-1;"><div class="fl">What are you working on?</div><input class="fi" type="text" id="p-task" placeholder="e.g. Lesson 4, Drill Q5-Q8"></div>
+      <div>
+        <div class="fl">Topic</div>
+        <select class="fi" id="p-topic">
+          <option value="T1">T1 — Product design (Sec A)</option>
+          <option value="T2">T2 — Assumptions (Sec B)</option>
+          <option value="T3">T3 — Product mgmt (Sec E)</option>
+          <option value="T4">T4 — Valuation (Sec C)</option>
+          <option value="T5">T5 — Assets &amp; risk (Sec D+F)</option>
+        </select>
+      </div>
+      <div>
+        <div class="fl">Sub-activity</div>
+        <select class="fi" id="p-sub">
+          <option value="Study_DSM">TIA DSM reading</option>
+          <option value="Study_Lecture">Video / lecture</option>
+          <option value="Study_Notes">Note-taking</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <div class="fl">What are you working on?</div>
+        <input class="fi" type="text" id="p-task" placeholder="e.g. Lesson 4, Drill Q5-Q8">
+      </div>
     </div>
   </div>
+  <!-- Summary tiles -->
   <div class="tile-row">
     <div class="tile t-blue"><div class="tile-dot"></div><div class="tile-lbl">Today</div><div class="tile-val" id="pt-today">0</div><div class="tile-sub">pomodoros</div></div>
     <div class="tile t-green"><div class="tile-dot"></div><div class="tile-lbl">Focus time</div><div class="tile-val" id="pt-focus">0m</div><div class="tile-sub">today</div></div>
@@ -226,28 +361,65 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
-<!-- STOPWATCH -->
+<!-- ============================================================
+  SECTION 4: STOPWATCH PAGE
+  Free-running timer (no countdown). Shows elapsed time with
+  milliseconds. On stop, shows a confirmation modal asking user
+  to Save & Log, Pause/Resume, or Discard. Logs to Firebase
+  history when saved. Includes lap recording.
+============================================================ -->
 <div class="pg" id="page-stopwatch">
-  <div class="hero"><div class="hero-inner hero-sw"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Free timer</div><div class="h-title">Run with no limits.<br>Log when you stop.</div><div class="h-sub">No countdown — study as long as you need.</div></div></div>
+  <div class="hero">
+    <div class="hero-inner hero-sw">
+      <div class="hc1"></div><div class="hc2"></div>
+      <div class="h-tag">Free timer</div>
+      <div class="h-title">Run with no limits.<br>Log when you stop.</div>
+      <div class="h-sub">Tap Stop → confirm to save your session to history.</div>
+    </div>
+  </div>
   <div class="sw-card">
     <div class="sw-time" id="sw-disp">00:00<span class="sw-ms" id="sw-ms">.00</span></div>
     <div class="sw-btns">
       <button class="btn-sw" id="sw-start">Start</button>
-      <button class="btn-sw-icon" id="sw-lap" style="opacity:.35;" disabled><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
-      <button class="btn-sw-icon" id="sw-reset"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+      <button class="btn-sw-icon" id="sw-lap" style="opacity:.35;" disabled title="Lap">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </button>
+      <button class="btn-sw-icon" id="sw-reset" title="Reset">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
     </div>
+    <!-- Activity type -->
     <div class="act-seg" id="sw-act-seg" style="max-width:480px;margin:0 auto 16px;">
       <button class="act-btn on" data-a="Study"><svg class="act-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Study</button>
       <button class="act-btn" data-a="Review"><svg class="act-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M7 21h10M12 17v4"/></svg>Review</button>
       <button class="act-btn" data-a="Exercise"><svg class="act-icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercise</button>
     </div>
+    <!-- Topic & note -->
     <div class="sw-ctx">
-      <div><div class="fl">Topic</div><select class="fi" id="sw-topic"><option value="T1">T1 — Product design</option><option value="T2">T2 — Assumptions</option><option value="T3">T3 — Product mgmt</option><option value="T4">T4 — Valuation</option><option value="T5">T5 — Assets &amp; risk</option></select></div>
-      <div><div class="fl">Sub-activity</div><select class="fi" id="sw-sub"><option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option></select></div>
+      <div><div class="fl">Topic</div>
+        <select class="fi" id="sw-topic">
+          <option value="T1">T1 — Product design</option>
+          <option value="T2">T2 — Assumptions</option>
+          <option value="T3">T3 — Product mgmt</option>
+          <option value="T4">T4 — Valuation</option>
+          <option value="T5">T5 — Assets &amp; risk</option>
+        </select>
+      </div>
+      <div><div class="fl">Sub-activity</div>
+        <select class="fi" id="sw-sub">
+          <option value="Study_DSM">TIA DSM reading</option>
+          <option value="Study_Lecture">Video / lecture</option>
+          <option value="Study_Notes">Note-taking</option>
+        </select>
+      </div>
     </div>
-    <div class="sw-note-w"><div class="fl">Note</div><input class="fi" type="text" id="sw-note" placeholder="optional"></div>
+    <div class="sw-note-w">
+      <div class="fl">Note</div>
+      <input class="fi" type="text" id="sw-note" placeholder="optional">
+    </div>
     <div class="lap-list" id="sw-laps"></div>
   </div>
+  <!-- Summary tiles -->
   <div class="tile-row">
     <div class="tile t-blue"><div class="tile-dot"></div><div class="tile-lbl">Study</div><div class="tile-val" id="sw-s">0.0h</div><div class="tile-sub">logged</div></div>
     <div class="tile t-purple"><div class="tile-dot"></div><div class="tile-lbl">Review</div><div class="tile-val" id="sw-r">0.0h</div><div class="tile-sub">logged</div></div>
@@ -256,24 +428,97 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
-<!-- DASHBOARD -->
+<!-- Stopwatch Stop Confirmation Modal -->
+<div class="sw-confirm" id="sw-confirm">
+  <div class="sw-confirm-box">
+    <div class="sw-confirm-title">Stop studying?</div>
+    <div class="sw-confirm-time" id="sc-time">00:00</div>
+    <div class="sw-confirm-label">time studied</div>
+    <div class="sw-confirm-sub">What would you like to do?</div>
+    <div class="sw-confirm-btns">
+      <button class="btn-stop-save" id="sc-save">✓ Save & log this session</button>
+      <button class="btn-pause-resume" id="sc-pause">⏸ Pause — keep timer running</button>
+      <button class="btn-discard" id="sc-discard">✕ Discard this session</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+  SECTION 5: DASHBOARD PAGE
+  Overview stats, activity breakdown by category (Study/Review/
+  Exercise), topic progress bars, and a chart that supports:
+  - Bar chart view (default)
+  - Dot plot view (toggled)
+  - Zoom: last 14 days (default) or all-time view
+  Goals section shows daily/weekly targets.
+============================================================ -->
 <div class="pg" id="page-dash">
-  <div class="hero"><div class="hero-inner hero-dash"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Progress overview</div><div class="h-title">Every hour counts.<br>Keep the balance.</div><div class="h-sub">All five SOA topics carry equal 15-25% weight.</div></div></div>
+  <div class="hero">
+    <div class="hero-inner hero-dash">
+      <div class="hc1"></div><div class="hc2"></div>
+      <div class="h-tag">Progress overview</div>
+      <div class="h-title">Every hour counts.<br>Keep the balance.</div>
+      <div class="h-sub">All five SOA topics carry equal 15-25% weight.</div>
+    </div>
+  </div>
+  <!-- Summary tiles -->
   <div class="tile-row">
     <div class="tile t-purple"><div class="tile-dot"></div><div class="tile-lbl">Total</div><div class="tile-val" id="d-total">0.0h</div><div class="tile-sub" id="d-sess">0 sessions</div></div>
     <div class="tile t-blue"><div class="tile-dot"></div><div class="tile-lbl">This week</div><div class="tile-val" id="d-week">0.0h</div><div class="tile-sub">last 7 days</div></div>
     <div class="tile t-green"><div class="tile-dot"></div><div class="tile-lbl">Daily avg</div><div class="tile-val" id="d-avg">0.0h</div><div class="tile-sub">per active day</div></div>
     <div class="tile t-orange"><div class="tile-dot"></div><div class="tile-lbl">Streak</div><div class="tile-val" id="d-streak">0</div><div class="tile-sub">days</div></div>
   </div>
-  <div class="card"><div class="card-title">Activity breakdown</div><div class="card-sub">Study · Review · Exercise</div><div class="bk-grid" id="bk-grid"></div></div>
-  <div class="card"><div class="card-title">Topics</div><div class="card-sub">Hours per syllabus topic</div><div id="topic-bars"></div></div>
-  <div class="card"><div class="card-title">Last 14 days</div><div class="card-sub">daily hours</div><div class="chart" id="ap-chart"></div></div>
-  <div class="card"><div class="card-title">Goals</div><div class="card-sub">daily and weekly targets</div><div class="goals-grid" id="ap-goals"></div></div>
+  <!-- Activity breakdown -->
+  <div class="card">
+    <div class="card-title">Activity breakdown</div>
+    <div class="card-sub">Study · Review · Exercise</div>
+    <div class="bk-grid" id="bk-grid"></div>
+  </div>
+  <!-- Topic bars -->
+  <div class="card">
+    <div class="card-title">Topics</div>
+    <div class="card-sub">Hours per syllabus topic — all weighted 15-25%</div>
+    <div id="topic-bars"></div>
+  </div>
+  <!-- Chart with toolbar -->
+  <div class="card">
+    <div class="card-title">Study history</div>
+    <div class="chart-toolbar">
+      <!-- Zoom toggle -->
+      <button class="pill active" id="ch-14">Last 14 days</button>
+      <button class="pill" id="ch-all">All time</button>
+      <div style="flex:1"></div>
+      <!-- Chart type toggle -->
+      <button class="pill active" id="ch-bar">📊 Bar</button>
+      <button class="pill" id="ch-dot">• Dot plot</button>
+    </div>
+    <div class="chart-wrap"><div class="chart" id="ap-chart"></div></div>
+  </div>
+  <!-- Goals -->
+  <div class="card">
+    <div class="card-title">Goals</div>
+    <div class="card-sub">Daily and weekly targets</div>
+    <div class="goals-grid" id="ap-goals"></div>
+  </div>
 </div>
 
-<!-- HISTORY -->
+<!-- ============================================================
+  SECTION 6: HISTORY PAGE
+  Manual session entry form + scrollable session list.
+  Each session supports Edit (opens modal) and Delete.
+  Edit modal allows changing date, hours, topic, category, note.
+  Filters by category and topic. CSV export button.
+============================================================ -->
 <div class="pg" id="page-history">
-  <div class="hero"><div class="hero-inner hero-hist"><div class="hc1"></div><div class="hc2"></div><div class="h-tag">Session ledger</div><div class="h-title">Log any session.<br>Any date, any time.</div><div class="h-sub">Syncs across all your devices via Firebase.</div></div></div>
+  <div class="hero">
+    <div class="hero-inner hero-hist">
+      <div class="hc1"></div><div class="hc2"></div>
+      <div class="h-tag">Session ledger</div>
+      <div class="h-title">Log any session.<br>Any date, any time.</div>
+      <div class="h-sub">Syncs across all your devices via Firebase.</div>
+    </div>
+  </div>
+  <!-- Add session form -->
   <div class="card">
     <div class="card-title">Add session</div>
     <div class="card-sub">Enter a date, time range or hours directly</div>
@@ -282,17 +527,51 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
       <button class="act-btn" data-a="Review"><svg class="act-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M7 21h10M12 17v4"/></svg>Review</button>
       <button class="act-btn" data-a="Exercise"><svg class="act-icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercise</button>
     </div>
-    <div class="fg2"><div><div class="fl">Topic</div><select class="fi" id="h-topic"><option value="T1">T1 — Product design (Sec A)</option><option value="T2">T2 — Assumptions (Sec B)</option><option value="T3">T3 — Product mgmt (Sec E)</option><option value="T4">T4 — Valuation (Sec C)</option><option value="T5">T5 — Assets &amp; risk (Sec D+F)</option></select></div><div><div class="fl">Sub-activity</div><select class="fi" id="h-sub"><option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option></select></div></div>
-    <div class="fg3"><div><div class="fl">Start time</div><input class="fi" type="time" id="h-start"></div><div><div class="fl">End time</div><input class="fi" type="time" id="h-end"></div><div><div class="fl">Or hours directly</div><input class="fi" type="number" id="h-hours" min="0.1" step="0.1" placeholder="e.g. 1.5"></div></div>
-    <div class="fg2" style="margin-bottom:14px;"><div><div class="fl">Date</div><input class="fi" type="date" id="h-date"></div><div><div class="fl">Note (optional)</div><input class="fi" type="text" id="h-note" placeholder="e.g. Lesson 4, Drill Q5"></div></div>
+    <div class="fg2">
+      <div><div class="fl">Topic</div>
+        <select class="fi" id="h-topic">
+          <option value="T1">T1 — Product design (Sec A)</option>
+          <option value="T2">T2 — Assumptions (Sec B)</option>
+          <option value="T3">T3 — Product mgmt (Sec E)</option>
+          <option value="T4">T4 — Valuation (Sec C)</option>
+          <option value="T5">T5 — Assets &amp; risk (Sec D+F)</option>
+        </select>
+      </div>
+      <div><div class="fl">Sub-activity</div>
+        <select class="fi" id="h-sub">
+          <option value="Study_DSM">TIA DSM reading</option>
+          <option value="Study_Lecture">Video / lecture</option>
+          <option value="Study_Notes">Note-taking</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg3">
+      <div><div class="fl">Start time</div><input class="fi" type="time" id="h-start"></div>
+      <div><div class="fl">End time</div><input class="fi" type="time" id="h-end"></div>
+      <div><div class="fl">Or hours directly</div><input class="fi" type="number" id="h-hours" min="0.1" step="0.1" placeholder="e.g. 1.5"></div>
+    </div>
+    <div class="fg2" style="margin-bottom:14px;">
+      <div><div class="fl">Date</div><input class="fi" type="date" id="h-date"></div>
+      <div><div class="fl">Note (optional)</div><input class="fi" type="text" id="h-note" placeholder="e.g. Lesson 4, Drill Q5"></div>
+    </div>
     <button class="btn-add" id="h-add">Add to history</button>
   </div>
+  <!-- Session list with filters -->
   <div class="card">
     <div class="card-head">
       <div><div class="card-title">All sessions</div></div>
       <div class="toolbar">
-        <select class="fi" id="h-fcat" style="width:auto;font-size:12px;height:34px;"><option value="">All categories</option><option value="Study">Study</option><option value="Review">Review</option><option value="Exercise">Exercise</option></select>
-        <select class="fi" id="h-ftopic" style="width:auto;font-size:12px;height:34px;"><option value="">All topics</option><option value="T1">T1</option><option value="T2">T2</option><option value="T3">T3</option><option value="T4">T4</option><option value="T5">T5</option></select>
+        <select class="fi" id="h-fcat" style="width:auto;font-size:12px;height:34px;">
+          <option value="">All categories</option>
+          <option value="Study">Study</option>
+          <option value="Review">Review</option>
+          <option value="Exercise">Exercise</option>
+        </select>
+        <select class="fi" id="h-ftopic" style="width:auto;font-size:12px;height:34px;">
+          <option value="">All topics</option>
+          <option value="T1">T1</option><option value="T2">T2</option>
+          <option value="T3">T3</option><option value="T4">T4</option><option value="T5">T5</option>
+        </select>
         <button class="pill" id="h-export">⬇ Export CSV</button>
         <button class="pill danger" id="h-clear">Clear all</button>
       </div>
@@ -301,12 +580,59 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
+<!-- Edit Session Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">Edit session</div>
+    <div class="modal-sub">Update any detail and save.</div>
+    <div class="act-seg" id="e-act-seg">
+      <button class="act-btn on" data-a="Study"><svg class="act-icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Study</button>
+      <button class="act-btn" data-a="Review"><svg class="act-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M7 21h10M12 17v4"/></svg>Review</button>
+      <button class="act-btn" data-a="Exercise"><svg class="act-icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Exercise</button>
+    </div>
+    <div class="fg2">
+      <div><div class="fl">Topic</div>
+        <select class="fi" id="e-topic">
+          <option value="T1">T1 — Product design</option>
+          <option value="T2">T2 — Assumptions</option>
+          <option value="T3">T3 — Product mgmt</option>
+          <option value="T4">T4 — Valuation</option>
+          <option value="T5">T5 — Assets &amp; risk</option>
+        </select>
+      </div>
+      <div><div class="fl">Sub-activity</div>
+        <select class="fi" id="e-sub">
+          <option value="Study_DSM">TIA DSM reading</option>
+          <option value="Study_Lecture">Video / lecture</option>
+          <option value="Study_Notes">Note-taking</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div><div class="fl">Date</div><input class="fi" type="date" id="e-date"></div>
+      <div><div class="fl">Hours</div><input class="fi" type="number" id="e-hours" min="0.1" step="0.1"></div>
+    </div>
+    <div><div class="fl">Note</div><input class="fi" type="text" id="e-note" placeholder="optional"></div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" id="e-cancel">Cancel</button>
+      <button class="btn-modal-save" id="e-save">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
 <div class="toast" id="ap-toast"><span class="toast-dot"></span><span id="toast-txt">Saved</span></div>
 
-<!-- Firebase SDK -->
+<!-- ============================================================
+  SECTION 7: JAVASCRIPT — FIREBASE & APP LOGIC
+============================================================ -->
 <script type="module">
+
+// ── 7A. FIREBASE SETUP ────────────────────────────────────────
+// Imports Firebase SDK and initialises the Firestore database.
+// All data (sessions, pomos) is stored in Firebase collections.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, onSnapshot, collection, addDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCogzZ0EN1GLgKT136B_IjLQp7K2vqwk5M",
@@ -316,262 +642,797 @@ const firebaseConfig = {
   messagingSenderId: "61772644005",
   appId: "1:61772644005:web:c79fa0345632035816174c"
 };
-
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db  = getFirestore(app);
 
-const TOPICS={T1:{name:'Product design',color:'#5856d6',bg:'rgba(88,86,214,.1)'},T2:{name:'Assumptions',color:'#28cd41',bg:'rgba(40,205,65,.1)'},T3:{name:'Product mgmt',color:'#ff9500',bg:'rgba(255,149,0,.1)'},T4:{name:'Valuation',color:'#007aff',bg:'rgba(0,122,255,.1)'},T5:{name:'Assets & risk',color:'#af52de',bg:'rgba(175,82,222,.1)'}};
-const ACTS={Study:{color:'#007aff',bg:'rgba(0,122,255,.08)',label:'Study',subs:{Study_DSM:'TIA DSM',Study_Lecture:'Lecture',Study_Notes:'Notes'}},Review:{color:'#af52de',bg:'rgba(175,82,222,.08)',label:'Review',subs:{Review_FC:'Formula cards',Review_Anki:'Anki',Review_Notes:'Re-read'}},Exercise:{color:'#ff9500',bg:'rgba(255,149,0,.08)',label:'Exercise',subs:{Exercise_Drill:'Drill problems',Exercise_Past:'Past exam',Exercise_CBT:'CBT practice'}}};
-const SUBS={Study:'<option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option>',Review:'<option value="Review_FC">Formula cards</option><option value="Review_Anki">Anki / flashcards</option><option value="Review_Notes">Re-read notes</option>',Exercise:'<option value="Exercise_Drill">Drill problems</option><option value="Exercise_Past">Past exam</option><option value="Exercise_CBT">CBT practice</option>'};
 
-let sessions=[], pomos=[], dbReady=false;
+// ── 7B. CONSTANTS & LOOKUP TABLES ────────────────────────────
+// Topic colours, activity colours, sub-activity labels,
+// and sub-activity HTML options used across all pages.
 
-function setSyncBadge(state,text){const b=document.getElementById('sync-badge'),t=document.getElementById('sync-txt');b.className='sync-badge '+state;t.textContent=text;}
-function today(){const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
-function dkey(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
-function p2(n){return String(n).padStart(2,'0');}
-function ft(s){return p2(Math.floor(s/60))+':'+p2(s%60);}
-function fh(h){return h.toFixed(1)+'h';}
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);}
-function catOf(s){return s?s.split('_')[0]:'Study';}
-function toast(msg,dot='#28cd41'){const el=document.getElementById('ap-toast');document.getElementById('toast-txt').textContent=msg;document.querySelector('.toast-dot').style.background=dot;el.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>el.classList.remove('show'),2400);}
+const TOPICS = {
+  T1:{name:'Product design', color:'#5856d6', bg:'rgba(88,86,214,.1)'},
+  T2:{name:'Assumptions',    color:'#28cd41', bg:'rgba(40,205,65,.1)'},
+  T3:{name:'Product mgmt',   color:'#ff9500', bg:'rgba(255,149,0,.1)'},
+  T4:{name:'Valuation',      color:'#007aff', bg:'rgba(0,122,255,.1)'},
+  T5:{name:'Assets & risk',  color:'#af52de', bg:'rgba(175,82,222,.1)'}
+};
 
-// ── Firebase save/load ────────────────────────────────────────
-async function saveSession(s){
+const ACTS = {
+  Study:   {color:'#007aff', bg:'rgba(0,122,255,.08)',   label:'Study',
+             subs:{Study_DSM:'TIA DSM', Study_Lecture:'Lecture', Study_Notes:'Notes'}},
+  Review:  {color:'#af52de', bg:'rgba(175,82,222,.08)', label:'Review',
+             subs:{Review_FC:'Formula cards', Review_Anki:'Anki', Review_Notes:'Re-read'}},
+  Exercise:{color:'#ff9500', bg:'rgba(255,149,0,.08)',   label:'Exercise',
+             subs:{Exercise_Drill:'Drill problems', Exercise_Past:'Past exam', Exercise_CBT:'CBT practice'}}
+};
+
+const SUBS = {
+  Study:    '<option value="Study_DSM">TIA DSM reading</option><option value="Study_Lecture">Video / lecture</option><option value="Study_Notes">Note-taking</option>',
+  Review:   '<option value="Review_FC">Formula cards</option><option value="Review_Anki">Anki / flashcards</option><option value="Review_Notes">Re-read notes</option>',
+  Exercise: '<option value="Exercise_Drill">Drill problems</option><option value="Exercise_Past">Past exam</option><option value="Exercise_CBT">CBT practice</option>'
+};
+
+
+// ── 7C. APP STATE ─────────────────────────────────────────────
+// In-memory arrays synced from Firebase via real-time listeners.
+// Chart display preferences (zoom & chart type).
+
+let sessions = [];   // All study sessions (from Firebase)
+let pomos    = [];   // All pomodoro records (from Firebase)
+let dbReady  = false;
+
+// Chart preferences
+let chartZoom = '14';  // '14' = last 14 days, 'all' = all time
+let chartType = 'bar'; // 'bar' or 'dot'
+
+
+// ── 7D. UTILITY FUNCTIONS ─────────────────────────────────────
+// Small helpers used throughout the app.
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+}
+function dkey(d) {
+  return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;
+}
+function p2(n)  { return String(n).padStart(2,'0'); }
+function ft(s)  { return `${p2(Math.floor(s/60))}:${p2(s%60)}`; }
+function fh(h)  { return h.toFixed(1)+'h'; }
+function catOf(s){ return s ? s.split('_')[0] : 'Study'; }
+function esc(s) {
+  return String(s||'').replace(/[&<>"']/g,
+    c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+// Sync badge in navbar
+function setSyncBadge(state, text) {
+  const b = document.getElementById('sync-badge');
+  const t = document.getElementById('sync-txt');
+  b.className = 'sync-badge ' + state;
+  t.textContent = text;
+}
+
+// Toast notification (bottom-center popup)
+function toast(msg, dot='#28cd41') {
+  const el = document.getElementById('ap-toast');
+  document.getElementById('toast-txt').textContent = msg;
+  document.querySelector('.toast-dot').style.background = dot;
+  el.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+
+// ── 7E. FIREBASE CRUD OPERATIONS ─────────────────────────────
+// All read/write/delete operations to Firebase Firestore.
+// Real-time listeners (onSnapshot) auto-update the UI whenever
+// data changes in the database (from any device).
+
+// Save or overwrite a session document
+async function saveSession(s) {
   setSyncBadge('saving','Saving…');
-  try{
-    await setDoc(doc(db,'sessions',String(s.id)),s);
+  try {
+    await setDoc(doc(db,'sessions',String(s.id)), s);
     setSyncBadge('saved','✓ Synced');
-    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
-  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
-}
-async function savePomo(p){
-  try{await setDoc(doc(db,'pomos',String(p.id)),p);}catch(e){console.error(e);}
-}
-async function deleteSession(id){
-  setSyncBadge('saving','Deleting…');
-  try{
-    await deleteDoc(doc(db,'sessions',String(id)));
-    setSyncBadge('saved','✓ Synced');
-    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
-  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
-}
-async function deleteAllSessions(){
-  setSyncBadge('saving','Clearing…');
-  try{
-    const promises=sessions.map(s=>deleteDoc(doc(db,'sessions',String(s.id))));
-    const pomoProm=pomos.map(p=>deleteDoc(doc(db,'pomos',String(p.id))));
-    await Promise.all([...promises,...pomoProm]);
-    setSyncBadge('saved','✓ Cleared');
-    setTimeout(()=>setSyncBadge('saved','Firebase sync on'),2500);
-  }catch(e){setSyncBadge('error','Sync failed');console.error(e);}
-}
-
-// ── Real-time listener ────────────────────────────────────────
-function startListeners(){
-  onSnapshot(collection(db,'sessions'),snap=>{
-    sessions=snap.docs.map(d=>d.data());
-    renderAll();
-    if(!dbReady){dbReady=true;setSyncBadge('saved','Firebase sync on');}
-  });
-  onSnapshot(collection(db,'pomos'),snap=>{
-    pomos=snap.docs.map(d=>d.data());
-    renderAll();
-  });
-}
-
-// ── Nav ───────────────────────────────────────────────────────
-document.getElementById('main-seg').addEventListener('click',e=>{
-  const t=e.target.closest('[data-p]');if(!t)return;
-  document.querySelectorAll('[data-p]').forEach(x=>x.classList.remove('on'));
-  document.querySelectorAll('.pg').forEach(x=>x.classList.remove('on'));
-  t.classList.add('on');document.getElementById('page-'+t.dataset.p).classList.add('on');
-  renderAll();
-});
-function bindSeg(id,subId){const seg=document.getElementById(id);if(!seg)return;seg.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;seg.querySelectorAll('.act-btn').forEach(x=>x.classList.remove('on'));b.classList.add('on');const s=document.getElementById(subId);if(s)s.innerHTML=SUBS[b.dataset.a];});}
-bindSeg('p-act-seg','p-sub');bindSeg('sw-act-seg','sw-sub');bindSeg('h-act-seg','h-sub');
-
-// ── Pomodoro ──────────────────────────────────────────────────
-const PM={mode:'work',running:false,left:25*60,total:25*60,iid:null,cycle:0,w:25,sb:5,lb:15,cl:4};
-const RC=2*Math.PI*88;
-function setMode(m){PM.mode=m;PM.running=false;if(PM.iid)clearInterval(PM.iid);const min=m==='work'?PM.w:m==='short'?PM.sb:PM.lb;PM.left=min*60;PM.total=min*60;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));document.getElementById('rfill').style.stroke=m==='work'?'#007aff':m==='short'?'#28cd41':'#af52de';document.getElementById('p-start').textContent='Start';document.getElementById('p-start').classList.remove('pause');updateRing();}
-function updateRing(){document.getElementById('ptime').textContent=ft(PM.left);document.getElementById('rfill').style.strokeDashoffset=RC*(1-(PM.total-PM.left)/PM.total);const tp=pomos.filter(p=>p.date===today()).length;document.getElementById('plbl').textContent=PM.mode==='work'?'Focus #'+(tp+1):PM.mode==='short'?'Short break':'Long break';}
-function startP(){if(PM.running){PM.running=false;clearInterval(PM.iid);document.getElementById('p-start').textContent='Resume';document.getElementById('p-start').classList.remove('pause');return;}PM.running=true;document.getElementById('p-start').textContent='Pause';document.getElementById('p-start').classList.add('pause');PM.iid=setInterval(()=>{PM.left--;updateRing();if(PM.left<=0)doneP();},1000);}
-function doneP(skip){
-  clearInterval(PM.iid);PM.running=false;
-  if(PM.mode==='work'&&!skip){
-    const topic=document.getElementById('p-topic').value,sub=document.getElementById('p-sub').value,cat=catOf(sub),task=document.getElementById('p-task').value.trim();
-    const ts=Date.now();
-    const pomo={id:ts,date:today(),topic,sub,cat,mins:PM.w};
-    const sess={id:ts+1,date:today(),topic,sub,cat,hours:PM.w/60,note:task||'Pomodoro'};
-    savePomo(pomo);saveSession(sess);
-    PM.cycle++;beep();toast('✓ Pomodoro saved & synced!');
-    setMode(PM.cycle%PM.cl===0?'long':'short');
-  }else if(PM.mode!=='work'&&!skip){beep();setMode('work');}
-  else setMode(PM.mode==='work'?'short':'work');
-}
-function beep(){try{const ctx=new(window.AudioContext||window.webkitAudioContext)();[[880,0],[1320,210]].forEach(([f,d])=>{setTimeout(()=>{const o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.2,ctx.currentTime+.05);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.5);o.start();o.stop(ctx.currentTime+.5);},d);});}catch(e){}}
-document.getElementById('p-start').addEventListener('click',startP);
-document.getElementById('p-reset').addEventListener('click',()=>{clearInterval(PM.iid);PM.running=false;setMode(PM.mode);});
-document.getElementById('p-skip').addEventListener('click',()=>doneP(true));
-document.querySelectorAll('.mode-btn').forEach(b=>b.addEventListener('click',()=>{if(PM.running&&!confirm('Switch? Timer resets.'))return;clearInterval(PM.iid);PM.running=false;setMode(b.dataset.m);}));
-
-// ── Stopwatch ─────────────────────────────────────────────────
-let SW={run:false,start:0,elapsed:0,iid:null,laps:[]};
-function swShow(ms){const tot=Math.floor(ms/1000);document.getElementById('sw-disp').childNodes[0].textContent=p2(Math.floor(tot/60))+':'+p2(tot%60);document.getElementById('sw-ms').textContent='.'+p2(Math.floor((ms%1000)/10));}
-function startSW(){
-  if(SW.run){
-    SW.elapsed+=Date.now()-SW.start;SW.run=false;clearInterval(SW.iid);
-    document.getElementById('sw-start').textContent='Resume';document.getElementById('sw-start').classList.remove('pause');
-    if(SW.elapsed>10000){
-      const topic=document.getElementById('sw-topic').value,sub=document.getElementById('sw-sub').value,cat=catOf(sub),note=document.getElementById('sw-note').value.trim(),hrs=SW.elapsed/3600000;
-      const sess={id:Date.now(),date:today(),topic,sub,cat,hours:hrs,note:note||'Stopwatch'};
-      saveSession(sess);toast('✓ Logged & synced ('+fh(hrs)+')');
-    }
-  }else{
-    SW.run=true;SW.start=Date.now();
-    document.getElementById('sw-start').textContent='Stop';document.getElementById('sw-start').classList.add('pause');
-    document.getElementById('sw-lap').disabled=false;document.getElementById('sw-lap').style.opacity='1';
-    SW.iid=setInterval(()=>swShow(SW.elapsed+Date.now()-SW.start),50);
+    setTimeout(() => setSyncBadge('saved','Firebase sync on'), 2500);
+  } catch(e) {
+    setSyncBadge('error','Sync failed');
+    console.error(e);
   }
 }
-document.getElementById('sw-start').addEventListener('click',startSW);
-document.getElementById('sw-lap').addEventListener('click',()=>{if(!SW.run)return;SW.laps.push(SW.elapsed+Date.now()-SW.start);renderLaps();});
-document.getElementById('sw-reset').addEventListener('click',()=>{clearInterval(SW.iid);SW={run:false,start:0,elapsed:0,iid:null,laps:[]};swShow(0);document.getElementById('sw-start').textContent='Start';document.getElementById('sw-start').classList.remove('pause');document.getElementById('sw-lap').disabled=true;document.getElementById('sw-lap').style.opacity='.35';document.getElementById('sw-laps').innerHTML='';});
-function renderLaps(){const el=document.getElementById('sw-laps');if(!SW.laps.length){el.innerHTML='';return;}el.innerHTML=SW.laps.map((ms,i)=>{const prev=i>0?SW.laps[i-1]:0;const fmt=t=>{const s=Math.floor(t/1000);return p2(Math.floor(s/60))+':'+p2(s%60);};return '<div class="lap-row"><span>Lap '+(i+1)+'</span><span><b>+'+fmt(ms-prev)+'</b>   '+fmt(ms)+'</span></div>';}).join('');}
 
-// ── History add ───────────────────────────────────────────────
-document.getElementById('h-date').value=today();
-document.getElementById('h-add').addEventListener('click',()=>{
-  const topic=document.getElementById('h-topic').value,sub=document.getElementById('h-sub').value,cat=catOf(sub);
-  const date=document.getElementById('h-date').value,note=document.getElementById('h-note').value.trim();
-  const s=document.getElementById('h-start').value,e=document.getElementById('h-end').value;
-  let hours=0;
-  if(s&&e){const[sh,sm]=s.split(':').map(Number);const[eh,em]=e.split(':').map(Number);let m=(eh*60+em)-(sh*60+sm);if(m<0)m+=1440;hours=m/60;}
-  else hours=parseFloat(document.getElementById('h-hours').value)||0;
-  if(!date||hours<=0){toast('Enter date and time/hours','#ff3b30');return;}
-  const sess={id:Date.now(),date,topic,sub,cat,hours,note};
-  saveSession(sess);
-  ['h-note','h-hours','h-start','h-end'].forEach(id=>document.getElementById(id).value='');
+// Save a pomodoro record
+async function savePomo(p) {
+  try { await setDoc(doc(db,'pomos',String(p.id)), p); }
+  catch(e) { console.error(e); }
+}
+
+// Delete a single session by id
+async function deleteSession(id) {
+  setSyncBadge('saving','Deleting…');
+  try {
+    await deleteDoc(doc(db,'sessions',String(id)));
+    setSyncBadge('saved','✓ Synced');
+    setTimeout(() => setSyncBadge('saved','Firebase sync on'), 2500);
+  } catch(e) { setSyncBadge('error','Sync failed'); }
+}
+
+// Delete ALL sessions and pomos
+async function deleteAllData() {
+  setSyncBadge('saving','Clearing…');
+  try {
+    const sp = sessions.map(s => deleteDoc(doc(db,'sessions',String(s.id))));
+    const pp = pomos.map(p => deleteDoc(doc(db,'pomos',String(p.id))));
+    await Promise.all([...sp,...pp]);
+    setSyncBadge('saved','✓ Cleared');
+    setTimeout(() => setSyncBadge('saved','Firebase sync on'), 2500);
+  } catch(e) { setSyncBadge('error','Sync failed'); }
+}
+
+// Real-time listeners — update local arrays & re-render when DB changes
+function startListeners() {
+  onSnapshot(collection(db,'sessions'), snap => {
+    sessions = snap.docs.map(d => d.data());
+    renderAll();
+    if (!dbReady) { dbReady = true; setSyncBadge('saved','Firebase sync on'); }
+  });
+  onSnapshot(collection(db,'pomos'), snap => {
+    pomos = snap.docs.map(d => d.data());
+    renderAll();
+  });
+}
+
+
+// ── 7F. NAVIGATION ───────────────────────────────────────────
+// Tab switching between Timer / Stopwatch / Dashboard / History.
+
+document.getElementById('main-seg').addEventListener('click', e => {
+  const t = e.target.closest('[data-p]');
+  if (!t) return;
+  document.querySelectorAll('[data-p]').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.pg').forEach(x => x.classList.remove('on'));
+  t.classList.add('on');
+  document.getElementById('page-'+t.dataset.p).classList.add('on');
+  renderAll();
+});
+
+// Activity segment (Study/Review/Exercise) binding helper
+function bindSeg(segId, subId) {
+  const seg = document.getElementById(segId);
+  if (!seg) return;
+  seg.addEventListener('click', e => {
+    const b = e.target.closest('[data-a]');
+    if (!b) return;
+    seg.querySelectorAll('.act-btn').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    const s = document.getElementById(subId);
+    if (s) s.innerHTML = SUBS[b.dataset.a];
+  });
+}
+bindSeg('p-act-seg','p-sub');
+bindSeg('sw-act-seg','sw-sub');
+bindSeg('h-act-seg','h-sub');
+bindSeg('e-act-seg','e-sub');
+
+
+// ── 7G. POMODORO TIMER ───────────────────────────────────────
+// 25-min countdown timer. Saves a session + pomo record to
+// Firebase when a focus session completes. Auto-advances to
+// break mode, then back to focus after break ends.
+
+const PM = {
+  mode:'work', running:false, left:25*60, total:25*60,
+  iid:null, cycle:0, w:25, sb:5, lb:15, cl:4
+};
+const RC = 2 * Math.PI * 88; // Ring circumference
+
+function setMode(m) {
+  PM.mode = m; PM.running = false;
+  if (PM.iid) clearInterval(PM.iid);
+  const min = m==='work' ? PM.w : m==='short' ? PM.sb : PM.lb;
+  PM.left = min*60; PM.total = min*60;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('on', b.dataset.m===m));
+  document.getElementById('rfill').style.stroke =
+    m==='work' ? '#007aff' : m==='short' ? '#28cd41' : '#af52de';
+  document.getElementById('p-start').textContent = 'Start';
+  document.getElementById('p-start').classList.remove('pause');
+  updateRing();
+}
+
+function updateRing() {
+  document.getElementById('ptime').textContent = ft(PM.left);
+  document.getElementById('rfill').style.strokeDashoffset =
+    RC * (1 - (PM.total - PM.left) / PM.total);
+  const tp = pomos.filter(p => p.date===today()).length;
+  document.getElementById('plbl').textContent =
+    PM.mode==='work' ? `Focus #${tp+1}` : PM.mode==='short' ? 'Short break' : 'Long break';
+}
+
+function startP() {
+  if (PM.running) {
+    PM.running = false; clearInterval(PM.iid);
+    document.getElementById('p-start').textContent = 'Resume';
+    document.getElementById('p-start').classList.remove('pause');
+    return;
+  }
+  PM.running = true;
+  document.getElementById('p-start').textContent = 'Pause';
+  document.getElementById('p-start').classList.add('pause');
+  PM.iid = setInterval(() => { PM.left--; updateRing(); if (PM.left<=0) doneP(); }, 1000);
+}
+
+function doneP(skip) {
+  clearInterval(PM.iid); PM.running = false;
+  if (PM.mode==='work' && !skip) {
+    const topic = document.getElementById('p-topic').value;
+    const sub   = document.getElementById('p-sub').value;
+    const cat   = catOf(sub);
+    const task  = document.getElementById('p-task').value.trim();
+    const ts    = Date.now();
+    savePomo({id:ts, date:today(), topic, sub, cat, mins:PM.w});
+    saveSession({id:ts+1, date:today(), topic, sub, cat, hours:PM.w/60, note:task||'Pomodoro'});
+    PM.cycle++; beep();
+    toast('✓ Pomodoro saved & synced!');
+    setMode(PM.cycle % PM.cl === 0 ? 'long' : 'short');
+  } else if (PM.mode!=='work' && !skip) {
+    beep(); setMode('work');
+  } else {
+    setMode(PM.mode==='work' ? 'short' : 'work');
+  }
+}
+
+function beep() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1320,210]].forEach(([f,d]) => setTimeout(() => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=f; o.type='sine';
+      g.gain.setValueAtTime(0,ctx.currentTime);
+      g.gain.linearRampToValueAtTime(.2,ctx.currentTime+.05);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.5);
+      o.start(); o.stop(ctx.currentTime+.5);
+    }, d));
+  } catch(e) {}
+}
+
+document.getElementById('p-start').addEventListener('click', startP);
+document.getElementById('p-reset').addEventListener('click', () => {
+  clearInterval(PM.iid); PM.running = false; setMode(PM.mode);
+});
+document.getElementById('p-skip').addEventListener('click', () => doneP(true));
+document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => {
+  if (PM.running && !confirm('Switch mode? Timer will reset.')) return;
+  clearInterval(PM.iid); PM.running = false; setMode(b.dataset.m);
+}));
+
+
+// ── 7H. STOPWATCH ────────────────────────────────────────────
+// Free-running timer. When user taps Stop, a confirmation modal
+// appears with 3 options:
+//   1. Save & Log → saves session to Firebase + history
+//   2. Pause → pauses timer without saving (can resume)
+//   3. Discard → resets timer without saving
+
+let SW = {run:false, start:0, elapsed:0, iid:null, laps:[]};
+
+function swShow(ms) {
+  const tot = Math.floor(ms/1000);
+  document.getElementById('sw-disp').childNodes[0].textContent =
+    `${p2(Math.floor(tot/60))}:${p2(tot%60)}`;
+  document.getElementById('sw-ms').textContent = '.'+p2(Math.floor((ms%1000)/10));
+}
+
+function swCurrentMs() {
+  return SW.elapsed + (SW.run ? Date.now()-SW.start : 0);
+}
+
+// Format ms as HH:MM:SS for the confirm modal
+function fmtMs(ms) {
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  return h>0 ? `${p2(h)}:${p2(m)}:${p2(sec)}` : `${p2(m)}:${p2(sec)}`;
+}
+
+// Show the stop confirmation modal
+function showStopConfirm() {
+  const ms = swCurrentMs();
+  document.getElementById('sc-time').textContent = fmtMs(ms);
+  document.getElementById('sw-confirm').classList.add('show');
+}
+
+// Main start/stop button
+document.getElementById('sw-start').addEventListener('click', () => {
+  if (!SW.run) {
+    // Start or resume
+    SW.run = true; SW.start = Date.now();
+    document.getElementById('sw-start').textContent = 'Stop';
+    document.getElementById('sw-start').classList.add('running');
+    document.getElementById('sw-lap').disabled = false;
+    document.getElementById('sw-lap').style.opacity = '1';
+    SW.iid = setInterval(() => swShow(swCurrentMs()), 50);
+  } else {
+    // Pause ticker while modal shows
+    clearInterval(SW.iid);
+    SW.elapsed += Date.now()-SW.start;
+    SW.run = false;
+    showStopConfirm();
+  }
+});
+
+// Confirm modal: Save & Log
+document.getElementById('sc-save').addEventListener('click', () => {
+  document.getElementById('sw-confirm').classList.remove('show');
+  const ms  = SW.elapsed;
+  const hrs = ms / 3600000;
+  if (hrs > 0.003) { // at least ~10 seconds
+    const topic = document.getElementById('sw-topic').value;
+    const sub   = document.getElementById('sw-sub').value;
+    const cat   = catOf(sub);
+    const note  = document.getElementById('sw-note').value.trim();
+    const sess  = {id:Date.now(), date:today(), topic, sub, cat, hours:hrs, note:note||'Stopwatch'};
+    saveSession(sess);
+    toast(`✓ Logged & synced (${fh(hrs)})`);
+  }
+  swReset();
+});
+
+// Confirm modal: Pause (keep elapsed, allow resume)
+document.getElementById('sc-pause').addEventListener('click', () => {
+  document.getElementById('sw-confirm').classList.remove('show');
+  // Timer stays paused (elapsed is already accumulated above)
+  document.getElementById('sw-start').textContent = 'Resume';
+  document.getElementById('sw-start').classList.remove('running');
+  swShow(SW.elapsed);
+  toast('Timer paused — tap Resume to continue');
+});
+
+// Confirm modal: Discard
+document.getElementById('sc-discard').addEventListener('click', () => {
+  document.getElementById('sw-confirm').classList.remove('show');
+  swReset();
+  toast('Session discarded', '#ff9500');
+});
+
+function swReset() {
+  clearInterval(SW.iid);
+  SW = {run:false, start:0, elapsed:0, iid:null, laps:[]};
+  swShow(0);
+  document.getElementById('sw-start').textContent = 'Start';
+  document.getElementById('sw-start').classList.remove('running');
+  document.getElementById('sw-lap').disabled = true;
+  document.getElementById('sw-lap').style.opacity = '.35';
+  document.getElementById('sw-laps').innerHTML = '';
+}
+
+// Lap button
+document.getElementById('sw-lap').addEventListener('click', () => {
+  if (!SW.run) return;
+  SW.laps.push(swCurrentMs());
+  renderLaps();
+});
+
+// Reset button
+document.getElementById('sw-reset').addEventListener('click', () => {
+  if (SW.run || SW.elapsed>0) {
+    if (!confirm('Reset stopwatch? Unsaved time will be lost.')) return;
+  }
+  swReset();
+});
+
+function renderLaps() {
+  const el = document.getElementById('sw-laps');
+  if (!SW.laps.length) { el.innerHTML=''; return; }
+  el.innerHTML = SW.laps.map((ms,i) => {
+    const prev = i>0 ? SW.laps[i-1] : 0;
+    const fmt  = t => { const s=Math.floor(t/1000); return `${p2(Math.floor(s/60))}:${p2(s%60)}`; };
+    return `<div class="lap-row"><span>Lap ${i+1}</span><span><b>+${fmt(ms-prev)}</b>   ${fmt(ms)}</span></div>`;
+  }).join('');
+}
+
+
+// ── 7I. HISTORY — ADD SESSION FORM ───────────────────────────
+// Manual entry form in the History tab. Accepts start/end time
+// or direct hours input. Saves to Firebase on submit.
+
+document.getElementById('h-date').value = today();
+
+document.getElementById('h-add').addEventListener('click', () => {
+  const topic = document.getElementById('h-topic').value;
+  const sub   = document.getElementById('h-sub').value;
+  const cat   = catOf(sub);
+  const date  = document.getElementById('h-date').value;
+  const note  = document.getElementById('h-note').value.trim();
+  const s     = document.getElementById('h-start').value;
+  const e     = document.getElementById('h-end').value;
+  let hours   = 0;
+  if (s && e) {
+    const [sh,sm] = s.split(':').map(Number);
+    const [eh,em] = e.split(':').map(Number);
+    let m = (eh*60+em)-(sh*60+sm);
+    if (m<0) m+=1440;
+    hours = m/60;
+  } else {
+    hours = parseFloat(document.getElementById('h-hours').value)||0;
+  }
+  if (!date || hours<=0) { toast('Enter date and time/hours','#ff3b30'); return; }
+  saveSession({id:Date.now(), date, topic, sub, cat, hours, note});
+  ['h-note','h-hours','h-start','h-end'].forEach(id => document.getElementById(id).value='');
   toast('✓ Session saved & synced!');
 });
-document.getElementById('h-fcat').addEventListener('change',rSessions);
-document.getElementById('h-ftopic').addEventListener('change',rSessions);
 
-// ── Render ────────────────────────────────────────────────────
-function renderAll(){rStats();rBreakdown();rTopics();rChart();rSessions();rGoals();rPomoStats();rSWStats();}
-function rStats(){
-  const tot=sessions.reduce((a,b)=>a+b.hours,0);
-  document.getElementById('d-total').textContent=fh(tot);
-  document.getElementById('d-sess').textContent=sessions.length+' session'+(sessions.length===1?'':'s');
-  const now=new Date(today()+'T00:00:00'),wago=new Date(now);wago.setDate(wago.getDate()-6);
-  const wk=sessions.filter(s=>{const d=new Date(s.date+'T00:00:00');return d>=wago&&d<=now;}).reduce((a,b)=>a+b.hours,0);
-  document.getElementById('d-week').textContent=fh(wk);
-  const days=new Set(sessions.map(s=>s.date)).size;
-  document.getElementById('d-avg').textContent=fh(days>0?tot/days:0);
-  const dm={};sessions.forEach(s=>{dm[s.date]=(dm[s.date]||0)+s.hours;});
-  let streak=0;const cur=new Date(today()+'T00:00:00');
-  while(true){const k=dkey(cur);if(dm[k]>0){streak++;cur.setDate(cur.getDate()-1);}else break;}
-  document.getElementById('d-streak').textContent=streak;
+document.getElementById('h-fcat').addEventListener('change', rSessions);
+document.getElementById('h-ftopic').addEventListener('change', rSessions);
+
+
+// ── 7J. HISTORY — EDIT SESSION MODAL ────────────────────────
+// Opens a modal pre-filled with the session's data.
+// User can change date, hours, topic, category, note.
+// Saves updated session back to Firebase (same document id).
+
+let editingId = null; // tracks which session is being edited
+
+function openEditModal(s) {
+  editingId = s.id;
+  const cat = s.cat || catOf(s.sub) || 'Study';
+  // Set activity buttons
+  document.getElementById('e-act-seg').querySelectorAll('.act-btn').forEach(b => {
+    b.classList.toggle('on', b.dataset.a===cat);
+  });
+  // Set sub options and select current
+  document.getElementById('e-sub').innerHTML = SUBS[cat];
+  document.getElementById('e-topic').value = s.topic;
+  document.getElementById('e-sub').value   = s.sub||'';
+  document.getElementById('e-date').value  = s.date;
+  document.getElementById('e-hours').value = s.hours.toFixed(2);
+  document.getElementById('e-note').value  = s.note||'';
+  document.getElementById('edit-modal').classList.add('show');
 }
-function rSWStats(){
+
+document.getElementById('e-cancel').addEventListener('click', () => {
+  document.getElementById('edit-modal').classList.remove('show');
+  editingId = null;
+});
+
+document.getElementById('e-save').addEventListener('click', () => {
+  if (!editingId) return;
+  const cat   = document.getElementById('e-act-seg').querySelector('.act-btn.on')?.dataset.a || 'Study';
+  const sub   = document.getElementById('e-sub').value;
+  const topic = document.getElementById('e-topic').value;
+  const date  = document.getElementById('e-date').value;
+  const hours = parseFloat(document.getElementById('e-hours').value)||0;
+  const note  = document.getElementById('e-note').value.trim();
+  if (!date || hours<=0) { toast('Enter valid date and hours','#ff3b30'); return; }
+  saveSession({id:editingId, date, topic, sub, cat, hours, note});
+  document.getElementById('edit-modal').classList.remove('show');
+  editingId = null;
+  toast('✓ Session updated!');
+});
+
+// Close modal on overlay click
+document.getElementById('edit-modal').addEventListener('click', e => {
+  if (e.target===document.getElementById('edit-modal')) {
+    document.getElementById('edit-modal').classList.remove('show');
+    editingId = null;
+  }
+});
+
+
+// ── 7K. DASHBOARD — CHART CONTROLS ───────────────────────────
+// Toggle between bar chart / dot plot view.
+// Toggle between last-14-days zoom and all-time zoom.
+
+document.getElementById('ch-14').addEventListener('click', () => {
+  chartZoom='14';
+  document.getElementById('ch-14').classList.add('active');
+  document.getElementById('ch-all').classList.remove('active');
+  rChart();
+});
+document.getElementById('ch-all').addEventListener('click', () => {
+  chartZoom='all';
+  document.getElementById('ch-all').classList.add('active');
+  document.getElementById('ch-14').classList.remove('active');
+  rChart();
+});
+document.getElementById('ch-bar').addEventListener('click', () => {
+  chartType='bar';
+  document.getElementById('ch-bar').classList.add('active');
+  document.getElementById('ch-dot').classList.remove('active');
+  rChart();
+});
+document.getElementById('ch-dot').addEventListener('click', () => {
+  chartType='dot';
+  document.getElementById('ch-dot').classList.add('active');
+  document.getElementById('ch-bar').classList.remove('active');
+  rChart();
+});
+
+
+// ── 7L. RENDER FUNCTIONS ─────────────────────────────────────
+// All UI rendering. Called after any data change.
+
+function renderAll() {
+  rStats(); rBreakdown(); rTopics(); rChart();
+  rSessions(); rGoals(); rPomoStats(); rSWStats();
+}
+
+// Dashboard summary tiles
+function rStats() {
+  const tot = sessions.reduce((a,b) => a+b.hours, 0);
+  document.getElementById('d-total').textContent = fh(tot);
+  document.getElementById('d-sess').textContent  = `${sessions.length} session${sessions.length===1?'':'s'}`;
+  const now=new Date(today()+'T00:00:00'), wago=new Date(now);
+  wago.setDate(wago.getDate()-6);
+  const wk = sessions.filter(s => {
+    const d=new Date(s.date+'T00:00:00'); return d>=wago&&d<=now;
+  }).reduce((a,b) => a+b.hours, 0);
+  document.getElementById('d-week').textContent = fh(wk);
+  const days = new Set(sessions.map(s=>s.date)).size;
+  document.getElementById('d-avg').textContent  = fh(days>0 ? tot/days : 0);
+  const dm={};
+  sessions.forEach(s => { dm[s.date]=(dm[s.date]||0)+s.hours; });
+  let streak=0; const cur=new Date(today()+'T00:00:00');
+  while(true){ const k=dkey(cur); if(dm[k]>0){streak++;cur.setDate(cur.getDate()-1);}else break; }
+  document.getElementById('d-streak').textContent = streak;
+}
+
+// Stopwatch page summary tiles
+function rSWStats() {
   const cats={Study:0,Review:0,Exercise:0};
-  sessions.forEach(s=>{const c=s.cat||catOf(s.sub)||'Study';cats[c]=(cats[c]||0)+s.hours;});
+  sessions.forEach(s => { const c=s.cat||catOf(s.sub)||'Study'; cats[c]=(cats[c]||0)+s.hours; });
+  const tot = Object.values(cats).reduce((a,b)=>a+b,0);
+  document.getElementById('sw-s').textContent = fh(cats.Study);
+  document.getElementById('sw-r').textContent = fh(cats.Review);
+  document.getElementById('sw-e').textContent = fh(cats.Exercise);
+  document.getElementById('sw-t').textContent = fh(tot);
+}
+
+// Activity breakdown cards (Study/Review/Exercise)
+function rBreakdown() {
+  const cats={Study:0,Review:0,Exercise:0}, subs={};
+  sessions.forEach(s => {
+    const c=s.cat||catOf(s.sub)||'Study'; cats[c]=(cats[c]||0)+s.hours;
+    const sk=s.sub||'Study_DSM'; subs[sk]=(subs[sk]||0)+s.hours;
+  });
   const tot=Object.values(cats).reduce((a,b)=>a+b,0);
-  document.getElementById('sw-s').textContent=fh(cats.Study);
-  document.getElementById('sw-r').textContent=fh(cats.Review);
-  document.getElementById('sw-e').textContent=fh(cats.Exercise);
-  document.getElementById('sw-t').textContent=fh(tot);
-}
-function rBreakdown(){
-  const cats={Study:0,Review:0,Exercise:0},subs={};
-  sessions.forEach(s=>{const c=s.cat||catOf(s.sub)||'Study';cats[c]=(cats[c]||0)+s.hours;const sk=s.sub||'Study_DSM';subs[sk]=(subs[sk]||0)+s.hours;});
-  const tot=Object.values(cats).reduce((a,b)=>a+b,0);const max=Math.max(...Object.values(cats),.001);
-  document.getElementById('bk-grid').innerHTML=Object.keys(cats).map(cat=>{
-    const cfg=ACTS[cat];const h=cats[cat];const pct=tot>0?(h/tot)*100:0;const bw=(h/max)*100;
-    const subRows=Object.keys(cfg.subs).map(sk=>'<div class="bk-sub-row" style="color:'+cfg.color+'aa;"><span>'+cfg.subs[sk]+'</span><b style="color:'+cfg.color+'">'+(subs[sk]||0).toFixed(1)+'h</b></div>').join('');
-    return '<div class="bk-card" style="background:'+cfg.bg+';border-color:'+cfg.color+'30;"><div class="bk-lbl" style="color:'+cfg.color+'"><span class="bk-dot" style="background:'+cfg.color+'"></span>'+cfg.label+'</div><div class="bk-val" style="color:'+cfg.color+'">'+fh(h)+'</div><div class="bk-pct" style="color:'+cfg.color+'aa;">'+Math.round(pct)+'% of total</div><div class="bk-bar-bg"><div class="bk-bar-fill" style="background:'+cfg.color+';width:'+bw+'%"></div></div><div class="bk-subs">'+subRows+'</div></div>';
+  const max=Math.max(...Object.values(cats),.001);
+  document.getElementById('bk-grid').innerHTML = Object.keys(cats).map(cat => {
+    const cfg=ACTS[cat], h=cats[cat], pct=tot>0?(h/tot)*100:0, bw=(h/max)*100;
+    const subRows = Object.keys(cfg.subs).map(sk =>
+      `<div class="bk-sub-row" style="color:${cfg.color}aa;">
+        <span>${cfg.subs[sk]}</span>
+        <b style="color:${cfg.color}">${(subs[sk]||0).toFixed(1)}h</b>
+      </div>`).join('');
+    return `<div class="bk-card" style="background:${cfg.bg};border-color:${cfg.color}30;">
+      <div class="bk-lbl" style="color:${cfg.color}"><span class="bk-dot" style="background:${cfg.color}"></span>${cfg.label}</div>
+      <div class="bk-val" style="color:${cfg.color}">${fh(h)}</div>
+      <div class="bk-pct" style="color:${cfg.color}aa;">${Math.round(pct)}% of total</div>
+      <div class="bk-bar-bg"><div class="bk-bar-fill" style="background:${cfg.color};width:${bw}%"></div></div>
+      <div class="bk-subs">${subRows}</div>
+    </div>`;
   }).join('');
 }
-function rTopics(){
-  const byT={};Object.keys(TOPICS).forEach(t=>byT[t]=0);sessions.forEach(s=>{byT[s.topic]=(byT[s.topic]||0)+s.hours;});
-  const tot=Object.values(byT).reduce((a,b)=>a+b,0);const max=Math.max(...Object.values(byT),.001);
-  document.getElementById('topic-bars').innerHTML=Object.keys(TOPICS).map(tid=>{
-    const t=TOPICS[tid];const h=byT[tid];const bw=(h/max)*100;const sh=tot>0?(h/tot)*100:0;
-    return '<div class="t-row"><div class="t-head"><div class="t-name"><div class="t-tdot" style="background:'+t.color+'"></div><span style="font-size:11px;font-weight:700;color:'+t.color+'">'+tid+'</span><span class="t-nm">'+t.name+'</span></div><span class="t-meta"><b>'+fh(h)+'</b> '+Math.round(sh)+'%</span></div><div class="t-bg"><div class="t-fill" style="background:'+t.color+';width:'+bw+'%"></div></div></div>';
+
+// Topic progress bars
+function rTopics() {
+  const byT={};
+  Object.keys(TOPICS).forEach(t => byT[t]=0);
+  sessions.forEach(s => { byT[s.topic]=(byT[s.topic]||0)+s.hours; });
+  const tot=Object.values(byT).reduce((a,b)=>a+b,0);
+  const max=Math.max(...Object.values(byT),.001);
+  document.getElementById('topic-bars').innerHTML = Object.keys(TOPICS).map(tid => {
+    const t=TOPICS[tid], h=byT[tid], bw=(h/max)*100, sh=tot>0?(h/tot)*100:0;
+    return `<div class="t-row">
+      <div class="t-head">
+        <div class="t-name">
+          <div class="t-tdot" style="background:${t.color}"></div>
+          <span style="font-size:11px;font-weight:700;color:${t.color}">${tid}</span>
+          <span class="t-nm">${t.name}</span>
+        </div>
+        <span class="t-meta"><b>${fh(h)}</b> ${Math.round(sh)}%</span>
+      </div>
+      <div class="t-bg"><div class="t-fill" style="background:${t.color};width:${bw}%"></div></div>
+    </div>`;
   }).join('');
 }
-function rChart(){
-  const dm={};sessions.forEach(s=>{dm[s.date]=(dm[s.date]||0)+s.hours;});
-  const now=new Date(today()+'T00:00:00');const days=[];
-  for(let i=13;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const k=dkey(d);days.push({k,day:d.getDate(),h:dm[k]||0});}
+
+// Dashboard chart — supports bar and dot plot, 14-day or all-time zoom
+function rChart() {
+  const dm={};
+  sessions.forEach(s => { dm[s.date]=(dm[s.date]||0)+s.hours; });
+  const now = new Date(today()+'T00:00:00');
+  let days=[];
+
+  if (chartZoom==='14') {
+    // Last 14 days
+    for (let i=13;i>=0;i--) {
+      const d=new Date(now); d.setDate(d.getDate()-i);
+      const k=dkey(d); days.push({k,lbl:d.getDate(),h:dm[k]||0});
+    }
+  } else {
+    // All time: from earliest session date to today
+    const allDates = sessions.map(s=>s.date).sort();
+    if (!allDates.length) { days=[]; }
+    else {
+      const first=new Date(allDates[0]+'T00:00:00');
+      const cur=new Date(first);
+      while (cur<=now) {
+        const k=dkey(cur);
+        const lbl=`${cur.getMonth()+1}/${cur.getDate()}`;
+        days.push({k,lbl,h:dm[k]||0});
+        cur.setDate(cur.getDate()+1);
+      }
+    }
+  }
+
+  if (!days.length) {
+    document.getElementById('ap-chart').innerHTML = '<div class="empty" style="flex:1">No data yet</div>';
+    return;
+  }
+
   const max=Math.max(...days.map(d=>d.h),.001);
-  document.getElementById('ap-chart').innerHTML=days.map(d=>{const hp=(d.h/max)*90;return '<div class="ch-col"><div class="ch-bwrap"><div class="ch-bar'+(d.h===0?' empty':'')+'" style="height:'+hp+'%;" title="'+d.k+': '+fh(d.h)+'"></div></div><div class="ch-lbl">'+d.day+'</div></div>';}).join('');
+
+  if (chartType==='bar') {
+    // Bar chart
+    document.getElementById('ap-chart').innerHTML = days.map(d => {
+      const hp=(d.h/max)*100;
+      return `<div class="ch-col">
+        <div class="ch-bwrap">
+          <div class="ch-bar${d.h===0?' empty':''}" style="height:${hp}%;" title="${d.k}: ${fh(d.h)}"></div>
+        </div>
+        ${days.length<=30 ? `<div class="ch-lbl">${d.lbl}</div>` : ''}
+      </div>`;
+    }).join('');
+  } else {
+    // Dot plot — dots positioned vertically by value
+    const chartH=110;
+    document.getElementById('ap-chart').innerHTML = days.map(d => {
+      const pct = d.h/max;
+      const bottomPx = Math.round(pct*(chartH-20))+2;
+      return `<div class="ch-col" style="position:relative;height:${chartH}px;justify-content:flex-start;">
+        <div class="ch-dot${d.h===0?' empty':''}"
+             style="bottom:${bottomPx}px;position:absolute;"
+             title="${d.k}: ${fh(d.h)}"></div>
+        ${days.length<=30 ? `<div class="ch-lbl" style="position:absolute;bottom:0;">${d.lbl}</div>` : ''}
+        ${d.h>0 ? `<div class="ch-val" style="position:absolute;bottom:${bottomPx+10}px;left:50%;transform:translateX(-50%);">${d.h.toFixed(1)}</div>`:''}
+      </div>`;
+    }).join('');
+  }
 }
-function rGoals(){
-  const td=today();const tH=sessions.filter(s=>s.date===td).reduce((a,b)=>a+b.hours,0);
+
+// Goals (daily hours, daily pomos, weekly hours)
+function rGoals() {
+  const td=today();
+  const tH=sessions.filter(s=>s.date===td).reduce((a,b)=>a+b.hours,0);
   const tP=pomos.filter(p=>p.date===td).length;
-  const now=new Date(td+'T00:00:00'),wago=new Date(now);wago.setDate(wago.getDate()-6);
-  const wH=sessions.filter(s=>{const d=new Date(s.date+'T00:00:00');return d>=wago&&d<=now;}).reduce((a,b)=>a+b.hours,0);
-  const goals=[{label:'Daily hours',val:tH,tgt:2,unit:'h',cls:'g-blue'},{label:'Daily pomodoros',val:tP,tgt:6,unit:'',cls:'g-green'},{label:'Weekly hours',val:wH,tgt:14,unit:'h',cls:'g-orange'}];
-  document.getElementById('ap-goals').innerHTML=goals.map(g=>{
-    const pct=Math.min((g.val/g.tgt)*100,100);const done=g.val>=g.tgt;
-    const vs=g.unit==='h'?g.val.toFixed(1)+'h':g.val;const ts=g.unit==='h'?g.tgt+'h':g.tgt;
-    return '<div class="goal-card '+g.cls+'"><div class="goal-lbl">'+g.label+'</div><div class="goal-val">'+vs+' <span class="goal-tgt">/ '+ts+'</span></div><div class="goal-pct">'+(done?'🎯 Goal reached!':Math.round(pct)+'% complete')+'</div><div class="goal-bar"><div class="goal-bar-fill" style="width:'+pct+'%"></div></div></div>';
+  const now=new Date(td+'T00:00:00'), wago=new Date(now);
+  wago.setDate(wago.getDate()-6);
+  const wH=sessions.filter(s => {
+    const d=new Date(s.date+'T00:00:00'); return d>=wago&&d<=now;
+  }).reduce((a,b)=>a+b.hours,0);
+  const goals=[
+    {label:'Daily hours',     val:tH, tgt:2,  unit:'h', cls:'g-blue'},
+    {label:'Daily pomodoros', val:tP, tgt:6,  unit:'',  cls:'g-green'},
+    {label:'Weekly hours',    val:wH, tgt:14, unit:'h', cls:'g-orange'}
+  ];
+  document.getElementById('ap-goals').innerHTML = goals.map(g => {
+    const pct=Math.min((g.val/g.tgt)*100,100);
+    const vs=g.unit==='h'?g.val.toFixed(1)+'h':g.val;
+    const ts=g.unit==='h'?g.tgt+'h':g.tgt;
+    return `<div class="goal-card ${g.cls}">
+      <div class="goal-lbl">${g.label}</div>
+      <div class="goal-val">${vs} <span class="goal-tgt">/ ${ts}</span></div>
+      <div class="goal-pct">${pct>=100?'🎯 Goal reached!':Math.round(pct)+'% complete'}</div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${pct}%"></div></div>
+    </div>`;
   }).join('');
 }
-function rPomoStats(){
-  const td=today();const tp=pomos.filter(p=>p.date===td);const tm=tp.reduce((a,b)=>a+b.mins,0);
-  document.getElementById('pt-today').textContent=tp.length;
-  document.getElementById('pt-focus').textContent=tm>=60?Math.floor(tm/60)+'h '+(tm%60)+'m':tm+'m';
-  const dm={};pomos.forEach(p=>{dm[p.date]=(dm[p.date]||0)+1;});let streak=0;const cur=new Date(td+'T00:00:00');
-  while(true){const k=dkey(cur);if(dm[k]>0){streak++;cur.setDate(cur.getDate()-1);}else break;}
-  document.getElementById('pt-streak').textContent=streak;
-  document.getElementById('pt-alltime').textContent=pomos.length;
+
+// Pomodoro page summary tiles
+function rPomoStats() {
+  const td=today();
+  const tp=pomos.filter(p=>p.date===td);
+  const tm=tp.reduce((a,b)=>a+b.mins,0);
+  document.getElementById('pt-today').textContent  = tp.length;
+  document.getElementById('pt-focus').textContent  = tm>=60 ? `${Math.floor(tm/60)}h ${tm%60}m` : `${tm}m`;
+  const dm={};
+  pomos.forEach(p => { dm[p.date]=(dm[p.date]||0)+1; });
+  let streak=0; const cur=new Date(td+'T00:00:00');
+  while(true){ const k=dkey(cur); if(dm[k]>0){streak++;cur.setDate(cur.getDate()-1);}else break; }
+  document.getElementById('pt-streak').textContent  = streak;
+  document.getElementById('pt-alltime').textContent = pomos.length;
 }
-function rSessions(){
-  const cf=document.getElementById('h-fcat').value,tf=document.getElementById('h-ftopic').value;
-  let sorted=sessions.slice().sort((a,b)=>a.date!==b.date?b.date.localeCompare(a.date):b.id-a.id);
-  if(cf)sorted=sorted.filter(s=>(s.cat||catOf(s.sub))===cf);
-  if(tf)sorted=sorted.filter(s=>s.topic===tf);
+
+// History session list with edit & delete
+function rSessions() {
+  const cf=document.getElementById('h-fcat').value;
+  const tf=document.getElementById('h-ftopic').value;
+  let sorted=sessions.slice().sort((a,b) =>
+    a.date!==b.date ? b.date.localeCompare(a.date) : b.id-a.id
+  );
+  if (cf) sorted=sorted.filter(s=>(s.cat||catOf(s.sub))===cf);
+  if (tf) sorted=sorted.filter(s=>s.topic===tf);
   const el=document.getElementById('sess-container');
-  if(!dbReady){el.innerHTML='<div class="loading"><div class="spin"></div>Connecting to Firebase…</div>';return;}
-  if(!sorted.length){el.innerHTML='<div class="empty">No sessions yet — start the timer or add one above!</div>';return;}
-  const head='<div class="s-hrow"><span>Date</span><span>Topic</span><span>Category</span><span>Note</span><span style="text-align:right;">Hours</span><span></span></div>';
-  el.innerHTML='<div class="s-list">'+head+sorted.map(s=>{
-    const t=TOPICS[s.topic]||TOPICS.T1,cat=s.cat||catOf(s.sub)||'Study',cfg=ACTS[cat]||ACTS.Study;
+  if (!dbReady) { el.innerHTML='<div class="loading"><div class="spin"></div>Connecting to Firebase…</div>'; return; }
+  if (!sorted.length) { el.innerHTML='<div class="empty">No sessions yet — start the timer or add one above!</div>'; return; }
+  const head=`<div class="s-hrow">
+    <span>Date</span><span>Topic</span><span>Category</span>
+    <span>Note</span><span>Hours</span><span></span>
+  </div>`;
+  el.innerHTML='<div class="s-list">'+head+sorted.map(s => {
+    const t=TOPICS[s.topic]||TOPICS.T1;
+    const cat=s.cat||catOf(s.sub)||'Study';
+    const cfg=ACTS[cat]||ACTS.Study;
     const sub=(cfg.subs&&cfg.subs[s.sub])||cat;
     const dl=new Date(s.date+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
-    return '<div class="s-row"><span class="s-date">'+dl+'</span><span><span class="s-pill" style="background:'+t.bg+';color:'+t.color+'">'+s.topic+'</span></span><span><span class="s-cat-badge" style="background:'+cfg.bg+';color:'+cfg.color+'">'+cfg.label+'</span></span><span class="s-note">'+(s.note?esc(s.note):'<span style="color:#aeaeb2">'+esc(sub)+'</span>')+'</span><span class="s-hrs">'+s.hours.toFixed(1)+'h</span><button class="s-del" data-id="'+s.id+'">×</button></div>';
+    return `<div class="s-row">
+      <span class="s-date">${dl}</span>
+      <span><span class="s-pill" style="background:${t.bg};color:${t.color}">${s.topic}</span></span>
+      <span><span class="s-cat-badge" style="background:${cfg.bg};color:${cfg.color}">${cfg.label}</span></span>
+      <span class="s-note">${s.note ? esc(s.note) : `<span style="color:#aeaeb2">${esc(sub)}</span>`}</span>
+      <span class="s-hrs">${s.hours.toFixed(1)}h</span>
+      <span class="s-actions">
+        <button class="s-edit" data-id="${s.id}" title="Edit">✏️</button>
+        <button class="s-del"  data-id="${s.id}" title="Delete">×</button>
+      </span>
+    </div>`;
   }).join('')+'</div>';
-  el.querySelectorAll('.s-del').forEach(b=>b.addEventListener('click',e=>{
-    const id=parseInt(e.target.dataset.id);
-    deleteSession(id);
-    toast('Session deleted');
+
+  // Edit buttons
+  el.querySelectorAll('.s-edit').forEach(b => b.addEventListener('click', e => {
+    const id = parseInt(e.currentTarget.dataset.id);
+    const sess = sessions.find(s => s.id===id);
+    if (sess) openEditModal(sess);
+  }));
+
+  // Delete buttons
+  el.querySelectorAll('.s-del').forEach(b => b.addEventListener('click', e => {
+    const id = parseInt(e.currentTarget.dataset.id);
+    if (confirm('Delete this session?')) {
+      deleteSession(id);
+      toast('Session deleted');
+    }
   }));
 }
 
-// ── Export CSV ────────────────────────────────────────────────
-function exportCSV(){
-  if(!sessions.length){toast('Nothing to export','#ff3b30');return;}
+
+// ── 7M. CSV EXPORT ───────────────────────────────────────────
+// Exports all sessions to a downloadable CSV file.
+
+function exportCSV() {
+  if (!sessions.length) { toast('Nothing to export','#ff3b30'); return; }
   const h='date,topic,category,sub_activity,hours,note\n';
-  const rows=sessions.map(s=>s.date+','+s.topic+','+(s.cat||catOf(s.sub))+','+(s.sub||'')+','+s.hours.toFixed(2)+',"'+(s.note||'').replace(/"/g,'""')+'"').join('\n');
+  const rows=sessions.map(s =>
+    `${s.date},${s.topic},${s.cat||catOf(s.sub)},${s.sub||''},${s.hours.toFixed(2)},"${(s.note||'').replace(/"/g,'""')}"`
+  ).join('\n');
   const blob=new Blob([h+rows],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download='ila101-'+today()+'.csv';a.click();
-  URL.revokeObjectURL(url);toast('Exported '+sessions.length+' sessions');
+  const a=document.createElement('a');
+  a.href=url; a.download=`ila101-${today()}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  toast(`Exported ${sessions.length} sessions`);
 }
-document.getElementById('h-export').addEventListener('click',exportCSV);
-document.getElementById('h-clear').addEventListener('click',()=>{
-  if(!sessions.length)return;
-  if(confirm('Clear ALL sessions from Firebase? This cannot be undone.')){
-    deleteAllSessions();renderAll();toast('All data cleared');
+
+document.getElementById('h-export').addEventListener('click', exportCSV);
+
+document.getElementById('h-clear').addEventListener('click', () => {
+  if (!sessions.length) return;
+  if (confirm('Clear ALL sessions from Firebase? This cannot be undone.')) {
+    deleteAllData(); toast('All data cleared');
   }
 });
 
-// ── Boot ──────────────────────────────────────────────────────
+
+// ── 7N. BOOT ─────────────────────────────────────────────────
+// Initialise timer and start Firebase real-time listeners.
+
 setMode('work');
 startListeners();
+
 </script>
 </body>
 </html>
