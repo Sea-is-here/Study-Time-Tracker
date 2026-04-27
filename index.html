@@ -1391,36 +1391,6 @@ function rChart() {
       </div>`;
   }
 
-  const max=Math.max(...days.map(d=>d.h),.001);
-
-  if (chartType==='bar') {
-    // Bar chart
-    document.getElementById('ap-chart').innerHTML = days.map(d => {
-      const hp=(d.h/max)*100;
-      return `<div class="ch-col">
-        <div class="ch-bwrap">
-          <div class="ch-bar${d.h===0?' empty':''}" style="height:${hp}%;" title="${d.k}: ${fh(d.h)}"></div>
-        </div>
-        ${days.length<=30 ? `<div class="ch-lbl">${d.lbl}</div>` : ''}
-      </div>`;
-    }).join('');
-  } else {
-    // Dot plot — dots positioned vertically by value
-    const chartH=110;
-    document.getElementById('ap-chart').innerHTML = days.map(d => {
-      const pct = d.h/max;
-      const bottomPx = Math.round(pct*(chartH-20))+2;
-      return `<div class="ch-col" style="position:relative;height:${chartH}px;justify-content:flex-start;">
-        <div class="ch-dot${d.h===0?' empty':''}"
-             style="bottom:${bottomPx}px;position:absolute;"
-             title="${d.k}: ${fh(d.h)}"></div>
-        ${days.length<=30 ? `<div class="ch-lbl" style="position:absolute;bottom:0;">${d.lbl}</div>` : ''}
-        ${d.h>0 ? `<div class="ch-val" style="position:absolute;bottom:${bottomPx+10}px;left:50%;transform:translateX(-50%);">${d.h.toFixed(1)}</div>`:''}
-      </div>`;
-    }).join('');
-  }
-}
-
 // Goals (daily hours, daily pomos, weekly hours)
 function rGoals() {
   const td=today();
