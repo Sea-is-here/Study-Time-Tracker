@@ -625,8 +625,8 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 
 <!-- ============================================================
   SECTION 8: ACHIEVEMENTS PAGE
-  Badge collection with 9 badges across 3 categories.
-  All locked by default. Click any badge to unlock (demo mode).
+  Badge collection with 20 badges across 3 categories.
+  All locked by default. Conditions drive unlocks automatically.
   Each badge has unique SVG art revealed on unlock.
   Congrats modal + confetti fires on every unlock.
 ============================================================ -->
@@ -639,34 +639,34 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
     <div class="h-title">Your collection</div>
     <div class="h-sub">Unlock badges by studying smarter — not just harder.</div>
     <div class="ach-prog-wrap"><div class="ach-prog-fill" id="ach-prog-fill" style="width:0%"></div></div>
-    <div class="ach-prog-label"><span id="ach-prog-label">0 of 9 unlocked</span><span id="ach-prog-pct">0%</span></div>
+    <div class="ach-prog-label"><span id="ach-prog-label">0 of 20 unlocked</span><span id="ach-prog-pct">0%</span></div>
   </div>
 
   <!-- Summary tiles -->
   <div class="ach-tiles">
     <div class="ach-tile"><div class="ach-tile-val" id="ach-t-u">0</div><div class="ach-tile-lbl">Unlocked</div></div>
-    <div class="ach-tile"><div class="ach-tile-val" id="ach-t-l">9</div><div class="ach-tile-lbl">Locked</div></div>
+    <div class="ach-tile"><div class="ach-tile-val" id="ach-t-l">20</div><div class="ach-tile-lbl">Locked</div></div>
     <div class="ach-tile"><div class="ach-tile-val">5</div><div class="ach-tile-lbl">Tiers</div></div>
   </div>
 
   <!-- Getting started -->
   <div class="ach-section">
     <div class="ach-section-title">Getting started</div>
-    <div class="ach-section-sub">Your first steps as an actuary-in-training</div>
+    <div class="ach-section-sub">Your first steps as an actuary-in-training · 4 badges</div>
     <div class="ach-grid" id="ach-grid-start"></div>
   </div>
 
   <!-- Consistency -->
   <div class="ach-section">
     <div class="ach-section-title">Consistency</div>
-    <div class="ach-section-sub">Show up every day — streaks and habits</div>
+    <div class="ach-section-sub">Show up every day — streaks and habits · 8 badges</div>
     <div class="ach-grid" id="ach-grid-streak"></div>
   </div>
 
   <!-- Mastery -->
   <div class="ach-section" style="margin-bottom:32px;">
     <div class="ach-section-title">Mastery</div>
-    <div class="ach-section-sub">Rare badges for the most dedicated scholars</div>
+    <div class="ach-section-sub">Rare badges for the most dedicated scholars · 8 badges</div>
     <div class="ach-grid" id="ach-grid-master"></div>
   </div>
 
@@ -878,6 +878,7 @@ function startListeners() {
   onSnapshot(collection(db,'sessions'), snap => {
     sessions = snap.docs.map(d => d.data());
     renderAll();
+    checkAchievements();
     if (!dbReady) { dbReady = true; setSyncBadge('saved','Firebase sync on'); }
   });
   onSnapshot(collection(db,'pomos'), snap => {
@@ -1643,29 +1644,87 @@ document.getElementById('h-clear').addEventListener('click', () => {
 var ACH_LOCKED = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gl" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#d8d8e0"/><stop offset="45%" stop-color="#909098"/><stop offset="100%" stop-color="#404048"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#gl)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#b0b0b8" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="38" fill="none" stroke="#a0a0a8" stroke-width="1.8"/><circle cx="50" cy="50" r="34" fill="none" stroke="#606068" stroke-width=".6"/><rect x="36" y="48" width="28" height="22" rx="5" fill="#707078"/><rect x="38" y="50" width="24" height="18" rx="4" fill="#606068"/><path d="M42,48 L42,38 C42,30 58,30 58,38 L58,48" fill="none" stroke="#808088" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="60" r="4" fill="#505058"/><rect x="49" y="61" width="2" height="5" rx="1" fill="#505058"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".07" transform="rotate(-30,36,28)"/></svg>';
 
 // Full badge SVG art — only shown after unlock
+// Keys match ACH_BADGES ids and ACH_CONDITION_MAP exactly
 var ACH_SVGS = {
-  first:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="b1a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="b1s" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#ffe8b0"/><stop offset="40%" stop-color="#d09040"/><stop offset="100%" stop-color="#704010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#b1a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="url(#b1s)" stroke="#703010" stroke-width="1"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="none" stroke="#ffd080" stroke-width=".6" opacity=".7"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
-  night:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="n1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#5060c8"/><stop offset="45%" stop-color="#202880"/><stop offset="100%" stop-color="#080820"/></radialGradient><radialGradient id="n2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#8890e8"/><stop offset="50%" stop-color="#4050b0"/><stop offset="100%" stop-color="#101050"/></radialGradient><radialGradient id="nm" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#f8f0e0"/><stop offset="60%" stop-color="#d8c880"/><stop offset="100%" stop-color="#a08040"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#n1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#8890d8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#101060" stroke-width=".7"/><circle cx="50" cy="50" r="37" fill="none" stroke="#5060a8" stroke-width="1.5"/><circle cx="24" cy="22" r="1.2" fill="#e0e8ff" opacity=".8"/><circle cx="76" cy="28" r="1.5" fill="#c0c8f0" opacity=".7"/><circle cx="78" cy="58" r="1" fill="#d0d8ff" opacity=".6"/><circle cx="20" cy="68" r="1.2" fill="#c0c8f0" opacity=".5"/><circle cx="66" cy="16" r=".8" fill="#e0e8ff" opacity=".8"/><path d="M70,20 C78,22 82,30 78,36 C76,40 70,40 66,38 C72,36 76,30 70,20Z" fill="url(#nm)"/><ellipse cx="50" cy="56" rx="15" ry="18" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M35,52 C25,46 25,64 35,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><path d="M65,52 C75,46 75,64 65,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><ellipse cx="50" cy="40" rx="12" ry="11" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M42,30 L38,22 L46,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><path d="M58,30 L62,22 L54,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><circle cx="45" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="55" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="45" cy="38" r="2.5" fill="#2030a0"/><circle cx="55" cy="38" r="2.5" fill="#2030a0"/><circle cx="46" cy="37" r="1.1" fill="white" opacity=".9"/><circle cx="56" cy="37" r="1.1" fill="white" opacity=".9"/><polygon points="50,42 48,46 52,46" fill="#d0b050"/><path d="M44,52 C47,54 53,54 56,52" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M40,58 C44,61 56,61 60,58" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M44,74 L42,82 M44,74 L46,82 M44,74 L48,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><path d="M56,74 L54,82 M56,74 L58,82 M56,74 L60,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".1" transform="rotate(-30,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#n1)" stroke="#6070b8" stroke-width="1.2"/></svg>',
-  fire3:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f3a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="f3c" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#fff8e0"/><stop offset="40%" stop-color="#ffe0a0"/><stop offset="100%" stop-color="#c07820"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#f3a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><path d="M68,26 C62,30 54,36 48,44 C44,50 42,58 44,64 C48,58 54,52 62,48 C70,44 76,38 74,30Z" fill="url(#f3c)" stroke="#e0a030" stroke-width=".8"/><ellipse cx="58" cy="46" rx="3" ry="5" fill="#fff0c0" opacity=".8" transform="rotate(-45,58,46)"/><path d="M48,44 C40,50 32,54 26,52" fill="none" stroke="#ffe090" stroke-width="2.5" stroke-linecap="round" opacity=".8"/><path d="M52,50 C44,54 36,56 30,54" fill="none" stroke="#f0c060" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M54,56 C48,59 40,60 35,58" fill="none" stroke="#e0a040" stroke-width="1" stroke-linecap="round" opacity=".4"/><circle cx="68" cy="28" r="4.5" fill="url(#f3c)" stroke="#ffe0a0" stroke-width=".8"/><circle cx="68" cy="28" r="2" fill="white" opacity=".5"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
-  early:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="s1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff4c0"/><stop offset="30%" stop-color="#ffb040"/><stop offset="60%" stop-color="#e06020"/><stop offset="100%" stop-color="#801000"/></radialGradient><radialGradient id="s2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#ffe090"/><stop offset="100%" stop-color="#c05000"/></radialGradient></defs><line x1="50" y1="2" x2="50" y2="10" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="50" y1="90" x2="50" y2="98" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="85" y1="15" x2="79" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="15" y1="15" x2="21" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="2" y1="50" x2="10" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="90" y1="50" x2="98" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><circle cx="50" cy="50" r="42" fill="url(#s1)"/><circle cx="50" cy="50" r="42" fill="none" stroke="#ffc060" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="38" fill="none" stroke="#801000" stroke-width=".7"/><circle cx="50" cy="50" r="33" fill="none" stroke="#ff9040" stroke-width="2"/><path d="M20,60 Q50,48 80,60" fill="none" stroke="#ff6020" stroke-width="1.5" opacity=".8"/><path d="M14,64 Q32,54 50,56 Q68,54 86,64 L86,72 Q68,62 50,64 Q32,62 14,72Z" fill="#c04010" opacity=".6"/><path d="M28,60 A22,22 0 0,1 72,60Z" fill="url(#s2)"/><path d="M36,60 A14,14 0 0,1 64,60Z" fill="#ffe080" opacity=".8"/><line x1="50" y1="38" x2="50" y2="28" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="60" y1="42" x2="66" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="40" y1="42" x2="34" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="64" y1="52" x2="72" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="36" y1="52" x2="28" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><ellipse cx="36" cy="32" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-25,36,32)"/><path d="M30,82 L50,92 L70,82 L70,76 L30,76Z" fill="url(#s1)" stroke="#ffc060" stroke-width="1.2"/></svg>',
-  fire7:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f7a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fffbc0"/><stop offset="30%" stop-color="#f8d040"/><stop offset="65%" stop-color="#c07800"/><stop offset="100%" stop-color="#704000"/></radialGradient><radialGradient id="f7b" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#f8e060"/><stop offset="100%" stop-color="#a06000"/></radialGradient><radialGradient id="f7g" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#604000"/></radialGradient></defs><path d="M22,48 C10,36 12,18 24,12 C20,26 28,34 36,32 C22,54 44,68 50,90 C56,68 78,54 64,32 C72,34 80,26 76,12 C88,18 90,36 78,48 C86,56 88,72 78,80 C74,68 66,62 58,62 C62,72 58,82 50,86 C42,82 38,72 42,62 C34,62 26,68 22,80 C12,72 14,56 22,48Z" fill="url(#f7a)" stroke="#f8d040" stroke-width="1.2"/><ellipse cx="50" cy="46" rx="12" ry="18" fill="url(#f7b)" stroke="#f8c820" stroke-width=".8"/><ellipse cx="50" cy="40" rx="6" ry="9" fill="#fff8c0" opacity=".6"/><circle cx="50" cy="32" r="3" fill="url(#f7g)" stroke="#c08000" stroke-width=".6"/><circle cx="50" cy="32" r="1.5" fill="white" opacity=".6"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#f7a)" stroke="#f8c820" stroke-width="1.2"/></svg>',
-  balance: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="p1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="25%" stop-color="#c0e8f8"/><stop offset="55%" stop-color="#6090c0"/><stop offset="85%" stop-color="#304870"/><stop offset="100%" stop-color="#102040"/></radialGradient><radialGradient id="p2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#d0f0ff"/><stop offset="70%" stop-color="#4080c0"/><stop offset="100%" stop-color="#102050"/></radialGradient><radialGradient id="pg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a0f0ff"/><stop offset="50%" stop-color="#0080c0"/><stop offset="100%" stop-color="#003060"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#p1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8f8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#204868" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#90c8f0" stroke-width="2.5"/><circle cx="50" cy="50" r="33" fill="none" stroke="#204060" stroke-width=".6"/><rect x="48" y="28" width="4" height="44" rx="2" fill="url(#p2)"/><line x1="34" y1="44" x2="66" y2="44" stroke="#90c8f0" stroke-width="2" stroke-linecap="round"/><path d="M26,44 L34,44 A8,6 0 0,0 42,44Z" fill="url(#pg)" opacity=".9"/><path d="M58,44 L66,44 A8,6 0 0,0 74,44Z" fill="url(#pg)" opacity=".9"/><circle cx="50" cy="28" r="4" fill="url(#pg)" stroke="#d0f0ff" stroke-width=".8"/><circle cx="50" cy="28" r="2" fill="white" opacity=".5"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#p1)" stroke="#90c8f0" stroke-width="1.5"/></svg>',
-  scholar: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sc1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0d0"/><stop offset="25%" stop-color="#f8c840"/><stop offset="55%" stop-color="#9040c0"/><stop offset="100%" stop-color="#200840"/></radialGradient><radialGradient id="sc2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffe0a0"/><stop offset="40%" stop-color="#c080e0"/><stop offset="100%" stop-color="#300860"/></radialGradient><radialGradient id="scp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="50%" stop-color="#8020d0"/><stop offset="100%" stop-color="#200040"/></radialGradient><radialGradient id="scg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#604000"/></radialGradient></defs><polygon points="50,6 58,6 58,22 50,16 42,22 42,6" fill="url(#sc1)" stroke="#f8c840" stroke-width="1"/><circle cx="42" cy="22" r="3" fill="url(#scp)"/><circle cx="50" cy="16" r="3.5" fill="url(#scg)"/><circle cx="58" cy="22" r="3" fill="url(#scp)"/><polygon points="6,50 22,30 78,30 94,50 78,70 22,70" fill="url(#sc1)" stroke="#f8c840" stroke-width="1.5"/><polygon points="14,50 28,34 72,34 86,50 72,66 28,66" fill="none" stroke="#f0c030" stroke-width="2"/><circle cx="50" cy="34" r="2.5" fill="url(#scg)"/><circle cx="86" cy="50" r="2.5" fill="url(#scp)"/><circle cx="72" cy="66" r="2.5" fill="url(#scg)"/><circle cx="14" cy="50" r="2.5" fill="url(#scp)"/><circle cx="28" cy="34" r="2.5" fill="url(#scg)"/><circle cx="28" cy="66" r="2.5" fill="url(#scp)"/><circle cx="72" cy="34" r="2.5" fill="url(#scg)"/><circle cx="50" cy="66" r="2.5" fill="url(#scp)"/><circle cx="50" cy="50" r="28" fill="url(#sc1)"/><circle cx="50" cy="50" r="23" fill="none" stroke="#a050e0" stroke-width="1.2"/><path d="M34,56 L34,38 C34,36 32,34 30,35 C24,37 18,42 16,48 L16,68 C18,62 24,58 30,58 L34,58Z" fill="#fffce0" stroke="#c0a030" stroke-width=".7"/><path d="M66,56 L66,38 C66,36 68,34 70,35 C76,37 82,42 84,48 L84,68 C82,62 76,58 70,58 L66,58Z" fill="#fffce0" stroke="#c0a030" stroke-width=".7"/><rect x="48" y="34" width="4" height="30" rx="1" fill="#a08030"/><line x1="38" y1="42" x2="47" y2="40" stroke="#a09040" stroke-width=".7" opacity=".8"/><line x1="37" y1="47" x2="47" y2="45" stroke="#a09040" stroke-width=".7"/><path d="M62,36 C60,42 58,50 55,57" fill="none" stroke="#806020" stroke-width="1" stroke-linecap="round"/><path d="M62,36 C66,40 68,48 66,54 C64,48 60,50 55,57" fill="#f0e080" stroke="#b09030" stroke-width=".5" opacity=".9"/><path d="M55,57 L53,61 L58,57Z" fill="#604010"/><path d="M26,78 L26,72 L34,66 L66,66 L74,72 L74,78 L50,88Z" fill="url(#sc1)" stroke="#f8c840" stroke-width="1.3"/><circle cx="50" cy="76" r="2.5" fill="url(#scg)"/></svg>',
-  hundred: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="h1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0f8"/><stop offset="25%" stop-color="#f0c0e8"/><stop offset="55%" stop-color="#a040a0"/><stop offset="85%" stop-color="#501060"/><stop offset="100%" stop-color="#200030"/></radialGradient><radialGradient id="h2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#f0d0ff"/><stop offset="70%" stop-color="#9030c0"/><stop offset="100%" stop-color="#300050"/></radialGradient><radialGradient id="hg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="50%" stop-color="#8020d0"/><stop offset="100%" stop-color="#200040"/></radialGradient><radialGradient id="hd" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#d0f0ff"/><stop offset="70%" stop-color="#60b0e0"/><stop offset="100%" stop-color="#103060"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#h1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#f0c0e8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#601080" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#d080d0" stroke-width="2.5"/><polygon points="50,26 62,34 62,46 50,54 38,46 38,34" fill="url(#h2)" stroke="#e0a0f0" stroke-width="1"/><polygon points="50,26 62,34 62,46 50,54 38,46 38,34" fill="none" stroke="white" stroke-width=".5" opacity=".4"/><line x1="38" y1="34" x2="62" y2="34" stroke="#f0d0ff" stroke-width=".8" opacity=".6"/><line x1="50" y1="26" x2="50" y2="54" stroke="#e0c0ff" stroke-width=".6" opacity=".5"/><line x1="50" y1="26" x2="38" y2="46" stroke="#e0c0ff" stroke-width=".4" opacity=".4"/><line x1="50" y1="26" x2="62" y2="46" stroke="#e0c0ff" stroke-width=".4" opacity=".4"/><circle cx="50" cy="26" r="3.5" fill="url(#hd)" stroke="#d0f0ff" stroke-width=".8"/><circle cx="50" cy="26" r="1.5" fill="white" opacity=".7"/><circle cx="62" cy="34" r="2.5" fill="url(#hg)"/><circle cx="38" cy="34" r="2.5" fill="url(#hd)"/><circle cx="62" cy="46" r="2.5" fill="url(#hd)"/><circle cx="38" cy="46" r="2.5" fill="url(#hg)"/><circle cx="50" cy="54" r="3" fill="url(#hg)"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#h1)" stroke="#d080d0" stroke-width="1.5"/></svg>',
-  perfect: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="lg1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0d0"/><stop offset="25%" stop-color="#f8c840"/><stop offset="45%" stop-color="#e08000"/><stop offset="70%" stop-color="#a04000"/><stop offset="100%" stop-color="#500800"/></radialGradient><radialGradient id="lg2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="25%" stop-color="#ffe880"/><stop offset="60%" stop-color="#f09000"/><stop offset="100%" stop-color="#803000"/></radialGradient><radialGradient id="lgr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffb0b0"/><stop offset="50%" stop-color="#e02020"/><stop offset="100%" stop-color="#600000"/></radialGradient><radialGradient id="lgb" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#b0d0ff"/><stop offset="50%" stop-color="#2060e0"/><stop offset="100%" stop-color="#001060"/></radialGradient></defs><path d="M50,4 C58,10 66,4 70,12 C78,8 84,16 78,22 C86,24 88,34 82,38 C88,46 84,56 78,58 C80,68 74,76 66,76 C64,86 58,92 50,92 C42,92 36,86 34,76 C26,76 20,68 22,58 C16,56 12,46 18,38 C12,34 14,24 22,22 C16,16 22,8 30,12 C34,4 42,10 50,4Z" fill="url(#lg1)" stroke="#f8d040" stroke-width="1.5"/><circle cx="50" cy="50" r="30" fill="url(#lg1)"/><circle cx="50" cy="50" r="26" fill="none" stroke="#f8c840" stroke-width="2"/><circle cx="50" cy="34" r="3" fill="url(#lgb)"/><circle cx="50" cy="66" r="3" fill="url(#lgb)"/><circle cx="34" cy="50" r="3" fill="url(#lgr)"/><circle cx="66" cy="50" r="3" fill="url(#lgr)"/><circle cx="39" cy="39" r="2.5" fill="url(#lgb)"/><circle cx="61" cy="39" r="2.5" fill="url(#lgr)"/><circle cx="39" cy="61" r="2.5" fill="url(#lgr)"/><circle cx="61" cy="61" r="2.5" fill="url(#lgb)"/><polygon points="50,38 52.4,45 60,45 54,49 56,56 50,52 44,56 46,49 40,45 47.6,45" fill="url(#lg2)" stroke="#e08000" stroke-width=".8"/><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".15" transform="rotate(-25,36,26)"/><path d="M30,86 L50,96 L70,86 L70,80 L30,80Z" fill="url(#lg1)" stroke="#f8d040" stroke-width="1.5"/></svg>'
+
+  // ── BRONZE: Getting Started ───────────────────────────────
+
+  first: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="b1a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="b1s" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#ffe8b0"/><stop offset="40%" stop-color="#d09040"/><stop offset="100%" stop-color="#704010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#b1a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="url(#b1s)" stroke="#703010" stroke-width="1"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="none" stroke="#ffd080" stroke-width=".6" opacity=".7"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
+
+  pomorookie: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="pra" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="prs" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#fff0c0"/><stop offset="42%" stop-color="#d89038"/><stop offset="100%" stop-color="#6a3008"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#pra)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="52" r="20" fill="#fff8e8" stroke="#8a4810" stroke-width="1.8"/><g stroke="#8a4810" stroke-width="1.2" opacity=".7"><line x1="50" y1="34" x2="50" y2="31"/><line x1="50" y1="70" x2="50" y2="73"/><line x1="68" y1="52" x2="71" y2="52"/><line x1="32" y1="52" x2="29" y2="52"/><line x1="62" y1="40" x2="64" y2="38"/><line x1="38" y1="40" x2="36" y2="38"/><line x1="62" y1="64" x2="64" y2="66"/><line x1="38" y1="64" x2="36" y2="66"/></g><line x1="50" y1="52" x2="62" y2="44" stroke="#6a2808" stroke-width="2.2" stroke-linecap="round"/><line x1="50" y1="52" x2="50" y2="36" stroke="#6a2808" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="52" r="2.5" fill="#8a4810"/><path d="M50,32 C51,26 55,24 53,19 C50,23 47,26 50,32Z" fill="#7a3808" stroke="#6a2808" stroke-width=".8"/><path d="M50,32 C53,26 58,25 56,20 C53,24 50,28 50,32Z" fill="#8a4010" stroke="#6a2808" stroke-width=".6" opacity=".8"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
+
+  freshstart: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fsa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#ffe4a8"/><stop offset="38%" stop-color="#cc7a28"/><stop offset="100%" stop-color="#4a1c00"/></radialGradient><radialGradient id="fsp" cx="35%" cy="28%" r="65%"><stop offset="0%" stop-color="#ffe8c8"/><stop offset="40%" stop-color="#d09848"/><stop offset="100%" stop-color="#704820"/></radialGradient></defs><path d="M50,4 C78,10 96,32 96,58 C96,84 78,96 50,96 C22,96 4,84 4,58 C4,32 22,10 50,4Z" fill="url(#fsa)"/><path d="M50,4 C78,10 96,32 96,58 C96,84 78,96 50,96 C22,96 4,84 4,58 C4,32 22,10 50,4Z" fill="none" stroke="#ffdc80" stroke-width="2" opacity=".55"/><path d="M50,14 C72,20 84,38 84,58 C84,78 72,84 50,84 C28,84 16,78 16,58 C16,38 28,20 50,14Z" fill="none" stroke="#d88030" stroke-width="2"/><line x1="50" y1="78" x2="50" y2="34" stroke="#6a2e08" stroke-width="3.5" stroke-linecap="round"/><path d="M50,52 C44,44 28,42 28,52 C28,62 44,64 50,52Z" fill="url(#fsp)" stroke="#7a3810" stroke-width="1.4"/><path d="M50,44 C56,36 72,36 72,45 C72,54 56,56 50,44Z" fill="url(#fsp)" stroke="#7a3810" stroke-width="1.4"/><path d="M50,34 C54,26 60,22 58,16 C54,20 46,26 50,34Z" fill="url(#fsp)" stroke="#7a3810" stroke-width="1.2"/><ellipse cx="36" cy="22" rx="10" ry="6" fill="white" opacity=".12" transform="rotate(-28,36,22)"/></svg>',
+
+  fire3: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f3a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="f3c" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#fff8e0"/><stop offset="40%" stop-color="#ffe0a0"/><stop offset="100%" stop-color="#c07820"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#f3a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><path d="M68,26 C62,30 54,36 48,44 C44,50 42,58 44,64 C48,58 54,52 62,48 C70,44 76,38 74,30Z" fill="url(#f3c)" stroke="#e0a030" stroke-width=".8"/><ellipse cx="58" cy="46" rx="3" ry="5" fill="#fff0c0" opacity=".8" transform="rotate(-45,58,46)"/><path d="M48,44 C40,50 32,54 26,52" fill="none" stroke="#ffe090" stroke-width="2.5" stroke-linecap="round" opacity=".8"/><path d="M52,50 C44,54 36,56 30,54" fill="none" stroke="#f0c060" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M54,56 C48,59 40,60 35,58" fill="none" stroke="#e0a040" stroke-width="1" stroke-linecap="round" opacity=".4"/><circle cx="68" cy="28" r="4.5" fill="url(#f3c)" stroke="#ffe0a0" stroke-width=".8"/><circle cx="68" cy="28" r="2" fill="white" opacity=".5"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
+
+  // ── SILVER / GOLD: Consistency ────────────────────────────
+
+  night: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="n1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#5060c8"/><stop offset="45%" stop-color="#202880"/><stop offset="100%" stop-color="#080820"/></radialGradient><radialGradient id="n2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#8890e8"/><stop offset="50%" stop-color="#4050b0"/><stop offset="100%" stop-color="#101050"/></radialGradient><radialGradient id="nm" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#f8f0e0"/><stop offset="60%" stop-color="#d8c880"/><stop offset="100%" stop-color="#a08040"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#n1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#8890d8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#101060" stroke-width=".7"/><circle cx="50" cy="50" r="37" fill="none" stroke="#5060a8" stroke-width="1.5"/><circle cx="24" cy="22" r="1.2" fill="#e0e8ff" opacity=".8"/><circle cx="76" cy="28" r="1.5" fill="#c0c8f0" opacity=".7"/><circle cx="78" cy="58" r="1" fill="#d0d8ff" opacity=".6"/><circle cx="20" cy="68" r="1.2" fill="#c0c8f0" opacity=".5"/><circle cx="66" cy="16" r=".8" fill="#e0e8ff" opacity=".8"/><path d="M70,20 C78,22 82,30 78,36 C76,40 70,40 66,38 C72,36 76,30 70,20Z" fill="url(#nm)"/><ellipse cx="50" cy="56" rx="15" ry="18" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M35,52 C25,46 25,64 35,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><path d="M65,52 C75,46 75,64 65,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><ellipse cx="50" cy="40" rx="12" ry="11" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M42,30 L38,22 L46,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><path d="M58,30 L62,22 L54,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><circle cx="45" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="55" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="45" cy="38" r="2.5" fill="#2030a0"/><circle cx="55" cy="38" r="2.5" fill="#2030a0"/><circle cx="46" cy="37" r="1.1" fill="white" opacity=".9"/><circle cx="56" cy="37" r="1.1" fill="white" opacity=".9"/><polygon points="50,42 48,46 52,46" fill="#d0b050"/><path d="M44,52 C47,54 53,54 56,52" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M40,58 C44,61 56,61 60,58" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M44,74 L42,82 M44,74 L46,82 M44,74 L48,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><path d="M56,74 L54,82 M56,74 L58,82 M56,74 L60,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".1" transform="rotate(-30,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#n1)" stroke="#6070b8" stroke-width="1.2"/></svg>',
+
+  early: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="s1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff4c0"/><stop offset="30%" stop-color="#ffb040"/><stop offset="60%" stop-color="#e06020"/><stop offset="100%" stop-color="#801000"/></radialGradient><radialGradient id="s2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#ffe090"/><stop offset="100%" stop-color="#c05000"/></radialGradient></defs><line x1="50" y1="2" x2="50" y2="10" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="50" y1="90" x2="50" y2="98" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="85" y1="15" x2="79" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="15" y1="15" x2="21" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="2" y1="50" x2="10" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="90" y1="50" x2="98" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><circle cx="50" cy="50" r="42" fill="url(#s1)"/><circle cx="50" cy="50" r="42" fill="none" stroke="#ffc060" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="38" fill="none" stroke="#801000" stroke-width=".7"/><circle cx="50" cy="50" r="33" fill="none" stroke="#ff9040" stroke-width="2"/><path d="M20,60 Q50,48 80,60" fill="none" stroke="#ff6020" stroke-width="1.5" opacity=".8"/><path d="M14,64 Q32,54 50,56 Q68,54 86,64 L86,72 Q68,62 50,64 Q32,62 14,72Z" fill="#c04010" opacity=".6"/><path d="M28,60 A22,22 0 0,1 72,60Z" fill="url(#s2)"/><path d="M36,60 A14,14 0 0,1 64,60Z" fill="#ffe080" opacity=".8"/><line x1="50" y1="38" x2="50" y2="28" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="60" y1="42" x2="66" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="40" y1="42" x2="34" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="64" y1="52" x2="72" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="36" y1="52" x2="28" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><ellipse cx="36" cy="32" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-25,36,32)"/><path d="M30,82 L50,92 L70,82 L70,76 L30,76Z" fill="url(#s1)" stroke="#ffc060" stroke-width="1.2"/></svg>',
+
+  weekendwarrior: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="wwa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#d8e0f0"/><stop offset="62%" stop-color="#7888a0"/><stop offset="100%" stop-color="#303848"/></radialGradient><radialGradient id="wwb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="38%" stop-color="#c0ccdc"/><stop offset="100%" stop-color="#506070"/></radialGradient><radialGradient id="wwg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="50%" stop-color="#1858e0"/><stop offset="100%" stop-color="#000840"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#wwa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#e8eeff" stroke-width="1.8" opacity=".6"/><circle cx="50" cy="50" r="41" fill="none" stroke="#384858" stroke-width=".8"/><circle cx="50" cy="50" r="35" fill="none" stroke="#b8c8d8" stroke-width="2.2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#485860" stroke-width=".7"/><g stroke="#8898a8" stroke-width="1" opacity=".7"><line x1="50" y1="35" x2="50" y2="40"/><line x1="50" y1="60" x2="50" y2="65"/><line x1="65" y1="50" x2="70" y2="50"/><line x1="35" y1="50" x2="30" y2="50"/><line x1="60.6" y1="39.4" x2="64.2" y2="35.8"/><line x1="39.4" y1="39.4" x2="35.8" y2="35.8"/><line x1="60.6" y1="60.6" x2="64.2" y2="64.2"/><line x1="39.4" y1="60.6" x2="35.8" y2="64.2"/></g><path d="M50,22 L68,32 L68,52 C68,64 60,72 50,76 C40,72 32,64 32,52 L32,32Z" fill="url(#wwb)" stroke="#c0d0e0" stroke-width="1.5"/><path d="M50,22 L68,32 L68,52 C68,64 60,72 50,76 C40,72 32,64 32,52 L32,32Z" fill="none" stroke="white" stroke-width=".6" opacity=".35"/><line x1="38" y1="30" x2="62" y2="58" stroke="#8898b0" stroke-width="2.8" stroke-linecap="round"/><line x1="62" y1="30" x2="38" y2="58" stroke="#8898b0" stroke-width="2.8" stroke-linecap="round"/><circle cx="38" cy="29" r="3.5" fill="url(#wwb)" stroke="#c0d0e0" stroke-width="1"/><circle cx="62" cy="29" r="3.5" fill="url(#wwb)" stroke="#c0d0e0" stroke-width="1"/><circle cx="50" cy="44" r="4" fill="url(#wwg)" stroke="#d0e8ff" stroke-width=".8"/><circle cx="50" cy="44" r="2" fill="white" opacity=".55"/><ellipse cx="37" cy="27" rx="9" ry="5.5" fill="white" opacity=".18" transform="rotate(-25,37,27)"/><path d="M30,88 L50,98 L70,88 L70,82 L30,82Z" fill="url(#wwa)" stroke="#b8c8d8" stroke-width="1.3"/></svg>',
+
+  fire7: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f7a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fffbc0"/><stop offset="30%" stop-color="#f8d040"/><stop offset="65%" stop-color="#c07800"/><stop offset="100%" stop-color="#704000"/></radialGradient><radialGradient id="f7b" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#f8e060"/><stop offset="100%" stop-color="#a06000"/></radialGradient><radialGradient id="f7g" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#604000"/></radialGradient></defs><path d="M22,48 C10,36 12,18 24,12 C20,26 28,34 36,32 C22,54 44,68 50,90 C56,68 78,54 64,32 C72,34 80,26 76,12 C88,18 90,36 78,48 C86,56 88,72 78,80 C74,68 66,62 58,62 C62,72 58,82 50,86 C42,82 38,72 42,62 C34,62 26,68 22,80 C12,72 14,56 22,48Z" fill="url(#f7a)" stroke="#f8d040" stroke-width="1.2"/><ellipse cx="50" cy="46" rx="12" ry="18" fill="url(#f7b)" stroke="#f8c820" stroke-width=".8"/><ellipse cx="50" cy="40" rx="6" ry="9" fill="#fff8c0" opacity=".6"/><circle cx="50" cy="32" r="3" fill="url(#f7g)" stroke="#c08000" stroke-width=".6"/><circle cx="50" cy="32" r="1.5" fill="white" opacity=".6"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#f7a)" stroke="#f8c820" stroke-width="1.2"/></svg>',
+
+  balance: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="bla" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#fffcc0"/><stop offset="28%" stop-color="#f8d038"/><stop offset="62%" stop-color="#be7400"/><stop offset="100%" stop-color="#5a3000"/></radialGradient><radialGradient id="bls" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="36%" stop-color="#f8e058"/><stop offset="100%" stop-color="#986000"/></radialGradient><radialGradient id="blg" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#90e8ff"/><stop offset="48%" stop-color="#0078b8"/><stop offset="100%" stop-color="#002858"/></radialGradient></defs><path d="M4,50 C8,28 22,8 50,4 C78,8 92,28 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".4"/><circle cx="50" cy="50" r="46" fill="url(#bla)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffe060" stroke-width="2" opacity=".6"/><circle cx="50" cy="50" r="42" fill="none" stroke="#7a3800" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#f8d050" stroke-width="2.2"/><g fill="#f8c820"><circle cx="50" cy="14" r="2.2"/><circle cx="86" cy="50" r="2.2"/><circle cx="50" cy="86" r="2.2"/><circle cx="14" cy="50" r="2.2"/></g><rect x="48" y="26" width="4" height="38" rx="2" fill="url(#bls)" stroke="#f8d040" stroke-width=".8"/><circle cx="50" cy="26" r="5" fill="url(#blg)" stroke="#f8e060" stroke-width="1"/><circle cx="50" cy="26" r="2.5" fill="white" opacity=".5"/><rect x="26" y="46" width="48" height="4" rx="2" fill="url(#bls)" stroke="#f8e060" stroke-width=".8"/><line x1="28" y1="48" x2="28" y2="58" stroke="#f8d040" stroke-width="1.2" opacity=".8"/><line x1="72" y1="48" x2="72" y2="58" stroke="#f8d040" stroke-width="1.2" opacity=".8"/><path d="M18,58 L28,58 A10,6 0 0,1 38,58Z" fill="url(#bls)" stroke="#f8d040" stroke-width=".8"/><path d="M62,58 L72,58 A10,6 0 0,0 82,58Z" fill="url(#bls)" stroke="#f8d040" stroke-width=".8"/><ellipse cx="28" cy="61" rx="7" ry="2" fill="white" opacity=".2"/><ellipse cx="72" cy="61" rx="7" ry="2" fill="white" opacity=".2"/><path d="M42,64 L58,64 L56,70 L44,70Z" fill="url(#bls)" stroke="#f8e060" stroke-width=".8"/><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-26,36,26)"/><path d="M30,88 L50,98 L70,88 L70,82 L30,82Z" fill="url(#bla)" stroke="#f8c820" stroke-width="1.3"/></svg>',
+
+  deepfocus: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="dfa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#fffcc0"/><stop offset="28%" stop-color="#f8d038"/><stop offset="62%" stop-color="#be7400"/><stop offset="100%" stop-color="#5a3000"/></radialGradient><radialGradient id="dfb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="36%" stop-color="#f8e058"/><stop offset="100%" stop-color="#986000"/></radialGradient><radialGradient id="dfe" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="50%" stop-color="#1858e0"/><stop offset="100%" stop-color="#000840"/></radialGradient></defs><path d="M4,50 C8,28 22,8 50,4 C78,8 92,28 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".4"/><circle cx="50" cy="50" r="46" fill="url(#dfa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffe060" stroke-width="2" opacity=".6"/><circle cx="50" cy="50" r="42" fill="none" stroke="#7a3800" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#f8d050" stroke-width="2.2"/><g fill="#f8c820"><circle cx="50" cy="14" r="2.2"/><circle cx="86" cy="50" r="2.2"/><circle cx="50" cy="86" r="2.2"/><circle cx="14" cy="50" r="2.2"/></g><polygon points="50,22 69,36 69,56 50,70 31,56 31,36" fill="url(#dfb)" fill-opacity=".2" stroke="url(#dfb)" stroke-width="2.8" stroke-linejoin="round"/><polygon points="50,22 69,36 69,56 50,70 31,36" fill="none" stroke="#ffffc0" stroke-width=".7" opacity=".4"/><path d="M34,48 C42,36 58,36 66,48 C58,60 42,60 34,48Z" fill="#fff8e0" stroke="#c89020" stroke-width="1.2"/><circle cx="50" cy="48" r="8" fill="url(#dfe)" stroke="#1040a0" stroke-width=".8"/><circle cx="50" cy="48" r="4.5" fill="#080820"/><circle cx="48" cy="46" r="2" fill="white" opacity=".85"/><g stroke="#4870d0" stroke-width=".5" opacity=".5"><line x1="50" y1="40" x2="50" y2="44"/><line x1="57" y1="42" x2="54" y2="45"/><line x1="43" y1="42" x2="46" y2="45"/></g><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-26,36,26)"/><path d="M30,88 L50,98 L70,88 L70,82 L30,82Z" fill="url(#dfa)" stroke="#f8c820" stroke-width="1.3"/></svg>',
+
+  ironwill: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="iwa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#fffcc0"/><stop offset="28%" stop-color="#f8d038"/><stop offset="62%" stop-color="#be7400"/><stop offset="100%" stop-color="#5a3000"/></radialGradient><radialGradient id="iwb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="36%" stop-color="#f8e058"/><stop offset="100%" stop-color="#986000"/></radialGradient></defs><path d="M4,50 C8,28 22,8 50,4 C78,8 92,28 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".4"/><path d="M4,50 C8,72 22,92 50,96 C78,92 92,72 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".25"/><circle cx="50" cy="50" r="46" fill="url(#iwa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffe060" stroke-width="2" opacity=".6"/><circle cx="50" cy="50" r="42" fill="none" stroke="#7a3800" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#f8d050" stroke-width="2.2"/><g fill="#f8c820"><circle cx="50" cy="14" r="2.2"/><circle cx="86" cy="50" r="2.2"/><circle cx="50" cy="86" r="2.2"/><circle cx="14" cy="50" r="2.2"/></g><rect x="30" y="56" width="40" height="14" rx="2" fill="url(#iwb)" stroke="#f8e060" stroke-width="1.4"/><path d="M36,44 L64,44 L70,56 L30,56Z" fill="url(#iwb)" stroke="#f8e060" stroke-width="1.4"/><path d="M30,58 L18,58 C14,58 14,62 18,62 L30,62Z" fill="url(#iwb)" stroke="#f8e060" stroke-width="1.2"/><ellipse cx="50" cy="59" rx="17" ry="4" fill="white" opacity=".2"/><polygon points="58,24 50,40 56,40 46,58 62,40 56,40 64,24" fill="#fff8c0" stroke="#c89020" stroke-width="1.2"/><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-26,36,26)"/><path d="M30,88 L50,98 L70,88 L70,82 L30,82Z" fill="url(#iwa)" stroke="#f8c820" stroke-width="1.3"/></svg>',
+
+  century: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="cna" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#fffcc0"/><stop offset="28%" stop-color="#f8d038"/><stop offset="62%" stop-color="#be7400"/><stop offset="100%" stop-color="#5a3000"/></radialGradient><radialGradient id="cnb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="36%" stop-color="#f8e058"/><stop offset="100%" stop-color="#986000"/></radialGradient></defs><path d="M4,50 C8,28 22,8 50,4 C78,8 92,28 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".4"/><path d="M4,50 C8,72 22,92 50,96 C78,92 92,72 96,50" fill="none" stroke="#f8d040" stroke-width="1.2" opacity=".25"/><circle cx="50" cy="50" r="46" fill="url(#cna)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffe060" stroke-width="2" opacity=".6"/><circle cx="50" cy="50" r="42" fill="none" stroke="#7a3800" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#f8d050" stroke-width="2.2"/><g fill="#f8c820"><circle cx="50" cy="14" r="2.2"/><circle cx="86" cy="50" r="2.2"/><circle cx="50" cy="86" r="2.2"/><circle cx="14" cy="50" r="2.2"/></g><path d="M22,26 C28,22 36,24 36,24" fill="none" stroke="#c09020" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="26" cy="30" rx="5.5" ry="9" fill="#c8a020" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(-35,26,30)"/><ellipse cx="24" cy="42" rx="5.5" ry="9" fill="#d4ac22" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(-12,24,42)"/><ellipse cx="28" cy="54" rx="5.5" ry="9" fill="#c8a020" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(22,28,54)"/><path d="M78,26 C72,22 64,24 64,24" fill="none" stroke="#c09020" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="74" cy="30" rx="5.5" ry="9" fill="#c8a020" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(35,74,30)"/><ellipse cx="76" cy="42" rx="5.5" ry="9" fill="#d4ac22" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(12,76,42)"/><ellipse cx="72" cy="54" rx="5.5" ry="9" fill="#c8a020" stroke="#b89018" stroke-width="1" opacity=".9" transform="rotate(-22,72,54)"/><path d="M30,64 Q50,72 70,64" fill="none" stroke="#c09020" stroke-width="1.8" stroke-linecap="round"/><text x="50" y="58" text-anchor="middle" font-family="Georgia,serif" font-size="34" font-weight="700" fill="url(#cnb)">C</text><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-26,36,26)"/><path d="M30,88 L50,98 L70,88 L70,82 L30,82Z" fill="url(#cna)" stroke="#f8c820" stroke-width="1.3"/></svg>',
+
+  // ── PLATINUM / LEGENDARY: Mastery ────────────────────────
+
+  scholar: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sca" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="22%" stop-color="#b8e4f8"/><stop offset="52%" stop-color="#5888b8"/><stop offset="84%" stop-color="#284060"/><stop offset="100%" stop-color="#0c1c30"/></radialGradient><radialGradient id="scb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#c8ecff"/><stop offset="68%" stop-color="#3878b8"/><stop offset="100%" stop-color="#0c1c48"/></radialGradient><radialGradient id="scg" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#90e8ff"/><stop offset="48%" stop-color="#0078b8"/><stop offset="100%" stop-color="#002858"/></radialGradient></defs><path d="M-8,50 C-4,22 14,-4 50,-8 C86,-4 104,22 108,50" fill="none" stroke="#90c8f0" stroke-width="1" opacity=".3" transform="translate(0,0)"/><path d="M50,50 C26,40 10,58 50,96 C90,58 74,40 50,50Z" fill="none" stroke="#88c0e8" stroke-width="1" opacity=".2"/><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".4"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="url(#sca)" stroke="#c0e8f8" stroke-width="1.4"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="none" stroke="#d0f0ff" stroke-width=".5" opacity=".4"/><circle cx="50" cy="50" r="46" fill="url(#sca)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8ff" stroke-width="2.2" opacity=".75"/><circle cx="50" cy="50" r="42" fill="none" stroke="#1c3e5e" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#88c0e8" stroke-width="2.5"/><circle cx="50" cy="50" r="33" fill="none" stroke="#1c3858" stroke-width=".7"/><g stroke="#68a8d0" stroke-width="1.1" opacity=".8"><line x1="50" y1="36" x2="50" y2="42"/><line x1="50" y1="58" x2="50" y2="64"/><line x1="64" y1="50" x2="70" y2="50"/><line x1="36" y1="50" x2="30" y2="50"/><line x1="59.4" y1="40.6" x2="63.7" y2="36.3"/><line x1="40.6" y1="40.6" x2="36.3" y2="36.3"/><line x1="59.4" y1="59.4" x2="63.7" y2="63.7"/><line x1="40.6" y1="59.4" x2="36.3" y2="63.7"/></g><path d="M32,56 L32,38 C32,36 30,34 28,35 C22,37 16,42 14,48 L14,68 C16,62 22,58 28,58Z" fill="#fffde8" stroke="#b09020" stroke-width="1"/><path d="M68,56 L68,38 C68,36 70,34 72,35 C78,37 84,42 86,48 L86,68 C84,62 78,58 72,58Z" fill="#fffde8" stroke="#b09020" stroke-width="1"/><rect x="47.5" y="36" width="5" height="32" rx="1.5" fill="#907020" stroke="#705010" stroke-width=".6"/><line x1="34" y1="43" x2="46" y2="41" stroke="#988030" stroke-width=".9" opacity=".8"/><line x1="33" y1="48" x2="46" y2="46" stroke="#988030" stroke-width=".9" opacity=".7"/><line x1="33" y1="53" x2="46" y2="52" stroke="#988030" stroke-width=".8" opacity=".6"/><path d="M63,38 C61,44 59,52 56,60" fill="none" stroke="#706010" stroke-width="1.3" stroke-linecap="round"/><path d="M63,38 C68,43 69,51 67,57 C65,51 61,54 56,60" fill="#f0e060" stroke="#a09020" stroke-width=".7" opacity=".9"/><path d="M56,60 L54,65 L60,60Z" fill="#504010"/><ellipse cx="37" cy="28" rx="11" ry="6.5" fill="white" opacity=".18" transform="rotate(-26,37,28)"/><path d="M28,88 L50,100 L72,88 L72,82 L28,82Z" fill="url(#sca)" stroke="#88c0e8" stroke-width="1.6"/></svg>',
+
+  navigator: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="nva" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="22%" stop-color="#b8e4f8"/><stop offset="52%" stop-color="#5888b8"/><stop offset="84%" stop-color="#284060"/><stop offset="100%" stop-color="#0c1c30"/></radialGradient><radialGradient id="nvb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#c8ecff"/><stop offset="68%" stop-color="#3878b8"/><stop offset="100%" stop-color="#0c1c48"/></radialGradient><radialGradient id="nvg" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#90e8ff"/><stop offset="48%" stop-color="#0078b8"/><stop offset="100%" stop-color="#002858"/></radialGradient><radialGradient id="nvr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffa0a0"/><stop offset="50%" stop-color="#d81818"/><stop offset="100%" stop-color="#500000"/></radialGradient></defs><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 22,98 50,98 C78,98 94,78 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".25"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="url(#nva)" stroke="#c0e8f8" stroke-width="1.4"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="none" stroke="#d0f0ff" stroke-width=".5" opacity=".4"/><circle cx="50" cy="50" r="46" fill="url(#nva)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8ff" stroke-width="2.2" opacity=".75"/><circle cx="50" cy="50" r="42" fill="none" stroke="#1c3e5e" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#88c0e8" stroke-width="2.5"/><g stroke="#68a8d0" stroke-width="1.1" opacity=".8"><line x1="50" y1="36" x2="50" y2="42"/><line x1="50" y1="58" x2="50" y2="64"/><line x1="64" y1="50" x2="70" y2="50"/><line x1="36" y1="50" x2="30" y2="50"/></g><circle cx="50" cy="50" r="22" fill="#c8e8f8" opacity=".25" stroke="#88c0e8" stroke-width="1"/><line x1="50" y1="28" x2="50" y2="72" stroke="#88c0e8" stroke-width=".8" opacity=".6"/><line x1="28" y1="50" x2="72" y2="50" stroke="#88c0e8" stroke-width=".8" opacity=".6"/><line x1="34.4" y1="34.4" x2="65.6" y2="65.6" stroke="#88c0e8" stroke-width=".5" opacity=".35"/><line x1="65.6" y1="34.4" x2="34.4" y2="65.6" stroke="#88c0e8" stroke-width=".5" opacity=".35"/><polygon points="50,28 46,42 50,38 54,42" fill="url(#nvr)" stroke="#880808" stroke-width=".8"/><polygon points="50,72 46,58 50,62 54,58" fill="url(#nvb)" stroke="#4880b0" stroke-width=".8"/><polygon points="72,50 58,46 62,50 58,54" fill="url(#nvb)" stroke="#4880b0" stroke-width=".7"/><polygon points="28,50 42,46 38,50 42,54" fill="url(#nvb)" stroke="#4880b0" stroke-width=".7"/><circle cx="50" cy="50" r="5" fill="url(#nvg)" stroke="#d0f0ff" stroke-width="1"/><circle cx="50" cy="50" r="2.5" fill="white" opacity=".6"/><text x="50" y="26" text-anchor="middle" font-family="-apple-system,sans-serif" font-size="7" font-weight="700" fill="#d8f0ff">N</text><ellipse cx="37" cy="28" rx="11" ry="6.5" fill="white" opacity=".18" transform="rotate(-26,37,28)"/><path d="M28,88 L50,100 L72,88 L72,82 L28,82Z" fill="url(#nva)" stroke="#88c0e8" stroke-width="1.6"/></svg>',
+
+  timemaster: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="tma" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="22%" stop-color="#b8e4f8"/><stop offset="52%" stop-color="#5888b8"/><stop offset="84%" stop-color="#284060"/><stop offset="100%" stop-color="#0c1c30"/></radialGradient><radialGradient id="tmb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#c8ecff"/><stop offset="68%" stop-color="#3878b8"/><stop offset="100%" stop-color="#0c1c48"/></radialGradient><radialGradient id="tmg" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#90e8ff"/><stop offset="48%" stop-color="#0078b8"/><stop offset="100%" stop-color="#002858"/></radialGradient></defs><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".4"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="url(#tma)" stroke="#c0e8f8" stroke-width="1.4"/><circle cx="50" cy="50" r="46" fill="url(#tma)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8ff" stroke-width="2.2" opacity=".75"/><circle cx="50" cy="50" r="42" fill="none" stroke="#1c3e5e" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#88c0e8" stroke-width="2.5"/><g stroke="#68a8d0" stroke-width="1.1" opacity=".8"><line x1="50" y1="36" x2="50" y2="42"/><line x1="50" y1="58" x2="50" y2="64"/><line x1="64" y1="50" x2="70" y2="50"/><line x1="36" y1="50" x2="30" y2="50"/><line x1="59.4" y1="40.6" x2="63.7" y2="36.3"/><line x1="40.6" y1="40.6" x2="36.3" y2="36.3"/><line x1="59.4" y1="59.4" x2="63.7" y2="63.7"/><line x1="40.6" y1="59.4" x2="36.3" y2="63.7"/></g><rect x="34" y="24" width="32" height="5" rx="2.5" fill="url(#tmb)" stroke="#88c0e8" stroke-width="1.2"/><rect x="34" y="71" width="32" height="5" rx="2.5" fill="url(#tmb)" stroke="#88c0e8" stroke-width="1.2"/><rect x="34" y="29" width="3" height="42" rx="1.5" fill="url(#tmb)" stroke="#88c0e8" stroke-width=".8" opacity=".7"/><rect x="63" y="29" width="3" height="42" rx="1.5" fill="url(#tmb)" stroke="#88c0e8" stroke-width=".8" opacity=".7"/><path d="M37,29 L63,29 L54,50 L63,71 L37,71 L46,50Z" fill="#d8f0ff" stroke="#88c0e8" stroke-width=".9" opacity=".5"/><path d="M37,29 L63,29 L56,42 L37,29Z" fill="url(#tmg)" opacity=".7"/><path d="M46,58 L54,58 L63,71 L37,71Z" fill="url(#tmg)" opacity=".95"/><line x1="50" y1="46" x2="50" y2="56" stroke="url(#tmg)" stroke-width="2" opacity=".7" stroke-linecap="round"/><polygon points="50,22 52.5,27.5 58.5,27.5 54,31 55.5,36.5 50,33 44.5,36.5 46,31 41.5,27.5 47.5,27.5" fill="url(#tmg)" stroke="#d0f0ff" stroke-width=".7"/><ellipse cx="37" cy="28" rx="11" ry="6.5" fill="white" opacity=".18" transform="rotate(-26,37,28)"/><path d="M28,88 L50,100 L72,88 L72,82 L28,82Z" fill="url(#tma)" stroke="#88c0e8" stroke-width="1.6"/></svg>',
+
+  infinite: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ina" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="22%" stop-color="#b8e4f8"/><stop offset="52%" stop-color="#5888b8"/><stop offset="84%" stop-color="#284060"/><stop offset="100%" stop-color="#0c1c30"/></radialGradient><radialGradient id="inb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#ffffff"/><stop offset="28%" stop-color="#c8ecff"/><stop offset="68%" stop-color="#3878b8"/><stop offset="100%" stop-color="#0c1c48"/></radialGradient><radialGradient id="ing" cx="30%" cy="26%" r="65%"><stop offset="0%" stop-color="#90e8ff"/><stop offset="48%" stop-color="#0078b8"/><stop offset="100%" stop-color="#002858"/></radialGradient></defs><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 22,98 50,98 C78,98 94,78 98,50" fill="none" stroke="#90c8f0" stroke-width="1.2" opacity=".25"/><path d="M48,-2 C22,2 48,28 48,52 L52,52 C52,28 78,2 52,-2Z" fill="url(#ina)" stroke="#c0e8f8" stroke-width="1.4"/><circle cx="50" cy="50" r="46" fill="url(#ina)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8ff" stroke-width="2.2" opacity=".75"/><circle cx="50" cy="50" r="42" fill="none" stroke="#1c3e5e" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#88c0e8" stroke-width="2.5"/><g stroke="#68a8d0" stroke-width="1.1" opacity=".8"><line x1="50" y1="36" x2="50" y2="42"/><line x1="50" y1="58" x2="50" y2="64"/><line x1="64" y1="50" x2="70" y2="50"/><line x1="36" y1="50" x2="30" y2="50"/><line x1="59.4" y1="40.6" x2="63.7" y2="36.3"/><line x1="40.6" y1="40.6" x2="36.3" y2="36.3"/><line x1="59.4" y1="59.4" x2="63.7" y2="63.7"/><line x1="40.6" y1="59.4" x2="36.3" y2="63.7"/></g><path d="M32,50 C32,36 44,36 50,50 C56,64 68,64 68,50 C68,36 56,36 50,50 C44,64 32,64 32,50Z" fill="none" stroke="url(#inb)" stroke-width="5.5" stroke-linecap="round"/><path d="M32,50 C32,36 44,36 50,50 C56,64 68,64 68,50 C68,36 56,36 50,50 C44,64 32,64 32,50Z" fill="none" stroke="#e8f8ff" stroke-width="1.5" opacity=".35"/><circle cx="32" cy="50" r="4.5" fill="url(#ing)" stroke="#d0f0ff" stroke-width="1"/><circle cx="68" cy="50" r="4.5" fill="url(#ing)" stroke="#d0f0ff" stroke-width="1"/><circle cx="50" cy="50" r="5" fill="url(#ing)" stroke="#d0f0ff" stroke-width="1"/><circle cx="50" cy="50" r="2.5" fill="white" opacity=".65"/><circle cx="32" cy="50" r="2" fill="white" opacity=".5"/><circle cx="68" cy="50" r="2" fill="white" opacity=".5"/><ellipse cx="37" cy="28" rx="11" ry="6.5" fill="white" opacity=".18" transform="rotate(-26,37,28)"/><path d="M28,88 L50,100 L72,88 L72,82 L28,82Z" fill="url(#ina)" stroke="#88c0e8" stroke-width="1.6"/></svg>',
+
+  actuarialmaster: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="ama" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#f8e8ff"/><stop offset="20%" stop-color="#d080f8"/><stop offset="45%" stop-color="#8820c8"/><stop offset="70%" stop-color="#480878"/><stop offset="100%" stop-color="#180028"/></radialGradient><radialGradient id="amb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="30%" stop-color="#e0a0ff"/><stop offset="65%" stop-color="#a030d8"/><stop offset="100%" stop-color="#380058"/></radialGradient><radialGradient id="amw" cx="35%" cy="28%" r="68%"><stop offset="0%" stop-color="#f0c8ff"/><stop offset="48%" stop-color="#9020c0"/><stop offset="100%" stop-color="#340050"/></radialGradient><radialGradient id="amga" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="50%" stop-color="#1858e0"/><stop offset="100%" stop-color="#000840"/></radialGradient><radialGradient id="amgr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffa0a0"/><stop offset="50%" stop-color="#d81818"/><stop offset="100%" stop-color="#500000"/></radialGradient><radialGradient id="amgp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#e8a8ff"/><stop offset="50%" stop-color="#9818d8"/><stop offset="100%" stop-color="#300048"/></radialGradient><radialGradient id="amgy" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffff0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#504000"/></radialGradient></defs><path d="M-26,8 L-20,-6 L-12,-22 L0,-10 L12,-22 L20,-6 L26,8 L26,20 L-26,20Z" fill="url(#ama)" stroke="#e8a0ff" stroke-width="1.4" transform="translate(50,0)"/><circle cx="38" cy="-22" r="4" fill="url(#amga)" transform="translate(0,0)"/><circle cx="50" cy="-10" r="5" fill="url(#amgy)" transform="translate(0,0)"/><circle cx="62" cy="-22" r="4" fill="url(#amgr)" transform="translate(0,0)"/><path d="M2,50 C6,28 18,8 50,2 C82,8 94,28 98,50" fill="none" stroke="#e090ff" stroke-width="1" opacity=".3"/><path d="M4,50 C8,22 22,4 50,4 C78,4 92,22 96,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 18,92 50,98 C82,92 94,78 98,50" fill="none" stroke="#e090ff" stroke-width="1" opacity=".2"/><path d="M48,-2 C22,2 48,26 48,52 L52,52 C52,26 78,2 52,-2Z" fill="url(#amw)" stroke="#d080f8" stroke-width="1.4"/><path d="M4,58 C8,74 22,90 50,96 C78,90 92,74 96,58" fill="none" stroke="#e090ff" stroke-width="1" opacity=".2"/><circle cx="50" cy="50" r="46" fill="url(#ama)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#e8a8ff" stroke-width="2.5" opacity=".8"/><circle cx="50" cy="50" r="42" fill="none" stroke="#380058" stroke-width=".9"/><circle cx="50" cy="50" r="36" fill="none" stroke="#c060f0" stroke-width="3"/><circle cx="50" cy="50" r="33" fill="none" stroke="#480068" stroke-width=".8"/><g fill="url(#amgy)"><circle cx="50" cy="14" r="3.2"/><circle cx="78.3" cy="21.7" r="2.8"/><circle cx="86" cy="50" r="3.2"/><circle cx="78.3" cy="78.3" r="2.8"/><circle cx="50" cy="86" r="3.2"/><circle cx="21.7" cy="78.3" r="2.8"/><circle cx="14" cy="50" r="3.2"/><circle cx="21.7" cy="21.7" r="2.8"/></g><path d="M32,58 L32,40 C32,38 30,36 28,37 C21,39 14,44 12,50 L12,70 C14,64 21,60 28,60Z" fill="#fffde8" stroke="#b09020" stroke-width="1"/><path d="M68,58 L68,40 C68,38 70,36 72,37 C79,39 86,44 88,50 L88,70 C86,64 79,60 72,60Z" fill="#fffde8" stroke="#b09020" stroke-width="1"/><rect x="47.5" y="38" width="5" height="30" rx="1.5" fill="#907020"/><line x1="34" y1="45" x2="46" y2="43" stroke="#988030" stroke-width=".9" opacity=".8"/><line x1="33" y1="50" x2="46" y2="48" stroke="#988030" stroke-width=".9" opacity=".7"/><path d="M63,40 C61,46 59,54 56,62" fill="none" stroke="#706010" stroke-width="1.3" stroke-linecap="round"/><path d="M63,40 C68,45 69,53 67,59 C65,53 61,56 56,62" fill="#f0e060" stroke="#a09020" stroke-width=".7" opacity=".9"/><path d="M56,62 L54,67 L60,62Z" fill="#504010"/><ellipse cx="37" cy="28" rx="12" ry="7" fill="white" opacity=".16" transform="rotate(-26,37,28)"/><path d="M22,82 L22,76 L34,68 L66,68 L78,76 L78,82 L50,96Z" fill="url(#ama)" stroke="#e090ff" stroke-width="1.8"/><circle cx="50" cy="80" r="4" fill="url(#amgy)" stroke="#f0d060" stroke-width=".8"/><circle cx="50" cy="80" r="2" fill="white" opacity=".55"/></svg>',
+
+  solstice: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="soa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#f8e8ff"/><stop offset="20%" stop-color="#d080f8"/><stop offset="45%" stop-color="#8820c8"/><stop offset="70%" stop-color="#480878"/><stop offset="100%" stop-color="#180028"/></radialGradient><radialGradient id="sob" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="30%" stop-color="#e0a0ff"/><stop offset="65%" stop-color="#a030d8"/><stop offset="100%" stop-color="#380058"/></radialGradient><radialGradient id="sow" cx="35%" cy="28%" r="68%"><stop offset="0%" stop-color="#f0c8ff"/><stop offset="48%" stop-color="#9020c0"/><stop offset="100%" stop-color="#340050"/></radialGradient><radialGradient id="sogp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#e8a8ff"/><stop offset="50%" stop-color="#9818d8"/><stop offset="100%" stop-color="#300048"/></radialGradient><radialGradient id="sogr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffa0a0"/><stop offset="50%" stop-color="#d81818"/><stop offset="100%" stop-color="#500000"/></radialGradient></defs><path d="M-26,8 L-20,-6 L-12,-22 L0,-10 L12,-22 L20,-6 L26,8 L26,20 L-26,20Z" fill="url(#soa)" stroke="#e8a0ff" stroke-width="1.4" transform="translate(50,0)"/><circle cx="38" cy="-22" r="4" fill="url(#sogp)" transform="translate(0,0)"/><circle cx="50" cy="-10" r="5" fill="url(#sogr)" transform="translate(0,0)"/><circle cx="62" cy="-22" r="4" fill="url(#sogp)" transform="translate(0,0)"/><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 22,98 50,98 C78,98 94,78 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".25"/><path d="M48,-2 C22,2 48,26 48,52 L52,52 C52,26 78,2 52,-2Z" fill="url(#sow)" stroke="#d080f8" stroke-width="1.4"/><circle cx="50" cy="50" r="46" fill="url(#soa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#e8a8ff" stroke-width="2.5" opacity=".8"/><circle cx="50" cy="50" r="42" fill="none" stroke="#380058" stroke-width=".9"/><circle cx="50" cy="50" r="36" fill="none" stroke="#c060f0" stroke-width="3"/><g fill="url(#sogp)"><circle cx="50" cy="14" r="3.2"/><circle cx="86" cy="50" r="3.2"/><circle cx="50" cy="86" r="3.2"/><circle cx="14" cy="50" r="3.2"/><circle cx="71.3" cy="21.7" r="2.8"/><circle cx="71.3" cy="78.3" r="2.8"/><circle cx="28.7" cy="78.3" r="2.8"/><circle cx="28.7" cy="21.7" r="2.8"/></g><path d="M28,50 A22,22 0 0,0 28,50 A22,22 0 0,1 50,28 L50,72 A22,22 0 0,1 28,50Z" fill="#fff8d0" opacity=".9"/><path d="M50,28 A22,22 0 0,1 72,50 L50,50Z" fill="#101840"/><path d="M50,50 A22,22 0 0,1 72,50 L50,72 A22,22 0 0,0 50,50Z" fill="#101840"/><g stroke="#f8d040" stroke-width="1.5" stroke-linecap="round" opacity=".85"><line x1="26" y1="50" x2="20" y2="50"/><line x1="33" y1="33" x2="29" y2="29"/><line x1="33" y1="67" x2="29" y2="71"/><line x1="50" y1="26" x2="50" y2="20"/></g><circle cx="72" cy="38" r="1.8" fill="#b0c8ff" opacity=".9"/><circle cx="76" cy="52" r="1.2" fill="#b0c8ff" opacity=".8"/><circle cx="70" cy="64" r="1.4" fill="#b0c8ff" opacity=".7"/><line x1="50" y1="28" x2="50" y2="72" stroke="#e090ff" stroke-width="1.8"/><circle cx="50" cy="50" r="4.5" fill="url(#sogr)" stroke="#f0d0ff" stroke-width="1"/><circle cx="50" cy="50" r="2" fill="white" opacity=".65"/><ellipse cx="37" cy="28" rx="12" ry="7" fill="white" opacity=".16" transform="rotate(-26,37,28)"/><path d="M22,82 L22,76 L34,68 L66,68 L78,76 L78,82 L50,96Z" fill="url(#soa)" stroke="#e090ff" stroke-width="1.8"/><circle cx="50" cy="80" r="4" fill="url(#sogp)" stroke="#f0c0ff" stroke-width=".8"/><circle cx="50" cy="80" r="2" fill="white" opacity=".55"/></svg>',
+
+  perfectweek: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="pwa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#f8e8ff"/><stop offset="20%" stop-color="#d080f8"/><stop offset="45%" stop-color="#8820c8"/><stop offset="70%" stop-color="#480878"/><stop offset="100%" stop-color="#180028"/></radialGradient><radialGradient id="pwb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="30%" stop-color="#e0a0ff"/><stop offset="65%" stop-color="#a030d8"/><stop offset="100%" stop-color="#380058"/></radialGradient><radialGradient id="pww" cx="35%" cy="28%" r="68%"><stop offset="0%" stop-color="#f0c8ff"/><stop offset="48%" stop-color="#9020c0"/><stop offset="100%" stop-color="#340050"/></radialGradient><radialGradient id="pwgy" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffff0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#504000"/></radialGradient><radialGradient id="pwgr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffa0a0"/><stop offset="50%" stop-color="#d81818"/><stop offset="100%" stop-color="#500000"/></radialGradient><radialGradient id="pwgp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#e8a8ff"/><stop offset="50%" stop-color="#9818d8"/><stop offset="100%" stop-color="#300048"/></radialGradient></defs><path d="M-26,8 L-20,-6 L-12,-22 L0,-10 L12,-22 L20,-6 L26,8 L26,20 L-26,20Z" fill="url(#pwa)" stroke="#e8a0ff" stroke-width="1.4" transform="translate(50,0)"/><circle cx="38" cy="-22" r="4" fill="url(#pwgr)" transform="translate(0,0)"/><circle cx="50" cy="-10" r="5" fill="url(#pwgy)" transform="translate(0,0)"/><circle cx="62" cy="-22" r="4" fill="url(#pwgp)" transform="translate(0,0)"/><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 22,98 50,98 C78,98 94,78 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".25"/><path d="M48,-2 C22,2 48,26 48,52 L52,52 C52,26 78,2 52,-2Z" fill="url(#pww)" stroke="#d080f8" stroke-width="1.4"/><circle cx="50" cy="50" r="46" fill="url(#pwa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#e8a8ff" stroke-width="2.5" opacity=".8"/><circle cx="50" cy="50" r="42" fill="none" stroke="#380058" stroke-width=".9"/><circle cx="50" cy="50" r="36" fill="none" stroke="#c060f0" stroke-width="3"/><g fill="url(#pwgy)"><circle cx="50" cy="14" r="3.2"/><circle cx="78.3" cy="21.7" r="2.8"/><circle cx="86" cy="50" r="3.2"/><circle cx="78.3" cy="78.3" r="2.8"/><circle cx="50" cy="86" r="3.2"/><circle cx="21.7" cy="78.3" r="2.8"/><circle cx="14" cy="50" r="3.2"/><circle cx="21.7" cy="21.7" r="2.8"/></g><g fill="url(#pwb)" stroke="#c060d0" stroke-width=".7"><polygon points="22,44 23.4,39 27,39 24.2,36.8 25.2,32 22,34.4 18.8,32 19.8,36.8 17,39 20.6,39" transform="scale(.88) translate(7,5)"/><polygon points="31,34 32.4,29 36,29 33.2,26.8 34.2,22 31,24.4 27.8,22 28.8,26.8 26,29 29.6,29" transform="scale(.88) translate(7,5)"/><polygon points="40,28 41.4,23 45,23 42.2,20.8 43.2,16 40,18.4 36.8,16 37.8,20.8 35,23 38.6,23" transform="scale(.88) translate(7,5)"/><polygon points="50,26 51.4,21 55,21 52.2,18.8 53.2,14 50,16.4 46.8,14 47.8,18.8 45,21 48.6,21" transform="scale(.88) translate(7,5)"/><polygon points="60,28 61.4,23 65,23 62.2,20.8 63.2,16 60,18.4 56.8,16 57.8,20.8 55,23 58.6,23" transform="scale(.88) translate(7,5)"/><polygon points="69,34 70.4,29 74,29 71.2,26.8 72.2,22 69,24.4 65.8,22 66.8,26.8 64,29 67.6,29" transform="scale(.88) translate(7,5)"/></g><path d="M21,47 Q50,31 79,47" fill="none" stroke="#e090ff" stroke-width="1" opacity=".5"/><polygon points="50,60 53.5,70.5 64.5,70.5 55.5,77 58.5,87.5 50,81 41.5,87.5 44.5,77 35.5,70.5 46.5,70.5" fill="url(#pwgr)" stroke="#c040a0" stroke-width="1"/><circle cx="50" cy="73" r="3" fill="white" opacity=".4"/><ellipse cx="37" cy="28" rx="12" ry="7" fill="white" opacity=".16" transform="rotate(-26,37,28)"/><path d="M22,90 L22,84 L34,78 L66,78 L78,84 L78,90 L50,100Z" fill="url(#pwa)" stroke="#e090ff" stroke-width="1.8"/><circle cx="50" cy="88" r="4" fill="url(#pwgy)" stroke="#f0d060" stroke-width=".8"/><circle cx="50" cy="88" r="2" fill="white" opacity=".55"/></svg>',
+
+  thefellow: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="tfa" cx="38%" cy="30%" r="68%"><stop offset="0%" stop-color="#f8e8ff"/><stop offset="20%" stop-color="#d080f8"/><stop offset="45%" stop-color="#8820c8"/><stop offset="70%" stop-color="#480878"/><stop offset="100%" stop-color="#180028"/></radialGradient><radialGradient id="tfb" cx="30%" cy="26%" r="70%"><stop offset="0%" stop-color="#fff0ff"/><stop offset="30%" stop-color="#e0a0ff"/><stop offset="65%" stop-color="#a030d8"/><stop offset="100%" stop-color="#380058"/></radialGradient><radialGradient id="tfw" cx="35%" cy="28%" r="68%"><stop offset="0%" stop-color="#f0c8ff"/><stop offset="48%" stop-color="#9020c0"/><stop offset="100%" stop-color="#340050"/></radialGradient><radialGradient id="tfga" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a0c8ff"/><stop offset="50%" stop-color="#1858e0"/><stop offset="100%" stop-color="#000840"/></radialGradient><radialGradient id="tfgr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffa0a0"/><stop offset="50%" stop-color="#d81818"/><stop offset="100%" stop-color="#500000"/></radialGradient><radialGradient id="tfgp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#e8a8ff"/><stop offset="50%" stop-color="#9818d8"/><stop offset="100%" stop-color="#300048"/></radialGradient><radialGradient id="tfgy" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#fffff0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#504000"/></radialGradient><radialGradient id="tfgg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a8ffc8"/><stop offset="50%" stop-color="#18b848"/><stop offset="100%" stop-color="#004818"/></radialGradient></defs><path d="M-30,10 L-22,-6 L-14,-26 L0,-12 L14,-26 L22,-6 L30,10 L30,24 L-30,24Z" fill="url(#tfa)" stroke="#e8a0ff" stroke-width="1.6" transform="translate(50,0)"/><circle cx="36" cy="-26" r="4.5" fill="url(#tfgr)" transform="translate(0,0)"/><circle cx="50" cy="-12" r="5.5" fill="url(#tfga)" transform="translate(0,0)"/><circle cx="64" cy="-26" r="4.5" fill="url(#tfgg)" transform="translate(0,0)"/><line x1="20" y1="-6" x2="80" y2="-6" stroke="#f0b0ff" stroke-width=".8" opacity=".6"/><path d="M2,50 C6,22 22,2 50,2 C78,2 94,22 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".4"/><path d="M2,50 C6,78 22,98 50,98 C78,98 94,78 98,50" fill="none" stroke="#e090ff" stroke-width="1.2" opacity=".25"/><path d="M48,-2 C12,4 -2,28 -2,52 C-2,28 24,0 48,4Z" fill="url(#tfw)" stroke="#d080f8" stroke-width="1.5" transform="translate(0,0)"/><path d="M48,-2 C22,2 48,26 48,52 L52,52 C52,26 78,2 52,-2Z" fill="url(#tfw)" stroke="#d080f8" stroke-width="1.5"/><path d="M52,-2 C88,4 102,28 102,52 C102,28 76,0 52,4Z" fill="url(#tfw)" stroke="#d080f8" stroke-width="1.5" transform="translate(0,0)"/><circle cx="50" cy="50" r="46" fill="url(#tfa)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#f0b0ff" stroke-width="2.8" opacity=".85"/><circle cx="50" cy="50" r="42" fill="none" stroke="#400068" stroke-width="1"/><circle cx="50" cy="50" r="36" fill="none" stroke="#d070f8" stroke-width="3.2"/><circle cx="50" cy="50" r="33" fill="none" stroke="#500080" stroke-width=".8"/><circle cx="50" cy="50" r="28" fill="none" stroke="#e898ff" stroke-width="1.5"/><g><circle cx="50" cy="14" r="3.5" fill="url(#tfga)" stroke="#a0c8ff" stroke-width=".8"/><circle cx="71.3" cy="21.7" r="3" fill="url(#tfgy)" stroke="#f8f060" stroke-width=".8"/><circle cx="86" cy="50" r="3.5" fill="url(#tfgr)" stroke="#ff9090" stroke-width=".8"/><circle cx="71.3" cy="78.3" r="3" fill="url(#tfgp)" stroke="#e090ff" stroke-width=".8"/><circle cx="50" cy="86" r="3.5" fill="url(#tfga)" stroke="#a0c8ff" stroke-width=".8"/><circle cx="28.7" cy="78.3" r="3" fill="url(#tfgg)" stroke="#80e080" stroke-width=".8"/><circle cx="14" cy="50" r="3.5" fill="url(#tfgr)" stroke="#ff9090" stroke-width=".8"/><circle cx="28.7" cy="21.7" r="3" fill="url(#tfgy)" stroke="#f8f060" stroke-width=".8"/></g><path d="M36,56 L36,40 C36,38 34,36 32,37 C25,39 18,44 16,50 L16,70 C18,64 25,60 32,60Z" fill="#fffde8" stroke="#b09020" stroke-width="1"/><rect x="47.5" y="38" width="5" height="28" rx="1.5" fill="#907020"/><path d="M54,40 L68,40 L68,66 L54,66Z" fill="#fffde8" stroke="#c0a020" stroke-width=".9"/><ellipse cx="61" cy="40" rx="7" ry="3" fill="#f0e898" stroke="#b09820" stroke-width=".8"/><ellipse cx="61" cy="66" rx="7" ry="3" fill="#f0e898" stroke="#b09820" stroke-width=".8"/><line x1="57" y1="47" x2="65" y2="47" stroke="#988030" stroke-width=".8" opacity=".8"/><line x1="57" y1="52" x2="65" y2="52" stroke="#988030" stroke-width=".8" opacity=".7"/><line x1="57" y1="57" x2="65" y2="57" stroke="#988030" stroke-width=".7" opacity=".6"/><line x1="57" y1="62" x2="65" y2="62" stroke="#988030" stroke-width=".6" opacity=".5"/><circle cx="61" cy="60" r="4" fill="url(#tfgr)" stroke="#800000" stroke-width=".7"/><line x1="38" y1="44" x2="46" y2="42" stroke="#988030" stroke-width=".8" opacity=".8"/><line x1="37" y1="49" x2="46" y2="47" stroke="#988030" stroke-width=".8" opacity=".7"/><line x1="37" y1="54" x2="46" y2="53" stroke="#988030" stroke-width=".7" opacity=".6"/><ellipse cx="37" cy="28" rx="12" ry="7" fill="white" opacity=".16" transform="rotate(-26,37,28)"/><path d="M20,84 L20,78 L32,70 L68,70 L80,78 L80,84 L50,98Z" fill="url(#tfa)" stroke="#e890ff" stroke-width="2"/><line x1="20" y1="81" x2="80" y2="81" stroke="#f8c0ff" stroke-width=".7" opacity=".5"/><circle cx="50" cy="82" r="5" fill="url(#tfga)" stroke="#b0d8ff" stroke-width="1"/><circle cx="50" cy="82" r="2.5" fill="white" opacity=".65"/></svg>'
+
 };
 
-// Badge definitions
+// Badge definitions — 20 badges across 3 sections
+// IDs match ACH_CONDITIONS and ACH_SVGS exactly
 var ACH_BADGES = [
-  {id:'first',   section:'start',  name:'First step',        desc:'Log your first study session',    hint:null,                               mystery:false},
-  {id:'night',   section:'start',  name:'Night owl',         desc:'Study after midnight',            hint:null,                               mystery:false},
-  {id:'fire3',   section:'start',  name:'Kindled',           desc:'Study 3 days in a row',           hint:null,                               mystery:false},
-  {id:'early',   section:'streak', name:'Early bird',        desc:'Study before 7am',                hint:null,                               mystery:false},
-  {id:'fire7',   section:'streak', name:'Wildfire',          desc:'7-day study streak',              hint:null,                               mystery:false},
-  {id:'balance', section:'streak', name:'Balance keeper',    desc:'Study all 5 topics evenly',       hint:'All 5 topics deserve your love…',  mystery:true},
-  {id:'scholar', section:'master', name:'Actuarial scholar', desc:'Master all 5 topics (20h each)',  hint:null,                               mystery:false},
-  {id:'hundred', section:'master', name:'Century',           desc:'Log 100 total hours',             hint:'A century of focused hours awaits…',mystery:true},
-  {id:'perfect', section:'master', name:'???',               desc:'A special hidden achievement',    hint:'Some study at very unusual times…', mystery:true}
+
+  // ── GETTING STARTED (Bronze) ──────────────────────────────
+  {id:'first',          section:'start',  name:'First step',         desc:'Log your first study session',          hint:null,                                  mystery:false},
+  {id:'pomorookie',     section:'start',  name:'Pomo rookie',        desc:'Complete your first pomodoro',          hint:null,                                  mystery:false},
+  {id:'freshstart',     section:'start',  name:'Fresh start',        desc:'Add a session manually in History',     hint:null,                                  mystery:false},
+  {id:'fire3',          section:'start',  name:'Kindled',            desc:'Study 3 days in a row',                 hint:null,                                  mystery:false},
+
+  // ── CONSISTENCY (Silver + Gold) ───────────────────────────
+  {id:'night',          section:'streak', name:'Night owl',          desc:'Study between midnight and 4am',        hint:null,                                  mystery:false},
+  {id:'early',          section:'streak', name:'Early bird',         desc:'Study before 7am',                      hint:null,                                  mystery:false},
+  {id:'weekendwarrior', section:'streak', name:'Weekend warrior',    desc:'Study on both Saturday and Sunday',     hint:null,                                  mystery:false},
+  {id:'fire7',          section:'streak', name:'Wildfire',           desc:'Study 7 days in a row',                 hint:null,                                  mystery:false},
+  {id:'balance',        section:'streak', name:'Balance keeper',     desc:'Log at least 1h in all 5 topics',       hint:'All 5 topics deserve your love…',     mystery:true},
+  {id:'deepfocus',      section:'streak', name:'Deep focus',         desc:'Study 4+ hours in a single session',    hint:null,                                  mystery:false},
+  {id:'ironwill',       section:'streak', name:'Iron will',          desc:'Study 30 days in a row',                hint:null,                                  mystery:false},
+  {id:'century',        section:'streak', name:'Century',            desc:'Log 100 total hours',                   hint:'A century of focused hours awaits…',  mystery:true},
+
+  // ── MASTERY (Platinum + Legendary) ───────────────────────
+  {id:'scholar',        section:'master', name:'Actuarial scholar',  desc:'Log 20h in every topic',                hint:null,                                  mystery:false},
+  {id:'navigator',      section:'master', name:'Navigator',          desc:'10h per topic + 5h each activity type', hint:null,                                  mystery:false},
+  {id:'timemaster',     section:'master', name:'Time master',        desc:'Log 500 total hours',                   hint:'500 hours — time bends for you…',     mystery:true},
+  {id:'infinite',       section:'master', name:'Infinite',           desc:'Study 365 days in a row',               hint:'Some never stop…',                    mystery:true},
+  {id:'actuarialmaster',section:'master', name:'Actuarial master',   desc:'Log 40h in every topic',                hint:null,                                  mystery:false},
+  {id:'solstice',       section:'master', name:'Solstice',           desc:'Study after midnight AND before 7am on the same day', hint:'The sun and moon saw you study…', mystery:true},
+  {id:'perfectweek',    section:'master', name:'Perfect week',       desc:'Study every day for 7 days',            hint:null,                                  mystery:false},
+  {id:'thefellow',      section:'master', name:'The Fellow',         desc:'1000h total + 50h in every topic',      hint:'Fellowship is earned, not given…',    mystery:true}
+
 ];
 
 var achUnlocked = 0;
@@ -1728,32 +1787,347 @@ function achMakeCard(b) {
   return card;
 }
 
+// ── 7O-B. ACHIEVEMENT CONDITIONS ─────────────────────────────
+// Each badge has a condition function that receives (sessions, pomos).
+// Returns true when the achievement is earned.
+// Called every time sessions or pomos update from Firebase.
+
+var ACH_CONDITIONS = {
+
+  // ── BRONZE ─────────────────────────────────────────────────
+
+  // First step: log at least 1 session
+  first: function(s, p) {
+    return s.length >= 1;
+  },
+
+  // Kindled: study 3 consecutive calendar days
+  fire3: function(s, p) {
+    return achConsecutiveDays(s, 3);
+  },
+
+  // Fresh Start: add at least 1 manual session via History form
+  // (identified by having a note that is NOT 'Pomodoro' or 'Stopwatch')
+  freshstart: function(s, p) {
+    return s.some(function(x) {
+      var n = (x.note || '').trim();
+      return n !== 'Pomodoro' && n !== 'Stopwatch';
+    });
+  },
+
+  // Pomo Rookie: complete at least 1 pomodoro
+  pomorookie: function(s, p) {
+    return p.length >= 1;
+  },
+
+  // ── SILVER ─────────────────────────────────────────────────
+
+  // Night Owl: log a session that starts/ends after midnight (00:00–04:00)
+  // Detected by checking if session was saved between 00:00 and 04:00
+  night: function(s, p) {
+    return s.some(function(x) {
+      var d = new Date(x.id); // id = Date.now() at save time
+      var h = d.getHours();
+      return h >= 0 && h < 4;
+    });
+  },
+
+  // Early Bird: log a session saved before 07:00
+  early: function(s, p) {
+    return s.some(function(x) {
+      var d = new Date(x.id);
+      var h = d.getHours();
+      return h >= 4 && h < 7;
+    });
+  },
+
+  // Weekend Warrior: log at least 1 session on Saturday AND 1 on Sunday
+  weekendwarrior: function(s, p) {
+    var hasSat = s.some(function(x) { return new Date(x.date + 'T00:00:00').getDay() === 6; });
+    var hasSun = s.some(function(x) { return new Date(x.date + 'T00:00:00').getDay() === 0; });
+    return hasSat && hasSun;
+  },
+
+  // Wildfire: study 7 consecutive calendar days
+  fire7: function(s, p) {
+    return achConsecutiveDays(s, 7);
+  },
+
+  // ── GOLD ───────────────────────────────────────────────────
+
+  // Balance Keeper: all 5 topics have at least 1 hour each
+  balance: function(s, p) {
+    var topics = { T1:0, T2:0, T3:0, T4:0, T5:0 };
+    s.forEach(function(x) { if (topics[x.topic] !== undefined) topics[x.topic] += x.hours; });
+    return Object.values(topics).every(function(h) { return h >= 1; });
+  },
+
+  // Deep Focus: log a single stopwatch session of 4+ hours
+  deepfocus: function(s, p) {
+    return s.some(function(x) {
+      return (x.note || '') === 'Stopwatch' && x.hours >= 4;
+    });
+  },
+
+  // Iron Will: study 30 consecutive calendar days
+  ironwill: function(s, p) {
+    return achConsecutiveDays(s, 30);
+  },
+
+  // Century: log 100 total hours across all sessions
+  century: function(s, p) {
+    var total = s.reduce(function(a, b) { return a + b.hours; }, 0);
+    return total >= 100;
+  },
+
+  // ── PLATINUM ───────────────────────────────────────────────
+
+  // Actuarial Scholar: all 5 topics have at least 20 hours each
+  scholar: function(s, p) {
+    var topics = { T1:0, T2:0, T3:0, T4:0, T5:0 };
+    s.forEach(function(x) { if (topics[x.topic] !== undefined) topics[x.topic] += x.hours; });
+    return Object.values(topics).every(function(h) { return h >= 20; });
+  },
+
+  // Time Master: log 500 total hours
+  timemaster: function(s, p) {
+    var total = s.reduce(function(a, b) { return a + b.hours; }, 0);
+    return total >= 500;
+  },
+
+  // Navigator: all 5 topics have at least 10 hours AND
+  // all 3 activity types (Study/Review/Exercise) have at least 5 hours
+  navigator: function(s, p) {
+    var topics = { T1:0, T2:0, T3:0, T4:0, T5:0 };
+    var acts   = { Study:0, Review:0, Exercise:0 };
+    s.forEach(function(x) {
+      if (topics[x.topic] !== undefined) topics[x.topic] += x.hours;
+      var cat = x.cat || (x.sub ? x.sub.split('_')[0] : 'Study');
+      if (acts[cat] !== undefined) acts[cat] += x.hours;
+    });
+    var topicsOk = Object.values(topics).every(function(h) { return h >= 10; });
+    var actsOk   = Object.values(acts).every(function(h) { return h >= 5; });
+    return topicsOk && actsOk;
+  },
+
+  // Infinite: study 365 consecutive calendar days
+  infinite: function(s, p) {
+    return achConsecutiveDays(s, 365);
+  },
+
+  // ── LEGENDARY ──────────────────────────────────────────────
+
+  // Actuarial Master: all 5 topics have at least 40 hours each
+  actuarialmaster: function(s, p) {
+    var topics = { T1:0, T2:0, T3:0, T4:0, T5:0 };
+    s.forEach(function(x) { if (topics[x.topic] !== undefined) topics[x.topic] += x.hours; });
+    return Object.values(topics).every(function(h) { return h >= 40; });
+  },
+
+  // Solstice: earned a Night Owl (after midnight) AND Early Bird (before 7am)
+  // on the SAME calendar day
+  solstice: function(s, p) {
+    var byDate = {};
+    s.forEach(function(x) {
+      var d   = new Date(x.id);
+      var h   = d.getHours();
+      var key = x.date;
+      if (!byDate[key]) byDate[key] = { night: false, early: false };
+      if (h >= 0 && h < 4)  byDate[key].night = true;
+      if (h >= 4 && h < 7)  byDate[key].early = true;
+    });
+    return Object.values(byDate).some(function(v) { return v.night && v.early; });
+  },
+
+  // Perfect Week: log at least 1 session on every day of 7 consecutive days
+  // (same as Wildfire but verifying all 7 distinct weekdays are covered)
+  perfectweek: function(s, p) {
+    return achConsecutiveDays(s, 7);
+  },
+
+  // The Fellow: total hours >= 1000 AND all 5 topics >= 50 hours each
+  thefellow: function(s, p) {
+    var total  = s.reduce(function(a, b) { return a + b.hours; }, 0);
+    var topics = { T1:0, T2:0, T3:0, T4:0, T5:0 };
+    s.forEach(function(x) { if (topics[x.topic] !== undefined) topics[x.topic] += x.hours; });
+    var topicsOk = Object.values(topics).every(function(h) { return h >= 50; });
+    return total >= 1000 && topicsOk;
+  }
+};
+
+// ── HELPER: consecutive days ──────────────────────────────────
+// Returns true if sessions contain at least N consecutive calendar days
+function achConsecutiveDays(s, n) {
+  if (!s.length) return false;
+  // Build a Set of unique date strings
+  var dateSet = {};
+  s.forEach(function(x) { dateSet[x.date] = true; });
+  var dates = Object.keys(dateSet).sort();
+  if (dates.length < n) return false;
+  var best = 1, cur = 1;
+  for (var i = 1; i < dates.length; i++) {
+    var prev = new Date(dates[i-1] + 'T00:00:00');
+    var curr = new Date(dates[i]   + 'T00:00:00');
+    var diff = (curr - prev) / 86400000;
+    if (diff === 1) { cur++; if (cur >= n) return true; }
+    else cur = 1;
+  }
+  return best >= n || cur >= n;
+}
+
+// ── MAP: badge id → condition key ─────────────────────────────
+// Links each badge in ACH_BADGES to its condition function above.
+var ACH_CONDITION_MAP = {
+  first:         'first',
+  fire3:         'fire3',
+  freshstart:    'freshstart',
+  pomorookie:    'pomorookie',
+  night:         'night',
+  early:         'early',
+  weekendwarrior:'weekendwarrior',
+  fire7:         'fire7',
+  balance:       'balance',
+  deepfocus:     'deepfocus',
+  ironwill:      'ironwill',
+  century:       'century',
+  scholar:       'scholar',
+  timemaster:    'timemaster',
+  navigator:     'navigator',
+  infinite:      'infinite',
+  actuarialmaster:'actuarialmaster',
+  solstice:      'solstice',
+  perfectweek:   'perfectweek',
+  thefellow:     'thefellow'
+};
+
+// ── MAIN CHECK FUNCTION ───────────────────────────────────────
+// Called every time sessions or pomos update from Firebase.
+// For each locked badge, evaluates its condition.
+// If newly earned → triggers unlock animation + congrats modal.
+var achCheckRunning = false;
+function checkAchievements() {
+  if (achCheckRunning) return;
+  achCheckRunning = true;
+  var newlyUnlocked = [];
+  ACH_BADGES.forEach(function(b) {
+    if (b.unlocked) return; // already unlocked, skip
+    var condKey = ACH_CONDITION_MAP[b.id];
+    if (!condKey) return;  // no condition defined, skip
+    var condFn = ACH_CONDITIONS[condKey];
+    if (!condFn) return;
+    try {
+      var earned = condFn(sessions, pomos);
+      if (earned) newlyUnlocked.push(b);
+    } catch(e) {
+      console.error('Achievement check error for ' + b.id, e);
+    }
+  });
+  achCheckRunning = false;
+
+  // Unlock badges one by one with a delay between each
+  // so modals don't stack if multiple are earned at once
+  if (newlyUnlocked.length > 0) {
+    achUnlockQueue(newlyUnlocked, 0);
+  }
+}
+
+// ── UNLOCK QUEUE ─────────────────────────────────────────────
+// Unlocks badges sequentially with 600ms between each
+// so the user sees each congrats modal clearly.
+function achUnlockQueue(list, index) {
+  if (index >= list.length) return;
+  var b = list[index];
+  achUnlockBadge(b);
+  setTimeout(function() {
+    achUnlockQueue(list, index + 1);
+  }, 3200); // wait for modal to be seen before next one
+}
+
+// ── UNLOCK A SINGLE BADGE ────────────────────────────────────
+function achUnlockBadge(b) {
+  b.unlocked = true;
+  achUnlocked++;
+  achUpdateStats();
+
+  // Update the card in the grid if visible
+  var svgDiv = document.getElementById('ach-svg-' + b.id);
+  var card   = document.getElementById('ach-card-' + b.id);
+  if (svgDiv && card) {
+    svgDiv.innerHTML = ACH_SVGS[b.id];
+    svgDiv.classList.add('ach-pop');
+    card.className = 'ach-card unlocked';
+    var nameEl = card.querySelector('.ach-card-name');
+    var descEl = card.querySelector('.ach-card-desc');
+    if (nameEl) { nameEl.className = 'ach-card-name'; nameEl.textContent = b.name; }
+    if (descEl) { descEl.className = 'ach-card-desc'; descEl.textContent = b.desc; }
+  }
+
+  // Fire confetti + modal
+  achSpawnConfetti();
+  setTimeout(function() {
+    achOpenModal(ACH_SVGS[b.id], 'Achievement unlocked!',
+      'You earned "' + b.name + '" — ' + b.desc, true);
+  }, 420);
+}
+
+// ── REPLACE the old achOnClick ────────────────────────────────
+// Updated: clicking a locked badge now shows progress info
+// instead of unlocking it manually (conditions drive unlocks now).
 function achOnClick(b) {
   if (b.unlocked) {
     achOpenModal(ACH_SVGS[b.id], b.name, b.desc, false);
     return;
   }
-  b.unlocked = true;
-  achUnlocked++;
-  achUpdateStats();
+  // Show what is needed to unlock this badge
+  var hint = achProgressHint(b);
+  achOpenModal(ACH_LOCKED, b.mystery ? '???' : b.name, hint, false);
+}
 
-  var svgDiv = document.getElementById('ach-svg-' + b.id);
-  var card   = document.getElementById('ach-card-' + b.id);
-  svgDiv.innerHTML = ACH_SVGS[b.id];
-  svgDiv.classList.add('ach-pop');
-  card.className = 'ach-card unlocked';
+// ── PROGRESS HINT ─────────────────────────────────────────────
+// Returns a human-readable hint about how close the user is
+// to unlocking each badge based on current session data.
+function achProgressHint(b) {
+  var s = sessions, p = pomos;
+  var total = s.reduce(function(a, x) { return a + x.hours; }, 0);
+  switch(b.id) {
+    case 'first':         return s.length === 0 ? 'Log your first study session to unlock.' : 'Almost there!';
+    case 'fire3':         return 'Study on ' + (3 - achMaxStreak(s)) + ' more consecutive days.';
+    case 'freshstart':    return 'Add a session manually in the History tab.';
+    case 'pomorookie':    return 'Complete your first Pomodoro timer session.';
+    case 'night':         return 'Study between midnight and 4am to unlock.';
+    case 'early':         return 'Study between 4am and 7am to unlock.';
+    case 'weekendwarrior':return 'Study on both Saturday and Sunday in any week.';
+    case 'fire7':         return 'Study on ' + Math.max(0, 7 - achMaxStreak(s)) + ' more consecutive days.';
+    case 'balance':       return 'Every topic needs at least 1 hour. Check the Dashboard.';
+    case 'deepfocus':     return 'Run the Stopwatch for 4+ hours in one session.';
+    case 'ironwill':      return 'You need 30 consecutive study days. Keep going!';
+    case 'century':       return Math.round(total * 10) / 10 + 'h of 100h logged. ' + Math.round((100 - total) * 10) / 10 + 'h to go.';
+    case 'scholar':       return 'Each topic needs 20h. Check the Dashboard for progress.';
+    case 'timemaster':    return Math.round(total) + 'h of 500h logged. Keep studying!';
+    case 'navigator':     return 'All 5 topics need 10h each, plus 5h each of Study/Review/Exercise.';
+    case 'infinite':      return '365 consecutive study days. The ultimate commitment.';
+    case 'actuarialmaster':return 'All 5 topics need 40h each. A true master.';
+    case 'solstice':      return 'Study after midnight AND before 7am on the same day.';
+    case 'perfectweek':   return 'Log a session every single day for 7 days in a row.';
+    case 'thefellow':     return '1000h total + 50h in every topic. The pinnacle.';
+    default:              return b.hint || 'Keep studying to unlock this badge.';
+  }
+}
 
-  var nameEl = card.querySelector('.ach-card-name');
-  var descEl = card.querySelector('.ach-card-desc');
-  nameEl.className   = 'ach-card-name';
-  nameEl.textContent = b.name;
-  descEl.className   = 'ach-card-desc';
-  descEl.textContent = b.desc;
-
-  achSpawnConfetti();
-  setTimeout(function() {
-    achOpenModal(ACH_SVGS[b.id], 'Achievement unlocked!', 'You earned "' + b.name + '" — ' + b.desc, true);
-  }, 420);
+// ── HELPER: current max consecutive day streak ─────────────────
+function achMaxStreak(s) {
+  if (!s.length) return 0;
+  var dateSet = {};
+  s.forEach(function(x) { dateSet[x.date] = true; });
+  var dates = Object.keys(dateSet).sort();
+  var best = 1, cur = 1;
+  for (var i = 1; i < dates.length; i++) {
+    var prev = new Date(dates[i-1] + 'T00:00:00');
+    var curr = new Date(dates[i]   + 'T00:00:00');
+    if ((curr - prev) / 86400000 === 1) { cur++; if (cur > best) best = cur; }
+    else cur = 1;
+  }
+  return best;
 }
 
 function achOpenModal(svgStr, title, sub) {
