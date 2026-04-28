@@ -1242,164 +1242,169 @@ function rTopics() {
 
 // Dashboard chart — supports bar and dot plot, 14-day or all-time zoom
 function rChart() {
-const dm = {};
-sessions.forEach(s => { dm[s.date] = (dm[s.date] || 0) + s.hours; });
-const now = new Date(today() + ‘T00:00:00’);
-let days = [];
+  const dm = {};
+  sessions.forEach(s => { dm[s.date] = (dm[s.date] || 0) + s.hours; });
+  const now = new Date(today() + 'T00:00:00');
+  let days = [];
 
-if (chartZoom === ‘14’) {
-for (let i = 13; i >= 0; i–) {
-const d = new Date(now);
-d.setDate(d.getDate() - i);
-const k = dkey(d);
-days.push({ k, lbl: String(d.getDate()), h: dm[k] || 0 });
+  if (chartZoom === '14') {
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      const k = dkey(d);
+      days.push({ k, lbl: String(d.getDate()), h: dm[k] || 0 });
+    }
+  } else {
+    const allDates = sessions.map(s => s.date).sort();
+    if (!allDates.length) {
+      document.getElementById('ap-chart').innerHTML =
+        '<div class="empty" style="flex:1">No data yet</div>';
+      return;
+    }
+    const first = new Date(allDates[0] + 'T00:00:00');
+    const cur = new Date(first);
+    while (cur <= now) {
+      const k = dkey(cur);
+      days.push({ k, lbl: `${cur.getMonth()+1}/${cur.getDate()}`, h: dm[k] || 0 });
+      cur.setDate(cur.getDate() + 1);
+    }
+  }
+
+  if (!days.length) {
+    document.getElementById('ap-chart').innerHTML =
+      '<div class="empty" style="flex:1">No data yet</div>';
+    return;
+  }
+
+  // Only days that have data (for left-aligned rendering)
+  const activeDays = days.filter(d => d.h > 0);
+  if (!activeDays.length) {
+    document.getElementById('ap-chart').innerHTML =
+      '<div class="empty" style="flex:1">No study sessions yet in this range</div>';
+    return;
+  }
+
+  // Max based only on real data
+  const max = Math.max(...activeDays.map(d => d.h));
+
+  // Label every N to avoid crowding
+  const labelEvery = activeDays.length <= 14 ? 1
+                   : activeDays.length <= 30 ? 2
+                   : activeDays.length <= 60 ? 5
+                   : 7;
+
+  if (chartType === 'bar') {
+    // ── BAR CHART ──────────────────────────────────────────
+    // Only render days with data — no grey placeholders.
+    // Bars grow from left naturally.
+    document.getElementById('ap-chart').innerHTML = `
+      <div style="display:flex;align-items:flex-end;gap:4px;height:130px;
+                  padding-bottom:22px;overflow-x:auto;">
+        ${activeDays.map((d, i) => {
+          const hp = (d.h / max) * 100;
+          const showLbl = (i % labelEvery === 0);
+          return `<div style="display:flex;flex-direction:column;align-items:center;
+                              gap:2px;min-width:22px;flex:1;max-width:40px;height:100%;
+                              justify-content:flex-end;">
+            <div style="width:100%;border-radius:4px 4px 0 0;
+                        height:${hp}%;background:#007aff;opacity:0.8;
+                        min-height:2px;transition:height .4s;"
+                 title="${d.k}: ${fh(d.h)}"></div>
+            <div style="font-size:9px;color:#aeaeb2;font-weight:500;
+                        white-space:nowrap;text-align:center;">
+              ${showLbl ? d.lbl : ''}
+            </div>
+          </div>`;
+        }).join('')}
+      </div>`;
+
+  } else {
+    // ── DOT PLOT WITH CONNECTING LINE ─────────────────────
+    // SVG-based. Only active days plotted.
+    // Y-axis auto-scales to actual max value.
+    // Dots connected by a polyline. Zero days omitted entirely.
+
+    const pts = activeDays;
+    const n   = pts.length;
+
+    const svgH = 150;
+    const padL = 38;  // room for Y-axis labels
+    const padR = 10;
+    const padT = 18;  // room for value labels above dots
+    const padB = 24;  // room for X-axis labels
+    const plotH = svgH - padT - padB;
+    const minW  = Math.max(n * 28, 280);
+    const svgW  = minW;
+    const plotW = svgW - padL - padR;
+
+    // Y-axis ticks: auto-scale to max, 4 nice round steps
+    const rawStep = max / 3;
+    const step = rawStep < 0.5 ? 0.5
+               : rawStep < 1   ? 1
+               : rawStep < 2   ? 2
+               : rawStep < 5   ? 5
+               : 10;
+    const yMax  = Math.ceil(max / step) * step;
+    const yTicks = [];
+    for (let v = 0; v <= yMax; v += step) yTicks.push(v);
+
+    // Point coords
+    const coords = pts.map((d, i) => {
+      const x = padL + (n > 1 ? (i / (n - 1)) * plotW : plotW / 2);
+      const y = padT + plotH - (d.h / yMax) * plotH;
+      return { x, y, h: d.h, lbl: d.lbl, k: d.k };
+    });
+
+    // Polyline string
+    const polyPts = coords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+
+    // Grid lines + Y labels
+    const gridLines = yTicks.map(v => {
+      const y = padT + plotH - (v / yMax) * plotH;
+      return `
+        <line x1="${padL}" y1="${y.toFixed(1)}" x2="${svgW - padR}" y2="${y.toFixed(1)}"
+              stroke="#ebebf0" stroke-width="1"/>
+        <text x="${padL - 5}" y="${(y + 4).toFixed(1)}"
+              text-anchor="end" font-size="9" fill="#aeaeb2">${v === 0 ? '0' : v + 'h'}</text>`;
+    }).join('');
+
+    // X labels (every N)
+    const xLabels = coords.map((p, i) => {
+      if (i % labelEvery !== 0) return '';
+      return `<text x="${p.x.toFixed(1)}" y="${svgH - 6}"
+                    text-anchor="middle" font-size="9" fill="#aeaeb2">${p.lbl}</text>`;
+    }).join('');
+
+    // Value labels above each dot
+    const valLabels = coords.map(p =>
+      `<text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}"
+             text-anchor="middle" font-size="8" fill="#5856d6" font-weight="600">${p.h.toFixed(1)}h</text>`
+    ).join('');
+
+    // Dots
+    const dotElems = coords.map(p =>
+      `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"
+               r="5" fill="#007aff" opacity="0.85">
+         <title>${p.k}: ${fh(p.h)}</title>
+       </circle>`
+    ).join('');
+
+    document.getElementById('ap-chart').innerHTML = `
+      <div style="overflow-x:auto;width:100%;">
+        <svg width="${svgW}" height="${svgH}"
+             style="display:block;font-family:-apple-system,sans-serif;overflow:visible;">
+          ${gridLines}
+          <polyline points="${polyPts}"
+                    fill="none" stroke="#007aff" stroke-width="1.8"
+                    stroke-opacity="0.4" stroke-linejoin="round"/>
+          ${dotElems}
+          ${valLabels}
+          ${xLabels}
+        </svg>
+      </div>`;
+  }
 }
-} else {
-const allDates = sessions.map(s => s.date).sort();
-if (!allDates.length) {
-document.getElementById(‘ap-chart’).innerHTML =
-‘<div class="empty" style="flex:1">No data yet</div>’;
-return;
-}
-const first = new Date(allDates[0] + ‘T00:00:00’);
-const cur = new Date(first);
-while (cur <= now) {
-const k = dkey(cur);
-days.push({ k, lbl: `${cur.getMonth()+1}/${cur.getDate()}`, h: dm[k] || 0 });
-cur.setDate(cur.getDate() + 1);
-}
-}
-
-if (!days.length) {
-document.getElementById(‘ap-chart’).innerHTML =
-‘<div class="empty" style="flex:1">No data yet</div>’;
-return;
-}
-
-// Only days that have data (for left-aligned rendering)
-const activeDays = days.filter(d => d.h > 0);
-if (!activeDays.length) {
-document.getElementById(‘ap-chart’).innerHTML =
-‘<div class="empty" style="flex:1">No study sessions yet in this range</div>’;
-return;
-}
-
-// Max based only on real data
-const max = Math.max(…activeDays.map(d => d.h));
-
-// Label every N to avoid crowding
-const labelEvery = activeDays.length <= 14 ? 1
-: activeDays.length <= 30 ? 2
-: activeDays.length <= 60 ? 5
-: 7;
-
-if (chartType === ‘bar’) {
-// ── BAR CHART ──────────────────────────────────────────
-// Only render days with data — no grey placeholders.
-// Bars grow from left naturally.
-document.getElementById(‘ap-chart’).innerHTML = `<div style="display:flex;align-items:flex-end;gap:4px;height:130px; padding-bottom:22px;overflow-x:auto;"> ${activeDays.map((d, i) => { const hp = (d.h / max) * 100; const showLbl = (i % labelEvery === 0); return`<div style="display:flex;flex-direction:column;align-items:center;
-gap:2px;min-width:22px;flex:1;max-width:40px;height:100%;
-justify-content:flex-end;">
-<div style="width:100%;border-radius:4px 4px 0 0;
-height:${hp}%;background:#007aff;opacity:0.8;
-min-height:2px;transition:height .4s;"
-title="${d.k}: ${fh(d.h)}"></div>
-<div style="font-size:9px;color:#aeaeb2;font-weight:500;
-white-space:nowrap;text-align:center;">
-${showLbl ? d.lbl : ‘’}
-</div>
-</div>`; }).join('')} </div>`;
-
-} else {
-// ── DOT PLOT WITH CONNECTING LINE ─────────────────────
-// SVG-based. Only active days plotted.
-// Y-axis auto-scales to actual max value.
-// Dots connected by a polyline. Zero days omitted entirely.
-
-```
-const pts = activeDays;
-const n   = pts.length;
-
-const svgH = 150;
-const padL = 38;  // room for Y-axis labels
-const padR = 10;
-const padT = 18;  // room for value labels above dots
-const padB = 24;  // room for X-axis labels
-const plotH = svgH - padT - padB;
-const minW  = Math.max(n * 28, 280);
-const svgW  = minW;
-const plotW = svgW - padL - padR;
-
-// Y-axis ticks: auto-scale to max, 4 nice round steps
-const rawStep = max / 3;
-const step = rawStep < 0.5 ? 0.5
-           : rawStep < 1   ? 1
-           : rawStep < 2   ? 2
-           : rawStep < 5   ? 5
-           : 10;
-const yMax  = Math.ceil(max / step) * step;
-const yTicks = [];
-for (let v = 0; v <= yMax; v += step) yTicks.push(v);
-
-// Point coords
-const coords = pts.map((d, i) => {
-  const x = padL + (n > 1 ? (i / (n - 1)) * plotW : plotW / 2);
-  const y = padT + plotH - (d.h / yMax) * plotH;
-  return { x, y, h: d.h, lbl: d.lbl, k: d.k };
-});
-
-// Polyline string
-const polyPts = coords.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-
-// Grid lines + Y labels
-const gridLines = yTicks.map(v => {
-  const y = padT + plotH - (v / yMax) * plotH;
-  return `
-    <line x1="${padL}" y1="${y.toFixed(1)}" x2="${svgW - padR}" y2="${y.toFixed(1)}"
-          stroke="#ebebf0" stroke-width="1"/>
-    <text x="${padL - 5}" y="${(y + 4).toFixed(1)}"
-          text-anchor="end" font-size="9" fill="#aeaeb2">${v === 0 ? '0' : v + 'h'}</text>`;
-}).join('');
-
-// X labels (every N)
-const xLabels = coords.map((p, i) => {
-  if (i % labelEvery !== 0) return '';
-  return `<text x="${p.x.toFixed(1)}" y="${svgH - 6}"
-                text-anchor="middle" font-size="9" fill="#aeaeb2">${p.lbl}</text>`;
-}).join('');
-
-// Value labels above each dot
-const valLabels = coords.map(p =>
-  `<text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}"
-         text-anchor="middle" font-size="8" fill="#5856d6" font-weight="600">${p.h.toFixed(1)}h</text>`
-).join('');
-
-// Dots
-const dotElems = coords.map(p =>
-  `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}"
-           r="5" fill="#007aff" opacity="0.85">
-     <title>${p.k}: ${fh(p.h)}</title>
-   </circle>`
-).join('');
-
-document.getElementById('ap-chart').innerHTML = `
-  <div style="overflow-x:auto;width:100%;">
-    <svg width="${svgW}" height="${svgH}"
-         style="display:block;font-family:-apple-system,sans-serif;overflow:visible;">
-      ${gridLines}
-      <polyline points="${polyPts}"
-                fill="none" stroke="#007aff" stroke-width="1.8"
-                stroke-opacity="0.4" stroke-linejoin="round"/>
-      ${dotElems}
-      ${valLabels}
-      ${xLabels}
-    </svg>
-  </div>`;
-```
-
-}
-}
-
+  
 // Goals (daily hours, daily pomos, weekly hours)
 function rGoals() {
   const td=today();
