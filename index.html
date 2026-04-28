@@ -248,6 +248,48 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   .s-hrow span:nth-child(3),.s-row span:nth-child(3){display:none;}
   .nav-tab{padding:5px 8px;font-size:11px;}
 }
+
+/* ── SECTION 1 ADDITION: Achievement page styles ── */
+.ach-hero{background:linear-gradient(135deg,#1c1c3a,#2d2060 50%,#1a0a40);padding:24px 20px 22px;position:relative;overflow:hidden;margin-bottom:0;}
+.ach-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06);}
+.ach-hero::after{content:'';position:absolute;right:60px;bottom:-50px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.04);}
+.ach-prog-wrap{margin-top:14px;background:rgba(255,255,255,.12);border-radius:999px;height:6px;overflow:hidden;}
+.ach-prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#a78bfa,#60a5fa);transition:width .8s cubic-bezier(.16,1,.3,1);}
+.ach-prog-label{display:flex;justify-content:space-between;margin-top:5px;}
+.ach-prog-label span{font-size:11px;color:rgba(255,255,255,.55);font-weight:500;}
+.ach-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 20px 0;}
+.ach-tile{background:#fff;border:0.5px solid rgba(0,0,0,.09);border-radius:14px;padding:14px 12px;text-align:center;}
+.ach-tile-val{font-size:24px;font-weight:700;letter-spacing:-.03em;color:#1d1d1f;}
+.ach-tile-lbl{font-size:10px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;color:#8e8e93;margin-top:3px;}
+.ach-section{padding:20px 20px 0;}
+.ach-section-title{font-size:17px;font-weight:600;color:#1d1d1f;margin-bottom:3px;letter-spacing:-.02em;}
+.ach-section-sub{font-size:12px;color:#8e8e93;margin-bottom:14px;}
+.ach-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.ach-card{background:#fff;border:0.5px solid rgba(0,0,0,.09);border-radius:18px;padding:18px 10px 14px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;}
+.ach-card.unlocked:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.ach-card svg{width:80px;height:80px;display:block;margin:0 auto 10px;}
+.ach-card-name{font-size:12px;font-weight:600;color:#1d1d1f;margin-bottom:2px;letter-spacing:-.01em;}
+.ach-card-name.muted{color:#aeaeb2;}
+.ach-card-desc{font-size:10px;color:#8e8e93;line-height:1.3;}
+.ach-card-desc.hint{font-style:italic;color:#aeaeb2;}
+/* Achievement modal */
+.ach-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;}
+.ach-modal-bg.show{display:flex;}
+.ach-modal-box{background:#fff;border-radius:24px;padding:32px 24px 24px;width:86%;max-width:300px;text-align:center;}
+.ach-modal-box.anim{animation:achPop .35s cubic-bezier(.16,1,.3,1);}
+@keyframes achPop{from{opacity:0;transform:scale(.78) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.ach-modal-badge{width:100px;height:100px;margin:0 auto 14px;}
+.ach-modal-badge svg{width:100px;height:100px;display:block;}
+.ach-modal-title{font-size:19px;font-weight:700;color:#1d1d1f;letter-spacing:-.02em;margin-bottom:6px;}
+.ach-modal-sub{font-size:13px;color:#6e6e73;line-height:1.5;margin-bottom:18px;}
+.ach-modal-btn{width:100%;background:linear-gradient(135deg,#5856d6,#007aff);color:#fff;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:transform .1s;}
+.ach-modal-btn:active{transform:scale(.97);}
+/* Badge pop animation */
+@keyframes achShimmer{0%{opacity:0;transform:scale(.6);}60%{opacity:1;transform:scale(1.12);}80%{transform:scale(.95);}100%{transform:scale(1);opacity:1;}}
+.ach-pop{animation:achShimmer .5s cubic-bezier(.16,1,.3,1) forwards;}
+/* Confetti */
+.ach-confetti{position:fixed;pointer-events:none;z-index:10000;width:8px;height:8px;}
+@keyframes achFall{0%{transform:translateY(0) rotate(0deg);opacity:1;}100%{transform:translateY(500px) rotate(900deg);opacity:0;}}  
 </style>
 </head>
 <body>
@@ -273,6 +315,7 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
       <button class="nav-tab" data-p="stopwatch">Stopwatch</button>
       <button class="nav-tab" data-p="dash">Dashboard</button>
       <button class="nav-tab" data-p="history">History</button>
+      <button class="nav-tab" data-p="achievements">Achievements</button>
     </div>
   </div>
 </nav>
@@ -580,6 +623,65 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
   </div>
 </div>
 
+<!-- ============================================================
+  SECTION 8: ACHIEVEMENTS PAGE
+  Badge collection with 9 badges across 3 categories.
+  All locked by default. Click any badge to unlock (demo mode).
+  Each badge has unique SVG art revealed on unlock.
+  Congrats modal + confetti fires on every unlock.
+============================================================ -->
+<div class="pg" id="page-achievements">
+
+  <!-- Hero banner -->
+  <div class="ach-hero">
+    <div class="hc1"></div><div class="hc2"></div>
+    <div class="h-tag">Achievements</div>
+    <div class="h-title">Your collection</div>
+    <div class="h-sub">Unlock badges by studying smarter — not just harder.</div>
+    <div class="ach-prog-wrap"><div class="ach-prog-fill" id="ach-prog-fill" style="width:0%"></div></div>
+    <div class="ach-prog-label"><span id="ach-prog-label">0 of 9 unlocked</span><span id="ach-prog-pct">0%</span></div>
+  </div>
+
+  <!-- Summary tiles -->
+  <div class="ach-tiles">
+    <div class="ach-tile"><div class="ach-tile-val" id="ach-t-u">0</div><div class="ach-tile-lbl">Unlocked</div></div>
+    <div class="ach-tile"><div class="ach-tile-val" id="ach-t-l">9</div><div class="ach-tile-lbl">Locked</div></div>
+    <div class="ach-tile"><div class="ach-tile-val">5</div><div class="ach-tile-lbl">Tiers</div></div>
+  </div>
+
+  <!-- Getting started -->
+  <div class="ach-section">
+    <div class="ach-section-title">Getting started</div>
+    <div class="ach-section-sub">Your first steps as an actuary-in-training</div>
+    <div class="ach-grid" id="ach-grid-start"></div>
+  </div>
+
+  <!-- Consistency -->
+  <div class="ach-section">
+    <div class="ach-section-title">Consistency</div>
+    <div class="ach-section-sub">Show up every day — streaks and habits</div>
+    <div class="ach-grid" id="ach-grid-streak"></div>
+  </div>
+
+  <!-- Mastery -->
+  <div class="ach-section" style="margin-bottom:32px;">
+    <div class="ach-section-title">Mastery</div>
+    <div class="ach-section-sub">Rare badges for the most dedicated scholars</div>
+    <div class="ach-grid" id="ach-grid-master"></div>
+  </div>
+
+</div>
+
+<!-- Achievement congrats modal -->
+<div class="ach-modal-bg" id="ach-modal-bg">
+  <div class="ach-modal-box" id="ach-modal-box">
+    <div class="ach-modal-badge" id="ach-modal-badge"></div>
+    <div class="ach-modal-title" id="ach-modal-title"></div>
+    <div class="ach-modal-sub" id="ach-modal-sub"></div>
+    <button class="ach-modal-btn" id="ach-modal-btn">Awesome!</button>
+  </div>
+</div>
+  
 <!-- Edit Session Modal -->
 <div class="modal-overlay" id="edit-modal">
   <div class="modal-box">
@@ -1530,7 +1632,180 @@ document.getElementById('h-clear').addEventListener('click', () => {
 
 // ── 7N. BOOT ─────────────────────────────────────────────────
 // Initialise timer and start Firebase real-time listeners.
+// ── 7O. ACHIEVEMENTS ─────────────────────────────────────────
+// Badge collection system. 9 badges across 3 categories.
+// All badges start locked (grey padlock). Clicking unlocks them
+// with a pop animation, confetti, and a congrats modal.
+// Mystery badges show hint text and ??? name when locked.
+// Badge art is only revealed after unlock.
 
+// Locked padlock SVG — shown for ALL badges before unlock
+var ACH_LOCKED = '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="gl" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#d8d8e0"/><stop offset="45%" stop-color="#909098"/><stop offset="100%" stop-color="#404048"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#gl)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#b0b0b8" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="38" fill="none" stroke="#a0a0a8" stroke-width="1.8"/><circle cx="50" cy="50" r="34" fill="none" stroke="#606068" stroke-width=".6"/><rect x="36" y="48" width="28" height="22" rx="5" fill="#707078"/><rect x="38" y="50" width="24" height="18" rx="4" fill="#606068"/><path d="M42,48 L42,38 C42,30 58,30 58,38 L58,48" fill="none" stroke="#808088" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="60" r="4" fill="#505058"/><rect x="49" y="61" width="2" height="5" rx="1" fill="#505058"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".07" transform="rotate(-30,36,28)"/></svg>';
+
+// Full badge SVG art — only shown after unlock
+var ACH_SVGS = {
+  first:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="b1a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="b1s" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#ffe8b0"/><stop offset="40%" stop-color="#d09040"/><stop offset="100%" stop-color="#704010"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#b1a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="url(#b1s)" stroke="#703010" stroke-width="1"/><polygon points="50,24 56,42 72,42 59,52 63,70 50,60 37,70 41,52 28,42 44,42" fill="none" stroke="#ffd080" stroke-width=".6" opacity=".7"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
+  night:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="n1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#5060c8"/><stop offset="45%" stop-color="#202880"/><stop offset="100%" stop-color="#080820"/></radialGradient><radialGradient id="n2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#8890e8"/><stop offset="50%" stop-color="#4050b0"/><stop offset="100%" stop-color="#101050"/></radialGradient><radialGradient id="nm" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#f8f0e0"/><stop offset="60%" stop-color="#d8c880"/><stop offset="100%" stop-color="#a08040"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#n1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#8890d8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#101060" stroke-width=".7"/><circle cx="50" cy="50" r="37" fill="none" stroke="#5060a8" stroke-width="1.5"/><circle cx="24" cy="22" r="1.2" fill="#e0e8ff" opacity=".8"/><circle cx="76" cy="28" r="1.5" fill="#c0c8f0" opacity=".7"/><circle cx="78" cy="58" r="1" fill="#d0d8ff" opacity=".6"/><circle cx="20" cy="68" r="1.2" fill="#c0c8f0" opacity=".5"/><circle cx="66" cy="16" r=".8" fill="#e0e8ff" opacity=".8"/><path d="M70,20 C78,22 82,30 78,36 C76,40 70,40 66,38 C72,36 76,30 70,20Z" fill="url(#nm)"/><ellipse cx="50" cy="56" rx="15" ry="18" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M35,52 C25,46 25,64 35,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><path d="M65,52 C75,46 75,64 65,66" fill="url(#n2)" stroke="#4050a0" stroke-width=".7"/><ellipse cx="50" cy="40" rx="12" ry="11" fill="url(#n2)" stroke="#4050a0" stroke-width=".8"/><path d="M42,30 L38,22 L46,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><path d="M58,30 L62,22 L54,32" fill="url(#n2)" stroke="#5060b0" stroke-width=".7"/><circle cx="45" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="55" cy="38" r="5" fill="#0a0a30" stroke="#a0b0e0" stroke-width="1"/><circle cx="45" cy="38" r="2.5" fill="#2030a0"/><circle cx="55" cy="38" r="2.5" fill="#2030a0"/><circle cx="46" cy="37" r="1.1" fill="white" opacity=".9"/><circle cx="56" cy="37" r="1.1" fill="white" opacity=".9"/><polygon points="50,42 48,46 52,46" fill="#d0b050"/><path d="M44,52 C47,54 53,54 56,52" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M40,58 C44,61 56,61 60,58" fill="none" stroke="#6070b8" stroke-width=".6" opacity=".7"/><path d="M44,74 L42,82 M44,74 L46,82 M44,74 L48,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><path d="M56,74 L54,82 M56,74 L58,82 M56,74 L60,80" fill="none" stroke="#c0a040" stroke-width="1" stroke-linecap="round"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".1" transform="rotate(-30,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#n1)" stroke="#6070b8" stroke-width="1.2"/></svg>',
+  fire3:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f3a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#ffd49a"/><stop offset="40%" stop-color="#c87830"/><stop offset="100%" stop-color="#5a2a00"/></radialGradient><radialGradient id="f3c" cx="30%" cy="25%" r="70%"><stop offset="0%" stop-color="#fff8e0"/><stop offset="40%" stop-color="#ffe0a0"/><stop offset="100%" stop-color="#c07820"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#f3a)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#ffd090" stroke-width="1.5" opacity=".5"/><circle cx="50" cy="50" r="42" fill="none" stroke="#603010" stroke-width=".7"/><circle cx="50" cy="50" r="35" fill="none" stroke="#e89040" stroke-width="2"/><circle cx="50" cy="50" r="32" fill="none" stroke="#703010" stroke-width=".6"/><path d="M68,26 C62,30 54,36 48,44 C44,50 42,58 44,64 C48,58 54,52 62,48 C70,44 76,38 74,30Z" fill="url(#f3c)" stroke="#e0a030" stroke-width=".8"/><ellipse cx="58" cy="46" rx="3" ry="5" fill="#fff0c0" opacity=".8" transform="rotate(-45,58,46)"/><path d="M48,44 C40,50 32,54 26,52" fill="none" stroke="#ffe090" stroke-width="2.5" stroke-linecap="round" opacity=".8"/><path d="M52,50 C44,54 36,56 30,54" fill="none" stroke="#f0c060" stroke-width="1.5" stroke-linecap="round" opacity=".6"/><path d="M54,56 C48,59 40,60 35,58" fill="none" stroke="#e0a040" stroke-width="1" stroke-linecap="round" opacity=".4"/><circle cx="68" cy="28" r="4.5" fill="url(#f3c)" stroke="#ffe0a0" stroke-width=".8"/><circle cx="68" cy="28" r="2" fill="white" opacity=".5"/><ellipse cx="36" cy="30" rx="9" ry="5" fill="white" opacity=".13" transform="rotate(-25,36,30)"/><rect x="32" y="88" width="36" height="8" rx="2" fill="#c07028" stroke="#e89040" stroke-width=".8"/></svg>',
+  early:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="s1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff4c0"/><stop offset="30%" stop-color="#ffb040"/><stop offset="60%" stop-color="#e06020"/><stop offset="100%" stop-color="#801000"/></radialGradient><radialGradient id="s2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#ffe090"/><stop offset="100%" stop-color="#c05000"/></radialGradient></defs><line x1="50" y1="2" x2="50" y2="10" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="50" y1="90" x2="50" y2="98" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="85" y1="15" x2="79" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="15" y1="15" x2="21" y2="21" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="2" y1="50" x2="10" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><line x1="90" y1="50" x2="98" y2="50" stroke="#ff9040" stroke-width="3" stroke-linecap="round" opacity=".6"/><circle cx="50" cy="50" r="42" fill="url(#s1)"/><circle cx="50" cy="50" r="42" fill="none" stroke="#ffc060" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="38" fill="none" stroke="#801000" stroke-width=".7"/><circle cx="50" cy="50" r="33" fill="none" stroke="#ff9040" stroke-width="2"/><path d="M20,60 Q50,48 80,60" fill="none" stroke="#ff6020" stroke-width="1.5" opacity=".8"/><path d="M14,64 Q32,54 50,56 Q68,54 86,64 L86,72 Q68,62 50,64 Q32,62 14,72Z" fill="#c04010" opacity=".6"/><path d="M28,60 A22,22 0 0,1 72,60Z" fill="url(#s2)"/><path d="M36,60 A14,14 0 0,1 64,60Z" fill="#ffe080" opacity=".8"/><line x1="50" y1="38" x2="50" y2="28" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="60" y1="42" x2="66" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="40" y1="42" x2="34" y2="34" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="64" y1="52" x2="72" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><line x1="36" y1="52" x2="28" y2="48" stroke="#ffe060" stroke-width="1.2" stroke-linecap="round" opacity=".9"/><ellipse cx="36" cy="32" rx="10" ry="6" fill="white" opacity=".18" transform="rotate(-25,36,32)"/><path d="M30,82 L50,92 L70,82 L70,76 L30,76Z" fill="url(#s1)" stroke="#ffc060" stroke-width="1.2"/></svg>',
+  fire7:   '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="f7a" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fffbc0"/><stop offset="30%" stop-color="#f8d040"/><stop offset="65%" stop-color="#c07800"/><stop offset="100%" stop-color="#704000"/></radialGradient><radialGradient id="f7b" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="35%" stop-color="#f8e060"/><stop offset="100%" stop-color="#a06000"/></radialGradient><radialGradient id="f7g" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#604000"/></radialGradient></defs><path d="M22,48 C10,36 12,18 24,12 C20,26 28,34 36,32 C22,54 44,68 50,90 C56,68 78,54 64,32 C72,34 80,26 76,12 C88,18 90,36 78,48 C86,56 88,72 78,80 C74,68 66,62 58,62 C62,72 58,82 50,86 C42,82 38,72 42,62 C34,62 26,68 22,80 C12,72 14,56 22,48Z" fill="url(#f7a)" stroke="#f8d040" stroke-width="1.2"/><ellipse cx="50" cy="46" rx="12" ry="18" fill="url(#f7b)" stroke="#f8c820" stroke-width=".8"/><ellipse cx="50" cy="40" rx="6" ry="9" fill="#fff8c0" opacity=".6"/><circle cx="50" cy="32" r="3" fill="url(#f7g)" stroke="#c08000" stroke-width=".6"/><circle cx="50" cy="32" r="1.5" fill="white" opacity=".6"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#f7a)" stroke="#f8c820" stroke-width="1.2"/></svg>',
+  balance: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="p1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="25%" stop-color="#c0e8f8"/><stop offset="55%" stop-color="#6090c0"/><stop offset="85%" stop-color="#304870"/><stop offset="100%" stop-color="#102040"/></radialGradient><radialGradient id="p2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#d0f0ff"/><stop offset="70%" stop-color="#4080c0"/><stop offset="100%" stop-color="#102050"/></radialGradient><radialGradient id="pg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#a0f0ff"/><stop offset="50%" stop-color="#0080c0"/><stop offset="100%" stop-color="#003060"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#p1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c0e8f8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#204868" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#90c8f0" stroke-width="2.5"/><circle cx="50" cy="50" r="33" fill="none" stroke="#204060" stroke-width=".6"/><rect x="48" y="28" width="4" height="44" rx="2" fill="url(#p2)"/><line x1="34" y1="44" x2="66" y2="44" stroke="#90c8f0" stroke-width="2" stroke-linecap="round"/><path d="M26,44 L34,44 A8,6 0 0,0 42,44Z" fill="url(#pg)" opacity=".9"/><path d="M58,44 L66,44 A8,6 0 0,0 74,44Z" fill="url(#pg)" opacity=".9"/><circle cx="50" cy="28" r="4" fill="url(#pg)" stroke="#d0f0ff" stroke-width=".8"/><circle cx="50" cy="28" r="2" fill="white" opacity=".5"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#p1)" stroke="#90c8f0" stroke-width="1.5"/></svg>',
+  scholar: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="sc1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0d0"/><stop offset="25%" stop-color="#f8c840"/><stop offset="55%" stop-color="#9040c0"/><stop offset="100%" stop-color="#200840"/></radialGradient><radialGradient id="sc2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffe0a0"/><stop offset="40%" stop-color="#c080e0"/><stop offset="100%" stop-color="#300860"/></radialGradient><radialGradient id="scp" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="50%" stop-color="#8020d0"/><stop offset="100%" stop-color="#200040"/></radialGradient><radialGradient id="scg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffc0"/><stop offset="50%" stop-color="#e0c000"/><stop offset="100%" stop-color="#604000"/></radialGradient></defs><polygon points="50,6 58,6 58,22 50,16 42,22 42,6" fill="url(#sc1)" stroke="#f8c840" stroke-width="1"/><circle cx="42" cy="22" r="3" fill="url(#scp)"/><circle cx="50" cy="16" r="3.5" fill="url(#scg)"/><circle cx="58" cy="22" r="3" fill="url(#scp)"/><polygon points="6,50 22,30 78,30 94,50 78,70 22,70" fill="url(#sc1)" stroke="#f8c840" stroke-width="1.5"/><polygon points="14,50 28,34 72,34 86,50 72,66 28,66" fill="none" stroke="#f0c030" stroke-width="2"/><circle cx="50" cy="34" r="2.5" fill="url(#scg)"/><circle cx="86" cy="50" r="2.5" fill="url(#scp)"/><circle cx="72" cy="66" r="2.5" fill="url(#scg)"/><circle cx="14" cy="50" r="2.5" fill="url(#scp)"/><circle cx="28" cy="34" r="2.5" fill="url(#scg)"/><circle cx="28" cy="66" r="2.5" fill="url(#scp)"/><circle cx="72" cy="34" r="2.5" fill="url(#scg)"/><circle cx="50" cy="66" r="2.5" fill="url(#scp)"/><circle cx="50" cy="50" r="28" fill="url(#sc1)"/><circle cx="50" cy="50" r="23" fill="none" stroke="#a050e0" stroke-width="1.2"/><path d="M34,56 L34,38 C34,36 32,34 30,35 C24,37 18,42 16,48 L16,68 C18,62 24,58 30,58 L34,58Z" fill="#fffce0" stroke="#c0a030" stroke-width=".7"/><path d="M66,56 L66,38 C66,36 68,34 70,35 C76,37 82,42 84,48 L84,68 C82,62 76,58 70,58 L66,58Z" fill="#fffce0" stroke="#c0a030" stroke-width=".7"/><rect x="48" y="34" width="4" height="30" rx="1" fill="#a08030"/><line x1="38" y1="42" x2="47" y2="40" stroke="#a09040" stroke-width=".7" opacity=".8"/><line x1="37" y1="47" x2="47" y2="45" stroke="#a09040" stroke-width=".7"/><path d="M62,36 C60,42 58,50 55,57" fill="none" stroke="#806020" stroke-width="1" stroke-linecap="round"/><path d="M62,36 C66,40 68,48 66,54 C64,48 60,50 55,57" fill="#f0e080" stroke="#b09030" stroke-width=".5" opacity=".9"/><path d="M55,57 L53,61 L58,57Z" fill="#604010"/><path d="M26,78 L26,72 L34,66 L66,66 L74,72 L74,78 L50,88Z" fill="url(#sc1)" stroke="#f8c840" stroke-width="1.3"/><circle cx="50" cy="76" r="2.5" fill="url(#scg)"/></svg>',
+  hundred: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="h1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0f8"/><stop offset="25%" stop-color="#f0c0e8"/><stop offset="55%" stop-color="#a040a0"/><stop offset="85%" stop-color="#501060"/><stop offset="100%" stop-color="#200030"/></radialGradient><radialGradient id="h2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#f0d0ff"/><stop offset="70%" stop-color="#9030c0"/><stop offset="100%" stop-color="#300050"/></radialGradient><radialGradient id="hg" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#d0a0ff"/><stop offset="50%" stop-color="#8020d0"/><stop offset="100%" stop-color="#200040"/></radialGradient><radialGradient id="hd" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="30%" stop-color="#d0f0ff"/><stop offset="70%" stop-color="#60b0e0"/><stop offset="100%" stop-color="#103060"/></radialGradient></defs><circle cx="50" cy="50" r="46" fill="url(#h1)"/><circle cx="50" cy="50" r="46" fill="none" stroke="#f0c0e8" stroke-width="2" opacity=".7"/><circle cx="50" cy="50" r="42" fill="none" stroke="#601080" stroke-width=".8"/><circle cx="50" cy="50" r="36" fill="none" stroke="#d080d0" stroke-width="2.5"/><polygon points="50,26 62,34 62,46 50,54 38,46 38,34" fill="url(#h2)" stroke="#e0a0f0" stroke-width="1"/><polygon points="50,26 62,34 62,46 50,54 38,46 38,34" fill="none" stroke="white" stroke-width=".5" opacity=".4"/><line x1="38" y1="34" x2="62" y2="34" stroke="#f0d0ff" stroke-width=".8" opacity=".6"/><line x1="50" y1="26" x2="50" y2="54" stroke="#e0c0ff" stroke-width=".6" opacity=".5"/><line x1="50" y1="26" x2="38" y2="46" stroke="#e0c0ff" stroke-width=".4" opacity=".4"/><line x1="50" y1="26" x2="62" y2="46" stroke="#e0c0ff" stroke-width=".4" opacity=".4"/><circle cx="50" cy="26" r="3.5" fill="url(#hd)" stroke="#d0f0ff" stroke-width=".8"/><circle cx="50" cy="26" r="1.5" fill="white" opacity=".7"/><circle cx="62" cy="34" r="2.5" fill="url(#hg)"/><circle cx="38" cy="34" r="2.5" fill="url(#hd)"/><circle cx="62" cy="46" r="2.5" fill="url(#hd)"/><circle cx="38" cy="46" r="2.5" fill="url(#hg)"/><circle cx="50" cy="54" r="3" fill="url(#hg)"/><ellipse cx="36" cy="28" rx="9" ry="5" fill="white" opacity=".15" transform="rotate(-25,36,28)"/><path d="M30,90 L50,98 L70,90 L70,84 L30,84Z" fill="url(#h1)" stroke="#d080d0" stroke-width="1.5"/></svg>',
+  perfect: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="lg1" cx="38%" cy="32%" r="65%"><stop offset="0%" stop-color="#fff0d0"/><stop offset="25%" stop-color="#f8c840"/><stop offset="45%" stop-color="#e08000"/><stop offset="70%" stop-color="#a04000"/><stop offset="100%" stop-color="#500800"/></radialGradient><radialGradient id="lg2" cx="35%" cy="30%" r="65%"><stop offset="0%" stop-color="#ffffff"/><stop offset="25%" stop-color="#ffe880"/><stop offset="60%" stop-color="#f09000"/><stop offset="100%" stop-color="#803000"/></radialGradient><radialGradient id="lgr" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#ffb0b0"/><stop offset="50%" stop-color="#e02020"/><stop offset="100%" stop-color="#600000"/></radialGradient><radialGradient id="lgb" cx="30%" cy="25%" r="65%"><stop offset="0%" stop-color="#b0d0ff"/><stop offset="50%" stop-color="#2060e0"/><stop offset="100%" stop-color="#001060"/></radialGradient></defs><path d="M50,4 C58,10 66,4 70,12 C78,8 84,16 78,22 C86,24 88,34 82,38 C88,46 84,56 78,58 C80,68 74,76 66,76 C64,86 58,92 50,92 C42,92 36,86 34,76 C26,76 20,68 22,58 C16,56 12,46 18,38 C12,34 14,24 22,22 C16,16 22,8 30,12 C34,4 42,10 50,4Z" fill="url(#lg1)" stroke="#f8d040" stroke-width="1.5"/><circle cx="50" cy="50" r="30" fill="url(#lg1)"/><circle cx="50" cy="50" r="26" fill="none" stroke="#f8c840" stroke-width="2"/><circle cx="50" cy="34" r="3" fill="url(#lgb)"/><circle cx="50" cy="66" r="3" fill="url(#lgb)"/><circle cx="34" cy="50" r="3" fill="url(#lgr)"/><circle cx="66" cy="50" r="3" fill="url(#lgr)"/><circle cx="39" cy="39" r="2.5" fill="url(#lgb)"/><circle cx="61" cy="39" r="2.5" fill="url(#lgr)"/><circle cx="39" cy="61" r="2.5" fill="url(#lgr)"/><circle cx="61" cy="61" r="2.5" fill="url(#lgb)"/><polygon points="50,38 52.4,45 60,45 54,49 56,56 50,52 44,56 46,49 40,45 47.6,45" fill="url(#lg2)" stroke="#e08000" stroke-width=".8"/><ellipse cx="36" cy="26" rx="10" ry="6" fill="white" opacity=".15" transform="rotate(-25,36,26)"/><path d="M30,86 L50,96 L70,86 L70,80 L30,80Z" fill="url(#lg1)" stroke="#f8d040" stroke-width="1.5"/></svg>'
+};
+
+// Badge definitions
+var ACH_BADGES = [
+  {id:'first',   section:'start',  name:'First step',        desc:'Log your first study session',    hint:null,                               mystery:false},
+  {id:'night',   section:'start',  name:'Night owl',         desc:'Study after midnight',            hint:null,                               mystery:false},
+  {id:'fire3',   section:'start',  name:'Kindled',           desc:'Study 3 days in a row',           hint:null,                               mystery:false},
+  {id:'early',   section:'streak', name:'Early bird',        desc:'Study before 7am',                hint:null,                               mystery:false},
+  {id:'fire7',   section:'streak', name:'Wildfire',          desc:'7-day study streak',              hint:null,                               mystery:false},
+  {id:'balance', section:'streak', name:'Balance keeper',    desc:'Study all 5 topics evenly',       hint:'All 5 topics deserve your love…',  mystery:true},
+  {id:'scholar', section:'master', name:'Actuarial scholar', desc:'Master all 5 topics (20h each)',  hint:null,                               mystery:false},
+  {id:'hundred', section:'master', name:'Century',           desc:'Log 100 total hours',             hint:'A century of focused hours awaits…',mystery:true},
+  {id:'perfect', section:'master', name:'???',               desc:'A special hidden achievement',    hint:'Some study at very unusual times…', mystery:true}
+];
+
+var achUnlocked = 0;
+var achTotal    = ACH_BADGES.length;
+
+function achUpdateStats() {
+  document.getElementById('ach-t-u').textContent = achUnlocked;
+  document.getElementById('ach-t-l').textContent = achTotal - achUnlocked;
+  var pct = Math.round((achUnlocked / achTotal) * 100);
+  document.getElementById('ach-prog-fill').style.width = pct + '%';
+  document.getElementById('ach-prog-label').textContent = achUnlocked + ' of ' + achTotal + ' unlocked';
+  document.getElementById('ach-prog-pct').textContent = pct + '%';
+}
+
+function achRender() {
+  var sections = ['start','streak','master'];
+  for (var si = 0; si < sections.length; si++) {
+    var sec  = sections[si];
+    var grid = document.getElementById('ach-grid-' + sec);
+    if (!grid) continue;
+    grid.innerHTML = '';
+    for (var bi = 0; bi < ACH_BADGES.length; bi++) {
+      var b = ACH_BADGES[bi];
+      if (b.section !== sec) continue;
+      grid.appendChild(achMakeCard(b));
+    }
+  }
+}
+
+function achMakeCard(b) {
+  var card = document.createElement('div');
+  card.id  = 'ach-card-' + b.id;
+  card.className = 'ach-card ' + (b.unlocked ? 'unlocked' : 'locked');
+
+  var svgDiv = document.createElement('div');
+  svgDiv.id  = 'ach-svg-' + b.id;
+  svgDiv.innerHTML = b.unlocked ? ACH_SVGS[b.id] : ACH_LOCKED;
+
+  var nameEl = document.createElement('div');
+  nameEl.className = 'ach-card-name' + (b.unlocked ? '' : ' muted');
+  nameEl.textContent = (b.mystery && !b.unlocked) ? '???' : b.name;
+
+  var descEl = document.createElement('div');
+  if (b.unlocked) {
+    descEl.className   = 'ach-card-desc';
+    descEl.textContent = b.desc;
+  } else if (b.mystery) {
+    descEl.className   = 'ach-card-desc hint';
+    descEl.textContent = b.hint;
+  } else {
+    descEl.className   = 'ach-card-desc';
+    descEl.textContent = b.desc;
+  }
+
+  card.appendChild(svgDiv);
+  card.appendChild(nameEl);
+  card.appendChild(descEl);
+
+  card.addEventListener('click', (function(badge){ return function(){ achOnClick(badge); }; })(b));
+  return card;
+}
+
+function achOnClick(b) {
+  if (b.unlocked) {
+    achOpenModal(ACH_SVGS[b.id], b.name, b.desc, false);
+    return;
+  }
+  b.unlocked = true;
+  achUnlocked++;
+  achUpdateStats();
+
+  var svgDiv = document.getElementById('ach-svg-' + b.id);
+  var card   = document.getElementById('ach-card-' + b.id);
+  svgDiv.innerHTML = ACH_SVGS[b.id];
+  svgDiv.classList.add('ach-pop');
+  card.className = 'ach-card unlocked';
+
+  var nameEl = card.querySelector('.ach-card-name');
+  var descEl = card.querySelector('.ach-card-desc');
+  nameEl.className   = 'ach-card-name';
+  nameEl.textContent = b.name;
+  descEl.className   = 'ach-card-desc';
+  descEl.textContent = b.desc;
+
+  achSpawnConfetti();
+  setTimeout(function() {
+    achOpenModal(ACH_SVGS[b.id], 'Achievement unlocked!', 'You earned "' + b.name + '" — ' + b.desc, true);
+  }, 420);
+}
+
+function achOpenModal(svgStr, title, sub) {
+  var bg    = document.getElementById('ach-modal-bg');
+  var box   = document.getElementById('ach-modal-box');
+  var badge = document.getElementById('ach-modal-badge');
+  badge.innerHTML = svgStr;
+  document.getElementById('ach-modal-title').textContent = title;
+  document.getElementById('ach-modal-sub').textContent   = sub;
+  box.classList.remove('anim');
+  void box.offsetWidth;
+  box.classList.add('anim');
+  bg.classList.add('show');
+}
+
+function achCloseModal() {
+  document.getElementById('ach-modal-bg').classList.remove('show');
+}
+
+document.getElementById('ach-modal-bg').addEventListener('click', function(e) {
+  if (e.target === document.getElementById('ach-modal-bg')) achCloseModal();
+});
+document.getElementById('ach-modal-btn').addEventListener('click', achCloseModal);
+
+function achSpawnConfetti() {
+  var colors = ['#ff375f','#ff9500','#28cd41','#007aff','#5856d6','#af52de','#f8c820'];
+  var root   = document.documentElement;
+  for (var i = 0; i < 30; i++) {
+    (function() {
+      var p     = document.createElement('div');
+      p.className = 'ach-confetti';
+      var left  = 15 + Math.floor(Math.random() * 70);
+      var color = colors[Math.floor(Math.random() * colors.length)];
+      var dur   = (0.9 + Math.random() * 1.0).toFixed(2);
+      var delay = (Math.random() * 0.4).toFixed(2);
+      var round = Math.random() > 0.5;
+      p.style.cssText = 'left:' + left + '%;top:30%;background:' + color
+        + ';border-radius:' + (round ? '50%' : '2px')
+        + ';animation:achFall ' + dur + 's ' + delay + 's linear forwards;';
+      root.appendChild(p);
+      setTimeout(function(){ if (p.parentNode) p.parentNode.removeChild(p); }, 2500);
+    })();
+  }
+}
+
+// Init achievements
+achRender();
+achUpdateStats();
+setTimeout(function() {
+  var pct = Math.round((achUnlocked / achTotal) * 100);
+  document.getElementById('ach-prog-fill').style.width = pct + '%';
+}, 200);
 setMode('work');
 startListeners();
 
