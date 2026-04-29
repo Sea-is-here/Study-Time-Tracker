@@ -2093,12 +2093,16 @@ function achUnlockBadge(b) {
     if (descEl) { descEl.className = 'ach-card-desc'; descEl.textContent = b.desc; }
   }
 
-  // Fire confetti + modal
-  achSpawnConfetti();
-  setTimeout(function() {
-    achOpenModal(ACH_SVGS[b.id], 'Achievement unlocked!',
-      'You earned "' + b.name + '" — ' + b.desc, true);
-  }, 420);
+  // Only show confetti + popup if this badge hasn't been shown before
+  var shownKey = 'ach_shown_' + b.id;
+  if (!localStorage.getItem(shownKey)) {
+    localStorage.setItem(shownKey, '1');
+    achSpawnConfetti();
+    setTimeout(function() {
+      achOpenModal(ACH_SVGS[b.id], 'Achievement unlocked!',
+        'You earned "' + b.name + '" — ' + b.desc, true);
+    }, 420);
+  }
 }
 
 // ── REPLACE the old achOnClick ────────────────────────────────
