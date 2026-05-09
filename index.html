@@ -1434,12 +1434,13 @@ function rChart() {
     document.getElementById('ap-chart').innerHTML = `
       <div style="display:flex;align-items:flex-end;gap:4px;height:130px;
                   padding-bottom:22px;overflow-x:auto;">
-        ${activeDays.map((d, i) => {
+        ${days.map((d, i) => {
           const hp = (d.h / max) * 100;
           const showLbl = (i % labelEvery === 0);
           return `<div style="display:flex;flex-direction:column;align-items:center;
                               gap:2px;min-width:22px;flex:1;max-width:40px;height:100%;
                               justify-content:flex-end;">
+            <div style="font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">${d.h > 0 ? d.h.toFixed(1)+'h' : ''}</div>
             <div style="width:100%;border-radius:4px 4px 0 0;
                         height:${hp}%;background:#007aff;opacity:0.8;
                         min-height:2px;transition:height .4s;"
@@ -1458,13 +1459,13 @@ function rChart() {
     // Y-axis auto-scales to actual max value.
     // Dots connected by a polyline. Zero days omitted entirely.
 
-    const pts = activeDays;
+    const pts = days;
     const n   = pts.length;
 
     const svgH = 150;
     const padL = 38;  // room for Y-axis labels
     const padR = 10;
-    const padT = 18;  // room for value labels above dots
+    const padT = 26;  // room for value labels above dots
     const padB = 24;  // room for X-axis labels
     const plotH = svgH - padT - padB;
     const minW  = Math.max(n * 28, 280);
