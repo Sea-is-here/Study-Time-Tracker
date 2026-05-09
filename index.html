@@ -1429,44 +1429,39 @@ function rChart() {
 
   if (chartType === 'bar') {
     // ── BAR CHART ──────────────────────────────────────────
-    // Only render days with data — no grey placeholders.
-    // Bars grow from left naturally.
-    document.getElementById('ap-chart').innerHTML = `
-      <div style="display:flex;align-items:flex-end;gap:4px;height:130px;
-                  padding-bottom:22px;overflow-x:auto;">
-        ${days.map((d, i) => {
-          const hp = (d.h / max) * 100;
-          const showLbl = (i % labelEvery === 0);
-          return `<div style="display:flex;flex-direction:column;align-items:center;
-                              gap:2px;min-width:22px;flex:1;max-width:40px;height:100%;
-                              justify-content:flex-end;">
-            <div style="font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">${d.h > 0 ? d.h.toFixed(1)+'h' : ''}</div>
+    // Uses .ch-col / .ch-bwrap CSS classes so flex:1 fills the bar area
+    // and value labels sit naturally above without overflowing the container.
+    document.getElementById('ap-chart').innerHTML =
+      days.map((d, i) => {
+        const hp = (d.h / max) * 100;
+        const showLbl = (i % labelEvery === 0);
+        return `<div class="ch-col" style="max-width:40px;">
+          <div style="font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;text-align:center;">${d.h.toFixed(1)}h</div>
+          <div class="ch-bwrap">
             <div style="width:100%;border-radius:4px 4px 0 0;
                         height:${hp}%;background:#007aff;opacity:0.8;
-                        min-height:2px;transition:height .4s;"
+                        min-height:${d.h > 0 ? 2 : 0}px;transition:height .4s;"
                  title="${d.k}: ${fh(d.h)}"></div>
-            <div style="font-size:9px;color:#aeaeb2;font-weight:500;
-                        white-space:nowrap;text-align:center;">
-              ${showLbl ? d.lbl : ''}
-            </div>
-          </div>`;
-        }).join('')}
-      </div>`;
+          </div>
+          <div style="font-size:9px;color:#aeaeb2;font-weight:500;white-space:nowrap;text-align:center;">
+            ${showLbl ? d.lbl : ''}
+          </div>
+        </div>`;
+      }).join('');
 
   } else {
     // ── DOT PLOT WITH CONNECTING LINE ─────────────────────
-    // SVG-based. Only active days plotted.
-    // Y-axis auto-scales to actual max value.
-    // Dots connected by a polyline. Zero days omitted entirely.
+    // SVG height kept at 128px to stay within the 130px .chart container,
+    // preventing .chart-wrap from clipping the top labels.
 
     const pts = days;
     const n   = pts.length;
 
-    const svgH = 150;
+    const svgH = 128;
     const padL = 38;  // room for Y-axis labels
     const padR = 10;
-    const padT = 26;  // room for value labels above dots
-    const padB = 24;  // room for X-axis labels
+    const padT = 20;  // room for value labels above dots
+    const padB = 22;  // room for X-axis labels
     const plotH = svgH - padT - padB;
     const minW  = Math.max(n * 28, 280);
     const svgW  = minW;
@@ -1510,11 +1505,12 @@ function rChart() {
                     text-anchor="middle" font-size="9" fill="#aeaeb2">${p.lbl}</text>`;
     }).join('');
 
-    // Value labels above each dot
-    const valLabels = coords.map(p =>
-      `<text x="${p.x.toFixed(1)}" y="${(p.y - 8).toFixed(1)}"
-             text-anchor="middle" font-size="8" fill="#5856d6" font-weight="600">${p.h.toFixed(1)}h</text>`
-    ).join('');
+    // Value labels above each dot (clamped so they never go above y=12)
+    const valLabels = coords.map(p => {
+      const labelY = Math.max(p.y - 8, 12);
+      return `<text x="${p.x.toFixed(1)}" y="${labelY.toFixed(1)}"
+                    text-anchor="middle" font-size="8" fill="#5856d6" font-weight="600">${p.h.toFixed(1)}h</text>`;
+    }).join('');
 
     // Dots
     const dotElems = coords.map(p =>
