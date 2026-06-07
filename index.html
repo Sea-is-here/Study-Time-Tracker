@@ -1481,35 +1481,43 @@ function rChart() {
                    : 7;
 
 if (chartType === 'bar') {
-    const chartUsableH = 108;
-    const lineTop = max >= 2 ? Math.round((1 - 2 / max) * chartUsableH) : null;
+    const LBL_TOP = 12, BAR_H = 72, LBL_BOT = 24; // 12+72+24 = 108px = usable chart area
+    const lineTop = max >= 2 ? LBL_TOP + Math.round((1 - 2 / max) * BAR_H) : null;
 
     const barsHtml = activeDays.map((d, i) => {
-      const hp = (d.h / max) * 100;
+      const barPx   = d.h > 0 ? Math.max(Math.round((d.h / max) * BAR_H), 2) : 0;
       const showLbl = (i % labelEvery === 0);
-      return `<div class="ch-col" style="flex:none;width:28px;">
-        <div style="font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;text-align:center;">${d.h.toFixed(1)}h</div>
-        <div class="ch-bwrap">
-          <div style="width:100%;border-radius:4px 4px 0 0;
-                      height:${hp}%;background:#007aff;opacity:0.8;
-                      min-height:${d.h > 0 ? 2 : 0}px;transition:height .4s;"
+      return `<div style="display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;">
+        <div style="height:${LBL_TOP}px;display:flex;align-items:center;justify-content:center;
+                    font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">
+          ${d.h.toFixed(1)}h
+        </div>
+        <div style="height:${BAR_H}px;width:100%;display:flex;align-items:flex-end;">
+          <div style="width:100%;border-radius:4px 4px 0 0;height:${barPx}px;
+                      background:#007aff;opacity:0.8;transition:height .4s;"
                title="${d.k}: ${fh(d.h)}"></div>
         </div>
-        <div style="font-size:9px;color:#aeaeb2;font-weight:500;white-space:nowrap;text-align:center;">
+        <div style="height:${LBL_BOT}px;display:flex;align-items:flex-start;padding-top:4px;
+                    justify-content:center;font-size:9px;color:#aeaeb2;font-weight:500;white-space:nowrap;">
           ${showLbl ? d.lbl : ''}
         </div>
       </div>`;
     }).join('');
 
-    const apChart = document.getElementById('ap-chart');
-    apChart.style.position = 'relative';
-    apChart.innerHTML = barsHtml + (lineTop !== null ? `
-      <div style="position:absolute;left:0;right:0;top:${lineTop}px;
-                  border-top:1.5px dashed rgba(255,149,0,0.75);
-                  pointer-events:none;z-index:2;">
-        <span style="position:absolute;left:4px;top:-13px;
-                     font-size:9px;color:#ff9500;font-weight:600;">2h</span>
-      </div>` : '');
+    document.getElementById('ap-chart').innerHTML = `
+      <div style="position:relative;width:100%;">
+        <div style="display:flex;gap:3px;overflow-x:auto;">
+          ${barsHtml}
+        </div>
+        ${lineTop !== null ? `
+        <div style="position:absolute;left:0;right:0;top:${lineTop}px;
+                    border-top:1.5px dashed rgba(255,149,0,0.75);
+                    pointer-events:none;z-index:2;">
+          <span style="position:absolute;left:4px;top:-13px;
+                       font-size:9px;color:#ff9500;font-weight:600;">2h</span>
+        </div>` : ''}
+      </div>`;
+
   } else {
     // ── DOT PLOT WITH CONNECTING LINE ─────────────────────
     // SVG height kept at 128px to stay within the 130px .chart container,
