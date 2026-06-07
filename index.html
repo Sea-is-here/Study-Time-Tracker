@@ -163,16 +163,24 @@ select.fi{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.o
 .bk-sub-row b{font-weight:600;}
 
 /* --- Dashboard: Topic Bars --- */
-.t-row{margin-bottom:14px;}
+.t-row{margin-bottom:20px;}
 .t-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
 .t-name{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:#1d1d1f;}
 .t-nm{font-size:12px;color:#6e6e73;font-weight:400;}
-.t-meta{font-size:12px;color:#6e6e73;}
-.t-meta b{color:#1d1d1f;font-weight:600;}
 .t-tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.t-bg{height:6px;border-radius:999px;background:#f2f2f7;overflow:hidden;}
-.t-fill{height:100%;border-radius:999px;transition:width .5s cubic-bezier(.16,1,.3,1);}
-
+.t-right{display:flex;align-items:center;gap:5px;font-size:12px;}
+.t-total{font-weight:500;color:#1d1d1f;}
+.t-slash{color:#6e6e73;}
+.t-pct{color:#6e6e73;}
+.t-target-display{color:#6e6e73;cursor:pointer;border-bottom:1px dashed #c7c7cc;padding-bottom:1px;}
+.t-target-display:hover{color:#1d1d1f;border-bottom-color:#1d1d1f;}
+.t-target-input{width:32px;font-size:12px;color:#1d1d1f;border:none;border-bottom:1.5px solid #007aff;background:transparent;text-align:center;outline:none;padding:0;font-family:inherit;display:none;}
+.t-bg{height:7px;border-radius:999px;background:#f2f2f7;overflow:hidden;display:flex;margin-bottom:7px;}
+.t-seg{height:100%;transition:width .5s cubic-bezier(.16,1,.3,1);}
+.t-breakdown{display:flex;gap:14px;}
+.t-bk-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#6e6e73;}
+.t-bk-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.t-bk-val{font-weight:600;}
 /* --- Dashboard: Chart (Bar + Dot) --- */
 .chart-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
 .chart-wrap{overflow-x:auto;padding-bottom:4px;}
@@ -803,6 +811,24 @@ function p2(n)  { return String(n).padStart(2,'0'); }
 function ft(s)  { return `${p2(Math.floor(s/60))}:${p2(s%60)}`; }
 function fh(h)  { return h.toFixed(1)+'h'; }
 function catOf(s){ return s ? s.split('_')[0] : 'Study'; }
+  var TOPIC_TARGETS = JSON.parse(localStorage.getItem('topicTargets')||'{}');
+['T1','T2','T3','T4','T5'].forEach(function(t){ if(!TOPIC_TARGETS[t]) TOPIC_TARGETS[t]=40; });
+function saveTopicTarget(tid,val){
+  TOPIC_TARGETS[tid]=val;
+  localStorage.setItem('topicTargets',JSON.stringify(TOPIC_TARGETS));
+}
+function editTarget(tid){
+  document.getElementById('tgt-d-'+tid).style.display='none';
+  var inp=document.getElementById('tgt-i-'+tid);
+  inp.style.display='inline';
+  inp.focus(); inp.select();
+}
+function saveTargetEdit(tid){
+  var inp=document.getElementById('tgt-i-'+tid);
+  var val=Math.max(1,parseInt(inp.value)||40);
+  saveTopicTarget(tid,val);
+  rTopics();
+}
 function esc(s) {
   return String(s||'').replace(/[&<>"']/g,
     c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
@@ -1353,23 +1379,50 @@ function rBreakdown() {
 
 // Topic progress bars
 function rTopics() {
-  const byT={};
-  Object.keys(TOPICS).forEach(t => byT[t]=0);
-  sessions.forEach(s => { byT[s.topic]=(byT[s.topic]||0)+s.hours; });
-  const tot=Object.values(byT).reduce((a,b)=>a+b,0);
-  const max=Math.max(...Object.values(byT),.001);
+  const ACT = {Study:'#007aff', Review:'#af52de', Exercise:'#ff9500'};
+  const byT = {};
+  Object.keys(TOPICS).forEach(t => byT[t]={Study:0,Review:0,Exercise:0});
+  sessions.forEach(s => {
+    if(byT[s.topic]){
+      const a=s.cat||catOf(s.sub)||'Study';
+      byT[s.topic][a]=(byT[s.topic][a]||0)+s.hours;
+    }
+  });
   document.getElementById('topic-bars').innerHTML = Object.keys(TOPICS).map(tid => {
-    const t=TOPICS[tid], h=byT[tid], bw=(h/max)*100, sh=tot>0?(h/tot)*100:0;
+    const t=TOPICS[tid], acts=byT[tid];
+    const total=acts.Study+acts.Review+acts.Exercise;
+    const target=TOPIC_TARGETS[tid]||40;
+    const pct=Math.min(total/target*100,100);
+    const sw=Math.min(acts.Study/target*100,100);
+    const rw=Math.min(acts.Review/target*100,Math.max(0,pct-sw));
+    const ew=Math.max(0,pct-sw-rw);
     return `<div class="t-row">
       <div class="t-head">
         <div class="t-name">
           <div class="t-tdot" style="background:${t.color}"></div>
-          <span style="font-size:11px;font-weight:700;color:${t.color}">${tid}</span>
+          <span style="font-size:11px;font-weight:500;color:${t.color}">${tid}</span>
           <span class="t-nm">${t.name}</span>
         </div>
-        <span class="t-meta"><b>${fh(h)}</b> ${Math.round(sh)}%</span>
+        <div class="t-right">
+          <span class="t-total">${fh(total)}</span>
+          <span class="t-slash">/</span>
+          <span class="t-target-display" id="tgt-d-${tid}" onclick="editTarget('${tid}')" title="Click to edit target">${target}h</span>
+          <input class="t-target-input" id="tgt-i-${tid}" type="number" min="1" value="${target}"
+            onblur="saveTargetEdit('${tid}')"
+            onkeydown="if(event.key==='Enter')this.blur()">
+          <span class="t-pct">· ${Math.round(pct)}%</span>
+        </div>
       </div>
-      <div class="t-bg"><div class="t-fill" style="background:${t.color};width:${bw}%"></div></div>
+      <div class="t-bg">
+        <div class="t-seg" style="background:${ACT.Study};width:${sw}%"></div>
+        <div class="t-seg" style="background:${ACT.Review};width:${rw}%"></div>
+        <div class="t-seg" style="background:${ACT.Exercise};width:${ew}%"></div>
+      </div>
+      <div class="t-breakdown">
+        <div class="t-bk-item"><div class="t-bk-dot" style="background:${ACT.Study}"></div><span class="t-bk-val" style="color:${ACT.Study}">${fh(acts.Study)}</span><span>study</span></div>
+        <div class="t-bk-item"><div class="t-bk-dot" style="background:${ACT.Review}"></div><span class="t-bk-val" style="color:${ACT.Review}">${fh(acts.Review)}</span><span>review</span></div>
+        <div class="t-bk-item"><div class="t-bk-dot" style="background:${ACT.Exercise}"></div><span class="t-bk-val" style="color:${ACT.Exercise}">${fh(acts.Exercise)}</span><span>exercise</span></div>
+      </div>
     </div>`;
   }).join('');
 }
