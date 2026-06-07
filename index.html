@@ -1488,8 +1488,8 @@ if (chartType === 'bar') {
       const hp = (d.h / max) * 100;
       const showLbl = (i % labelEvery === 0);
       return `<div style="display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;gap:2px;">
-        <div style="height:${VAL_H}px;display:flex;align-items:flex-end;justify-content:center;
-                    font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">${d.h.toFixed(1)}h</div>
+        <div style="min-height:14px;line-height:14px;font-size:8px;color:#5856d6;
+                    font-weight:600;white-space:nowrap;text-align:center;">${d.h.toFixed(1)}h</div>
         <div style="height:${PLOT_H}px;width:100%;display:flex;align-items:flex-end;">
           <div style="width:100%;border-radius:4px 4px 0 0;
                       height:${hp}%;background:#007aff;opacity:0.8;
@@ -1512,7 +1512,7 @@ if (chartType === 'bar') {
         <div style="position:absolute;left:0;right:0;top:${lineTop}px;
                     border-top:1.5px dashed rgba(255,149,0,0.75);
                     pointer-events:none;z-index:2;">
-          <span style="position:absolute;right:4px;top:-13px;
+          <span style="position:absolute;left:4px;top:-13px;
                        font-size:9px;color:#ff9500;font-weight:600;">2h</span>
         </div>` : ''}
       </div>`;
