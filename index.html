@@ -1515,10 +1515,8 @@ if (chartType === 'bar') {
     }).join('');
 
     document.getElementById('ap-chart').innerHTML = `
-      <div style="position:relative;width:100%;">
-        <div style="display:flex;gap:3px;overflow-x:auto;">
-          ${barsHtml}
-        </div>
+      <div style="position:relative;display:flex;gap:3px;align-items:flex-start;">
+        ${barsHtml}
         ${lineTop !== null ? `
         <div style="position:absolute;left:0;right:0;top:${lineTop}px;border-top:1.5px dashed rgba(255,149,0,0.75);pointer-events:none;z-index:2;">
           <span style="position:absolute;left:4px;top:-13px;font-size:9px;color:#ff9500;font-weight:600;">2h</span>
