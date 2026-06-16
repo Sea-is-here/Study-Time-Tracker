@@ -1499,8 +1499,8 @@ if (chartType === 'bar') {
       const showLbl  = (i % labelEvery === 0);
       return `<div style="display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;">
         <div style="height:${LBL_TOP}px;display:flex;align-items:center;justify-content:center;
-            font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">
-          ${showLbl ? d.h.toFixed(1)+'h' : ''}
+                    font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;overflow:visible;">
+          ${d.h.toFixed(1)}h
         </div>
         <div style="height:${BAR_H}px;width:100%;display:flex;align-items:flex-end;">
           <div style="width:100%;height:${totalPx}px;display:flex;flex-direction:column;
@@ -1519,11 +1519,11 @@ if (chartType === 'bar') {
 
     document.getElementById('ap-chart').innerHTML = `
       <div style="position:relative;width:100%;">
-        <div style="display:flex;gap:3px;overflow-x:auto;">
+        <div style="display:flex;gap:3px;overflow-x:auto;padding-top:${LBL_TOP}px;">
           ${barsHtml}
         </div>
         ${lineTop !== null ? `
-        <div style="position:absolute;left:0;right:0;top:${lineTop}px;
+        <div style="position:absolute;left:0;right:0;top:${lineTop + LBL_TOP}px;
                     border-top:1.5px dashed rgba(255,149,0,0.75);
                     pointer-events:none;z-index:2;">
           <span style="position:absolute;left:4px;top:-13px;
