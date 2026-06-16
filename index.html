@@ -1499,8 +1499,8 @@ if (chartType === 'bar') {
       const showLbl  = (i % labelEvery === 0);
       return `<div style="display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;">
         <div style="height:${LBL_TOP}px;display:flex;align-items:center;justify-content:center;
-                    font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">
-          ${d.h.toFixed(1)}h
+            font-size:8px;color:#5856d6;font-weight:600;white-space:nowrap;">
+          ${showLbl ? d.h.toFixed(1)+'h' : ''}
         </div>
         <div style="height:${BAR_H}px;width:100%;display:flex;align-items:flex-end;">
           <div style="width:100%;height:${totalPx}px;display:flex;flex-direction:column;
